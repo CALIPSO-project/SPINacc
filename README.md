@@ -1,7 +1,7 @@
 # SPINacc
 A spinup acceleration procedure for land surface models which is model independent.
 
-Documentation of aims, concepts, workflows are found in file:
+Documentation of aims, concepts, workflows are found in file: <MISSING>
 
 
 The SPINacc package includes:

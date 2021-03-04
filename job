@@ -1,0 +1,15 @@
+#QSUB -eo
+#QSUB -s /bin/tcsh
+
+setenv dirpython '/home/satellites8/ylwang/MLacc/'
+setenv dirdef    'DEF_Trunk/'
+
+limit descriptors 10000
+
+module unload python
+setenv PYTHONPATH $dirpython/Tools
+module load python/3
+uname -a
+
+cd $dirpython
+python3 main.py ${dirdef} || exit

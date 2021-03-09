@@ -177,7 +177,7 @@ if '3' in itask:
           # need Yan Sun to modify it
           if 'allname_type' in varlist['pred'].keys(): 
             col_type=labx.index(varlist['pred']['allname_type'])
-            type_val=np.arange(1,len(auxil.pfts))
+            type_val=varlist['pred']['type_code']
             combineXY=encode.en_code(combine_XY,col_type,type_val)
           else:
             col_type='None'

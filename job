@@ -1,5 +1,5 @@
-#QSUB -eo
-#QSUB -s /bin/tcsh
+#PBS -eo
+#PBS -S /bin/tcsh
 
 setenv dirpython '/home/satellites8/ylwang/MLacc/'
 setenv dirdef    'DEF_Trunk/'

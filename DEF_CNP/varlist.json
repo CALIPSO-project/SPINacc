@@ -52,7 +52,8 @@
             "PSurf_mean","SWdown_mean","LWdown_mean","soil_shield","clay_frac","silt_frac","bulk","soil_ph",
             "Pre_GS","Temp_GS","GS_length","interx1","interx2","soil_orders","Ndep_nhx","Ndep_noy"],
     "allname_pft":["Pdep","NPP0","LAI0"],
-    "allname_type":"soil_orders"
+    "allname_type":"soil_orders",
+    "type_code":[1,2,3,4,5,6,7,8,9,10,11,12]
   },
   "clustering":
   {

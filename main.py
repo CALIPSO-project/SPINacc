@@ -229,7 +229,7 @@ if '3' in itask:
             plt.close('all')
           else:
             check.display('%s PFT%2.2i element%i subp%i: NO DATA!'%(ipool,auxil.pfts[ipft],cnp.index(indy),isubp,R2,RMSE,slope),logfile)
-
+  check.display('task 3 done!',logfile)
           
   
   

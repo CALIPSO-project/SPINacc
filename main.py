@@ -45,7 +45,7 @@ check.display('DEF directory: '+dir_def,logfile)
 check.display('running task: %s'%str(itask),logfile)
 
 # Define task 
-resultpath=config[5].strip()
+resultpath=config[5].strip()+'/'
 check.display('results are stored at: '+resultpath,logfile)
 
 # Read list of variables

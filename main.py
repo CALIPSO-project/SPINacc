@@ -97,6 +97,7 @@ if '2' in itask:
   check.display('Kmean algorithm, K=%i'%KK,logfile)
   IDx,IDloc,IDsel=Cluster.Cluster_all(packdata,auxil,varlist,KK,logfile)
   IDx.dump(resultpath+'IDx.npy')
+  np.savetxt(resultpath+'IDx.txt',IDx,fmt='%.2f')
   IDloc.dump(resultpath+'IDloc.npy')
   IDsel.dump(resultpath+'IDsel.npy')
   check.display('clustering done!\nResults have been stored as IDx.npy',logfile)

@@ -14,7 +14,7 @@ The SPINacc package includes:
 HOW TO RUN THE CODE:
 1. copy the code to your own directory (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
 
-2. change the dirpython in job (L4) to the path where the code is copied, and the dirdef to the DEF_* directory you are going to run with.
+2. change the dirpython in job (L4) to the path where the code is copied, and the dirdef to the DEF_* directory where the configuration file (e.g., MLacc.def) is located.
 
 3. adjust the configurations in the DEF_* directories: MLacc.def defines the tasks to do and the executation directory.
 

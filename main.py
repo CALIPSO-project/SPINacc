@@ -67,6 +67,11 @@ else:
   np.save(resultpath+'packdata.npy',packdata)
   np.save(resultpath+'auxil.npy',auxil)
 
+# range of Ks to be tested, and the final K
+maxK=int(config[11].strip())
+auxil.Ks=range(2,maxK+1)
+auxil.K=int(config[9].strip())
+
 # Define random seed
 iseed=int(config[13].strip())
 random.seed(iseed)

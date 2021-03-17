@@ -67,11 +67,6 @@ else:
   np.save(resultpath+'packdata.npy',packdata)
   np.save(resultpath+'auxil.npy',auxil)
 
-# range of Ks to be tested, and the final K
-maxK=int(config[11].strip())
-auxil.Ks=range(2,maxK+1)
-auxil.K=int(config[9].strip())
-
 # Define random seed
 iseed=int(config[13].strip())
 random.seed(iseed)
@@ -90,7 +85,9 @@ if '1' in itask:
   lns=[]
   for ipft in range(dis_all.shape[1]):
     lns+=ax.plot(auxil.Ks,dis_all[:,ipft])
-  plt.legend(lns,varlist['clustering']['pfts'])
+  plt.legend(lns,varlist['clustering']['pfts'],title="PFT")
+  ax.set_ylabel('Sum of squared distances of samples to\ntheir closest cluster center')
+  ax.set_xlabel('K-value (cluster size)')
   fig.savefig(resultpath+'dist_all.png') 
   plt.close('all')
   check.display('test clustering results plotted!\nResults have been stored as dist_all.png',logfile)

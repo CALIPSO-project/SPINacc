@@ -49,7 +49,7 @@ def Cluster_Ana(packdata,auxil,PFT_mask,ipft,var_pred,var_pred_name,K,Nc):
   distance = mod.inertia_
   Cluster_output=DataFrame(np.hstack([np.reshape(CC,(len(CC),1)),ID]))
 
-  clus_str=['A','B','C','D','E','F','G','H','I','J','K','L']
+  clus_str=['clus_%.2i_'%i for i in range(1,K+1)]
   cluster_dic={}
   All_selectedID=np.zeros(shape=(0,2))
   SelectedID=np.zeros(shape=(0,2))
@@ -116,8 +116,8 @@ def Cluster_all(packdata,auxil,varlist,KK,logfile):
   var_pred=np.full((len(var_pred_name),auxil.nlat,auxil.nlon),np.nan)
   for veg in kpfts:
     ClusD,disx,training_ID=Cluster_Ana(packdata,auxil,PFT_mask,veg,var_pred,var_pred_name,KK,Ncc[kpfts.index(veg)])
-    locations=ClusD['Aloc']  
-    SelectedID=ClusD['Aloc_select']           
+#    locations=ClusD['Aloc']  
+#    SelectedID=ClusD['Aloc_select']           
     adict['PFT'+str(veg)+'ClusD']=ClusD
     adict['PFT'+str(veg)+'trainingID']=training_ID
   
@@ -127,6 +127,6 @@ def Cluster_all(packdata,auxil,varlist,KK,logfile):
   IDx=pd.concat([adict['PFT%itrainingID'%ii] for ii in kpfts])
   IDx.drop_duplicates(subset=['lat','lon'])  
   IDx=IDx.values 
-  IDloc=np.array([adict['PFT%iClusD'%ii]['Aloc'] for ii in kpfts])
-  IDsel=np.array([adict['PFT%iClusD'%ii]['Aloc_select'] for ii in kpfts])
+  IDloc=np.array([adict['PFT%iClusD'%ii]['clus_01_loc'] for ii in kpfts])
+  IDsel=np.array([adict['PFT%iClusD'%ii]['clus_01_loc_select'] for ii in kpfts])
   return IDx,IDloc,IDsel

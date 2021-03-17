@@ -7,7 +7,7 @@
            Unite mixte CEA-CNRS-UVSQ
  
  Code manager:
- Daniel Goll, LSCE, <email>
+ Daniel Goll, LSCE, dsgoll123@gmail.com
  
  This software is developed by Yan Sun, Yilong Wang and Daniel Goll.......
  

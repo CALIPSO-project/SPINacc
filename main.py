@@ -89,7 +89,7 @@ if '1' in itask:
   fig,ax=plt.subplots()
   lns=[]
   for ipft in range(dis_all.shape[1]):
-    lns+=ax.plot(dis_all[:,ipft])
+    lns+=ax.plot(auxil.Ks,dis_all[:,ipft])
   plt.legend(lns,varlist['clustering']['pfts'])
   fig.savefig(resultpath+'dist_all.png') 
   plt.close('all')

@@ -133,8 +133,4 @@ def readvar(packdata,auxil,varlist,config,logfile):
   packdata.interx1=packdata.Tmean*packdata.Rainf_mean
   packdata.interx2=packdata.Temp_GS*packdata.Pre_GS
 
-  # 0.4 range of Ks to be tested, and the final K
-  maxK=int(config[11].strip())
-  auxil.Ks=range(2,maxK+1)
-  auxil.K=int(config[9].strip())
   return

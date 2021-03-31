@@ -189,6 +189,7 @@ if '3' in itask:
             combineXY=encode.en_code(combine_XY,col_type,type_val)
           else:
             col_type='None'
+            type_val='None'
             combineXY=combine_XY
           #combine_XY=pd.get_dummies(combine_XY) # one-hot encoded
           Tree_Ens,predY_train=train.training_BAT(combineXY,logfile)

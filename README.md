@@ -12,6 +12,7 @@ The SPINacc package includes:
 ========================================================
 
 HOW TO RUN THE CODE:
+
 Prerequisite: Currently we only support the use of the tool on the LSCE IT infrastructure (i.e. obelix):
 
 1. copy the code to your own directory (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
@@ -27,6 +28,7 @@ Prerequisite: Currently we only support the use of the tool on the LSCE IT infra
 4. qsub -q long job   
 
 =======================================================
+
 INFORMATION FOR CODE DEVELOPERS:
 
 1. HOW TO UPDATE THE CODE ON GITHUB: 

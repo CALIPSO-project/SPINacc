@@ -10,6 +10,7 @@ The SPINacc package includes:
 * DEF_*/ : folders which contains specifications for different model versions (CNP, trunk 2.0, MICT, CNP-MIMICS) as well as simulation setup (e.g. forcing data)
 
 ========================================================
+
 HOW TO RUN THE CODE:
 Prerequisite: Currently we only support the use of the tool on the LSCE IT infrastructure (i.e. obelix):
 

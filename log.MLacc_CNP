@@ -1,0 +1,571 @@
+DEF directory: DEF_CNP/
+running task: ['3', '4']
+results are stored at: /home/orchidee04/ysun/MLacc_Python_Tool/CNP_res//
+read from previous results...
+random seed = 1000
+processing som...
+processing som, PFT 02...
+processing som, PFT 02, CNP 00...
+som, PFT 02, CNP 00, has 04 subpools:
+processing som, PFT 02, CNP 00, subpool 00...
+Counter(lab):Counter({1: 225, 0: 19, 2: 11})
+Counter(over_samples_y):Counter({1: 225, 0: 225, 2: 225})
+som PFT02 element0 subp0: R2=0.941 , RMSE=3.09, slope=1.00, reMSE=0.06
+processing som, PFT 02, CNP 00, subpool 01...
+Counter(lab):Counter({0: 225, 2: 19, 1: 11})
+Counter(over_samples_y):Counter({0: 225, 2: 225, 1: 225})
+som PFT02 element0 subp1: R2=0.930 , RMSE=183.44, slope=1.01, reMSE=0.06
+processing som, PFT 02, CNP 00, subpool 02...
+Counter(lab):Counter({2: 151, 0: 81, 1: 23})
+Counter(over_samples_y):Counter({2: 151, 0: 151, 1: 151})
+som PFT02 element0 subp2: R2=0.926 , RMSE=639.41, slope=1.00, reMSE=0.07
+processing som, PFT 02, CNP 00, subpool 03...
+Counter(lab):Counter({0: 226, 2: 19, 1: 10})
+Counter(over_samples_y):Counter({0: 226, 2: 226, 1: 226})
+som PFT02 element0 subp3: R2=0.901 , RMSE=4.30, slope=1.00, reMSE=0.09
+processing som, PFT 02, CNP 01...
+som, PFT 02, CNP 01, has 04 subpools:
+processing som, PFT 02, CNP 01, subpool 00...
+Counter(lab):Counter({0: 225, 1: 19, 2: 11})
+Counter(over_samples_y):Counter({0: 225, 1: 225, 2: 225})
+som PFT02 element1 subp0: R2=0.936 , RMSE=0.31, slope=1.00, reMSE=0.06
+processing som, PFT 02, CNP 01, subpool 01...
+Counter(lab):Counter({0: 225, 1: 19, 2: 11})
+Counter(over_samples_y):Counter({0: 225, 1: 225, 2: 225})
+som PFT02 element1 subp1: R2=0.931 , RMSE=10.72, slope=1.00, reMSE=0.06
+processing som, PFT 02, CNP 01, subpool 02...
+Counter(lab):Counter({2: 151, 0: 81, 1: 23})
+Counter(over_samples_y):Counter({2: 151, 0: 151, 1: 151})
+som PFT02 element1 subp2: R2=0.926 , RMSE=72.01, slope=1.01, reMSE=0.07
+processing som, PFT 02, CNP 01, subpool 03...
+Counter(lab):Counter({0: 188, 2: 49, 1: 18})
+Counter(over_samples_y):Counter({0: 188, 2: 188, 1: 188})
+som PFT02 element1 subp3: R2=0.889 , RMSE=0.43, slope=1.01, reMSE=0.10
+processing som, PFT 02, CNP 02...
+som, PFT 02, CNP 02, has 04 subpools:
+processing som, PFT 02, CNP 02, subpool 00...
+Counter(lab):Counter({0: 120, 1: 117, 2: 18})
+Counter(over_samples_y):Counter({1: 120, 0: 120, 2: 120})
+som PFT02 element2 subp0: R2=0.954 , RMSE=0.01, slope=0.98, reMSE=0.05
+processing som, PFT 02, CNP 02, subpool 01...
+Counter(lab):Counter({0: 130, 2: 108, 1: 17})
+Counter(over_samples_y):Counter({2: 130, 0: 130, 1: 130})
+som PFT02 element2 subp1: R2=0.961 , RMSE=0.38, slope=0.98, reMSE=0.04
+processing som, PFT 02, CNP 02, subpool 02...
+Counter(lab):Counter({1: 126, 2: 111, 0: 18})
+Counter(over_samples_y):Counter({2: 126, 1: 126, 0: 126})
+som PFT02 element2 subp2: R2=0.949 , RMSE=2.75, slope=0.99, reMSE=0.05
+processing som, PFT 02, CNP 02, subpool 03...
+Counter(lab):Counter({2: 128, 1: 112, 0: 15})
+Counter(over_samples_y):Counter({1: 128, 2: 128, 0: 128})
+som PFT02 element2 subp3: R2=0.931 , RMSE=0.02, slope=0.99, reMSE=0.07
+processing som, PFT 03...
+processing som, PFT 03, CNP 00...
+som, PFT 03, CNP 00, has 04 subpools:
+processing som, PFT 03, CNP 00, subpool 00...
+Counter(lab):Counter({1: 100, 0: 69, 2: 28})
+Counter(over_samples_y):Counter({0: 100, 1: 100, 2: 100})
+som PFT03 element0 subp0: R2=0.869 , RMSE=3.46, slope=0.90, reMSE=0.14
+processing som, PFT 03, CNP 00, subpool 01...
+Counter(lab):Counter({0: 107, 2: 58, 1: 32})
+Counter(over_samples_y):Counter({2: 107, 0: 107, 1: 107})
+som PFT03 element0 subp1: R2=0.899 , RMSE=128.12, slope=0.90, reMSE=0.11
+processing som, PFT 03, CNP 00, subpool 02...
+Counter(lab):Counter({0: 104, 1: 54, 2: 39})
+Counter(over_samples_y):Counter({1: 104, 0: 104, 2: 104})
+som PFT03 element0 subp2: R2=0.897 , RMSE=439.51, slope=0.90, reMSE=0.11
+processing som, PFT 03, CNP 00, subpool 03...
+Counter(lab):Counter({0: 92, 2: 77, 1: 28})
+Counter(over_samples_y):Counter({0: 92, 2: 92, 1: 92})
+som PFT03 element0 subp3: R2=0.844 , RMSE=2.52, slope=0.87, reMSE=0.17
+processing som, PFT 03, CNP 01...
+som, PFT 03, CNP 01, has 04 subpools:
+processing som, PFT 03, CNP 01, subpool 00...
+Counter(lab):Counter({2: 100, 0: 69, 1: 28})
+Counter(over_samples_y):Counter({0: 100, 2: 100, 1: 100})
+som PFT03 element1 subp0: R2=0.862 , RMSE=0.34, slope=0.88, reMSE=0.15
+processing som, PFT 03, CNP 01, subpool 01...
+Counter(lab):Counter({1: 107, 0: 58, 2: 32})
+Counter(over_samples_y):Counter({0: 107, 1: 107, 2: 107})
+som PFT03 element1 subp1: R2=0.897 , RMSE=7.61, slope=0.91, reMSE=0.11
+processing som, PFT 03, CNP 01, subpool 02...
+Counter(lab):Counter({0: 104, 1: 54, 2: 39})
+Counter(over_samples_y):Counter({1: 104, 0: 104, 2: 104})
+som PFT03 element1 subp2: R2=0.897 , RMSE=49.65, slope=0.91, reMSE=0.11
+processing som, PFT 03, CNP 01, subpool 03...
+Counter(lab):Counter({0: 95, 2: 74, 1: 28})
+Counter(over_samples_y):Counter({0: 95, 2: 95, 1: 95})
+som PFT03 element1 subp3: R2=0.847 , RMSE=0.18, slope=0.89, reMSE=0.16
+processing som, PFT 03, CNP 02...
+som, PFT 03, CNP 02, has 04 subpools:
+processing som, PFT 03, CNP 02, subpool 00...
+Counter(lab):Counter({0: 84, 2: 82, 1: 31})
+Counter(over_samples_y):Counter({2: 84, 0: 84, 1: 84})
+som PFT03 element2 subp0: R2=0.828 , RMSE=0.02, slope=0.86, reMSE=0.19
+processing som, PFT 03, CNP 02, subpool 01...
+Counter(lab):Counter({1: 87, 0: 86, 2: 24})
+Counter(over_samples_y):Counter({0: 87, 1: 87, 2: 87})
+som PFT03 element2 subp1: R2=0.884 , RMSE=0.36, slope=0.89, reMSE=0.13
+processing som, PFT 03, CNP 02, subpool 02...
+Counter(lab):Counter({1: 89, 0: 82, 2: 26})
+Counter(over_samples_y):Counter({1: 89, 0: 89, 2: 89})
+som PFT03 element2 subp2: R2=0.878 , RMSE=2.37, slope=0.89, reMSE=0.14
+processing som, PFT 03, CNP 02, subpool 03...
+Counter(lab):Counter({0: 88, 2: 77, 1: 32})
+Counter(over_samples_y):Counter({0: 88, 2: 88, 1: 88})
+som PFT03 element2 subp3: R2=0.783 , RMSE=0.01, slope=0.86, reMSE=0.23
+processing som, PFT 04...
+processing som, PFT 04, CNP 00...
+som, PFT 04, CNP 00, has 04 subpools:
+processing som, PFT 04, CNP 00, subpool 00...
+Counter(lab):Counter({2: 67, 0: 38, 1: 26})
+Counter(over_samples_y):Counter({2: 67, 0: 67, 1: 67})
+som PFT04 element0 subp0: R2=0.866 , RMSE=12.94, slope=1.05, reMSE=0.11
+processing som, PFT 04, CNP 00, subpool 01...
+Counter(lab):Counter({2: 66, 0: 39, 1: 26})
+Counter(over_samples_y):Counter({2: 66, 0: 66, 1: 66})
+som PFT04 element0 subp1: R2=0.847 , RMSE=815.12, slope=1.06, reMSE=0.12
+processing som, PFT 04, CNP 00, subpool 02...
+Counter(lab):Counter({0: 61, 2: 39, 1: 31})
+Counter(over_samples_y):Counter({0: 61, 2: 61, 1: 61})
+som PFT04 element0 subp2: R2=0.819 , RMSE=2565.84, slope=1.05, reMSE=0.14
+processing som, PFT 04, CNP 00, subpool 03...
+Counter(lab):Counter({0: 82, 2: 32, 1: 17})
+Counter(over_samples_y):Counter({0: 82, 1: 82, 2: 82})
+som PFT04 element0 subp3: R2=0.820 , RMSE=12.11, slope=1.05, reMSE=0.14
+processing som, PFT 04, CNP 01...
+som, PFT 04, CNP 01, has 04 subpools:
+processing som, PFT 04, CNP 01, subpool 00...
+Counter(lab):Counter({2: 67, 1: 38, 0: 26})
+Counter(over_samples_y):Counter({2: 67, 1: 67, 0: 67})
+som PFT04 element1 subp0: R2=0.868 , RMSE=1.07, slope=1.06, reMSE=0.11
+processing som, PFT 04, CNP 01, subpool 01...
+Counter(lab):Counter({0: 66, 2: 39, 1: 26})
+Counter(over_samples_y):Counter({0: 66, 2: 66, 1: 66})
+som PFT04 element1 subp1: R2=0.846 , RMSE=45.43, slope=1.07, reMSE=0.12
+processing som, PFT 04, CNP 01, subpool 02...
+Counter(lab):Counter({2: 61, 0: 39, 1: 31})
+Counter(over_samples_y):Counter({2: 61, 0: 61, 1: 61})
+som PFT04 element1 subp2: R2=0.844 , RMSE=257.68, slope=1.06, reMSE=0.12
+processing som, PFT 04, CNP 01, subpool 03...
+Counter(lab):Counter({0: 82, 2: 33, 1: 16})
+Counter(over_samples_y):Counter({0: 82, 1: 82, 2: 82})
+som PFT04 element1 subp3: R2=0.818 , RMSE=0.76, slope=1.04, reMSE=0.14
+processing som, PFT 04, CNP 02...
+som, PFT 04, CNP 02, has 04 subpools:
+processing som, PFT 04, CNP 02, subpool 00...
+Counter(lab):Counter({2: 52, 1: 43, 0: 36})
+Counter(over_samples_y):Counter({0: 52, 2: 52, 1: 52})
+som PFT04 element2 subp0: R2=0.900 , RMSE=0.03, slope=0.88, reMSE=0.12
+processing som, PFT 04, CNP 02, subpool 01...
+Counter(lab):Counter({0: 52, 1: 42, 2: 37})
+Counter(over_samples_y):Counter({2: 52, 0: 52, 1: 52})
+som PFT04 element2 subp1: R2=0.886 , RMSE=1.31, slope=0.89, reMSE=0.13
+processing som, PFT 04, CNP 02, subpool 02...
+Counter(lab):Counter({2: 49, 0: 42, 1: 40})
+Counter(over_samples_y):Counter({0: 49, 2: 49, 1: 49})
+som PFT04 element2 subp2: R2=0.890 , RMSE=7.12, slope=0.90, reMSE=0.12
+processing som, PFT 04, CNP 02, subpool 03...
+Counter(lab):Counter({1: 59, 0: 43, 2: 29})
+Counter(over_samples_y):Counter({1: 59, 0: 59, 2: 59})
+som PFT04 element2 subp3: R2=0.851 , RMSE=0.02, slope=0.87, reMSE=0.17
+processing som, PFT 05...
+processing som, PFT 05, CNP 00...
+som, PFT 05, CNP 00, has 04 subpools:
+processing som, PFT 05, CNP 00, subpool 00...
+Counter(lab):Counter({0: 64, 1: 52, 2: 12})
+Counter(over_samples_y):Counter({1: 64, 0: 64, 2: 64})
+som PFT05 element0 subp0: R2=0.736 , RMSE=10.53, slope=0.94, reMSE=0.23
+processing som, PFT 05, CNP 00, subpool 01...
+Counter(lab):Counter({1: 74, 0: 44, 2: 10})
+Counter(over_samples_y):Counter({0: 74, 1: 74, 2: 74})
+som PFT05 element0 subp1: R2=0.691 , RMSE=673.26, slope=0.95, reMSE=0.25
+processing som, PFT 05, CNP 00, subpool 02...
+Counter(lab):Counter({2: 60, 0: 50, 1: 18})
+Counter(over_samples_y):Counter({0: 60, 2: 60, 1: 60})
+som PFT05 element0 subp2: R2=0.865 , RMSE=1336.30, slope=0.93, reMSE=0.13
+processing som, PFT 05, CNP 00, subpool 03...
+Counter(lab):Counter({1: 86, 0: 32, 2: 10})
+Counter(over_samples_y):Counter({0: 86, 1: 86, 2: 86})
+som PFT05 element0 subp3: R2=0.557 , RMSE=16.87, slope=0.95, reMSE=0.33
+processing som, PFT 05, CNP 01...
+som, PFT 05, CNP 01, has 04 subpools:
+processing som, PFT 05, CNP 01, subpool 00...
+Counter(lab):Counter({2: 64, 0: 52, 1: 12})
+Counter(over_samples_y):Counter({0: 64, 2: 64, 1: 64})
+som PFT05 element1 subp0: R2=0.720 , RMSE=0.90, slope=0.94, reMSE=0.24
+processing som, PFT 05, CNP 01, subpool 01...
+Counter(lab):Counter({0: 74, 2: 44, 1: 10})
+Counter(over_samples_y):Counter({2: 74, 0: 74, 1: 74})
+som PFT05 element1 subp1: R2=0.733 , RMSE=34.74, slope=0.95, reMSE=0.23
+processing som, PFT 05, CNP 01, subpool 02...
+Counter(lab):Counter({1: 60, 0: 50, 2: 18})
+Counter(over_samples_y):Counter({0: 60, 1: 60, 2: 60})
+som PFT05 element1 subp2: R2=0.857 , RMSE=148.45, slope=0.94, reMSE=0.14
+processing som, PFT 05, CNP 01, subpool 03...
+Counter(lab):Counter({2: 70, 0: 49, 1: 9})
+Counter(over_samples_y):Counter({0: 70, 2: 70, 1: 70})
+som PFT05 element1 subp3: R2=0.748 , RMSE=1.04, slope=0.91, reMSE=0.24
+processing som, PFT 05, CNP 02...
+som, PFT 05, CNP 02, has 04 subpools:
+processing som, PFT 05, CNP 02, subpool 00...
+Counter(lab):Counter({1: 56, 0: 52, 2: 20})
+Counter(over_samples_y):Counter({0: 56, 2: 56, 1: 56})
+som PFT05 element2 subp0: R2=0.906 , RMSE=0.01, slope=0.91, reMSE=0.10
+processing som, PFT 05, CNP 02, subpool 01...
+Counter(lab):Counter({0: 55, 1: 52, 2: 21})
+Counter(over_samples_y):Counter({1: 55, 2: 55, 0: 55})
+som PFT05 element2 subp1: R2=0.921 , RMSE=0.46, slope=0.92, reMSE=0.09
+processing som, PFT 05, CNP 02, subpool 02...
+Counter(lab):Counter({0: 53, 2: 53, 1: 22})
+Counter(over_samples_y):Counter({0: 53, 1: 53, 2: 53})
+som PFT05 element2 subp2: R2=0.916 , RMSE=2.90, slope=0.91, reMSE=0.09
+processing som, PFT 05, CNP 02, subpool 03...
+Counter(lab):Counter({2: 56, 0: 50, 1: 22})
+Counter(over_samples_y):Counter({0: 56, 2: 56, 1: 56})
+som PFT05 element2 subp3: R2=0.905 , RMSE=0.02, slope=0.89, reMSE=0.11
+processing som, PFT 06...
+processing som, PFT 06, CNP 00...
+som, PFT 06, CNP 00, has 04 subpools:
+processing som, PFT 06, CNP 00, subpool 00...
+Counter(lab):Counter({0: 90, 2: 89, 1: 6})
+Counter(over_samples_y):Counter({2: 90, 0: 90, 1: 90})
+som PFT06 element0 subp0: R2=0.793 , RMSE=12.73, slope=0.95, reMSE=0.19
+processing som, PFT 06, CNP 00, subpool 01...
+Counter(lab):Counter({1: 89, 2: 83, 0: 13})
+Counter(over_samples_y):Counter({1: 89, 2: 89, 0: 89})
+som PFT06 element0 subp1: R2=0.685 , RMSE=464.31, slope=0.96, reMSE=0.26
+processing som, PFT 06, CNP 00, subpool 02...
+Counter(lab):Counter({0: 87, 1: 87, 2: 11})
+Counter(over_samples_y):Counter({0: 87, 1: 87, 2: 87})
+som PFT06 element0 subp2: R2=0.651 , RMSE=1616.80, slope=0.94, reMSE=0.28
+processing som, PFT 06, CNP 00, subpool 03...
+Counter(lab):Counter({0: 95, 1: 83, 2: 7})
+Counter(over_samples_y):Counter({0: 95, 1: 95, 2: 95})
+som PFT06 element0 subp3: R2=0.825 , RMSE=2.43, slope=0.95, reMSE=0.16
+processing som, PFT 06, CNP 01...
+som, PFT 06, CNP 01, has 04 subpools:
+processing som, PFT 06, CNP 01, subpool 00...
+Counter(lab):Counter({1: 90, 0: 89, 2: 6})
+Counter(over_samples_y):Counter({0: 90, 1: 90, 2: 90})
+som PFT06 element1 subp0: R2=0.802 , RMSE=1.04, slope=0.95, reMSE=0.18
+processing som, PFT 06, CNP 01, subpool 01...
+Counter(lab):Counter({2: 89, 0: 83, 1: 13})
+Counter(over_samples_y):Counter({2: 89, 0: 89, 1: 89})
+som PFT06 element1 subp1: R2=0.721 , RMSE=24.28, slope=0.96, reMSE=0.23
+processing som, PFT 06, CNP 01, subpool 02...
+Counter(lab):Counter({2: 87, 0: 87, 1: 11})
+Counter(over_samples_y):Counter({2: 87, 0: 87, 1: 87})
+som PFT06 element1 subp2: R2=0.685 , RMSE=166.05, slope=0.94, reMSE=0.27
+processing som, PFT 06, CNP 01, subpool 03...
+Counter(lab):Counter({0: 96, 1: 82, 2: 7})
+Counter(over_samples_y):Counter({0: 96, 1: 96, 2: 96})
+som PFT06 element1 subp3: R2=0.841 , RMSE=0.16, slope=0.95, reMSE=0.15
+processing som, PFT 06, CNP 02...
+som, PFT 06, CNP 02, has 04 subpools:
+processing som, PFT 06, CNP 02, subpool 00...
+Counter(lab):Counter({1: 73, 0: 65, 2: 47})
+Counter(over_samples_y):Counter({2: 73, 0: 73, 1: 73})
+som PFT06 element2 subp0: R2=0.886 , RMSE=0.04, slope=0.84, reMSE=0.14
+processing som, PFT 06, CNP 02, subpool 01...
+Counter(lab):Counter({2: 75, 0: 60, 1: 50})
+Counter(over_samples_y):Counter({0: 75, 1: 75, 2: 75})
+som PFT06 element2 subp1: R2=0.901 , RMSE=0.62, slope=0.87, reMSE=0.12
+processing som, PFT 06, CNP 02, subpool 02...
+Counter(lab):Counter({0: 77, 2: 57, 1: 51})
+Counter(over_samples_y):Counter({0: 77, 2: 77, 1: 77})
+som PFT06 element2 subp2: R2=0.884 , RMSE=4.21, slope=0.86, reMSE=0.14
+processing som, PFT 06, CNP 02, subpool 03...
+Counter(lab):Counter({1: 72, 0: 63, 2: 50})
+Counter(over_samples_y):Counter({2: 72, 0: 72, 1: 72})
+som PFT06 element2 subp3: R2=0.885 , RMSE=0.01, slope=0.84, reMSE=0.14
+processing som, PFT 07...
+processing som, PFT 07, CNP 00...
+som, PFT 07, CNP 00, has 04 subpools:
+processing som, PFT 07, CNP 00, subpool 00...
+Counter(lab):Counter({1: 32, 0: 28, 2: 3})
+Counter(lab):Counter({0: 43, 1: 20})
+Counter(lab):Counter({0: 43, 1: 20})
+Counter(over_samples_y):Counter({0: 43, 1: 43})
+som PFT07 element0 subp0: R2=0.929 , RMSE=11.11, slope=0.96, reMSE=0.07
+processing som, PFT 07, CNP 00, subpool 01...
+Counter(lab):Counter({2: 31, 0: 29, 1: 3})
+Counter(lab):Counter({0: 33, 1: 30})
+Counter(lab):Counter({0: 33, 1: 30})
+Counter(over_samples_y):Counter({1: 33, 0: 33})
+som PFT07 element0 subp1: R2=0.928 , RMSE=621.03, slope=0.93, reMSE=0.08
+processing som, PFT 07, CNP 00, subpool 02...
+Counter(lab):Counter({2: 31, 0: 29, 1: 3})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(over_samples_y):Counter({0: 32, 1: 32})
+som PFT07 element0 subp2: R2=0.937 , RMSE=1441.98, slope=0.94, reMSE=0.07
+processing som, PFT 07, CNP 00, subpool 03...
+Counter(lab):Counter({1: 43, 0: 18, 2: 2})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(over_samples_y):Counter({0: 32, 1: 32})
+som PFT07 element0 subp3: R2=0.913 , RMSE=8.51, slope=0.92, reMSE=0.09
+processing som, PFT 07, CNP 01...
+som, PFT 07, CNP 01, has 04 subpools:
+processing som, PFT 07, CNP 01, subpool 00...
+Counter(lab):Counter({1: 32, 0: 28, 2: 3})
+Counter(lab):Counter({0: 40, 1: 23})
+Counter(lab):Counter({0: 40, 1: 23})
+Counter(over_samples_y):Counter({0: 40, 1: 40})
+som PFT07 element1 subp0: R2=0.927 , RMSE=0.75, slope=0.96, reMSE=0.07
+processing som, PFT 07, CNP 01, subpool 01...
+Counter(lab):Counter({1: 36, 0: 24, 2: 3})
+Counter(lab):Counter({0: 33, 1: 30})
+Counter(lab):Counter({0: 33, 1: 30})
+Counter(over_samples_y):Counter({1: 33, 0: 33})
+som PFT07 element1 subp1: R2=0.927 , RMSE=31.18, slope=0.92, reMSE=0.08
+processing som, PFT 07, CNP 01, subpool 02...
+Counter(lab):Counter({1: 31, 0: 29, 2: 3})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(lab):Counter({1: 32, 0: 31})
+Counter(over_samples_y):Counter({0: 32, 1: 32})
+som PFT07 element1 subp2: R2=0.936 , RMSE=146.21, slope=0.94, reMSE=0.07
+processing som, PFT 07, CNP 01, subpool 03...
+Counter(lab):Counter({0: 46, 2: 15, 1: 2})
+Counter(lab):Counter({1: 61, 0: 2})
+Counter(lab):Counter({1: 61, 0: 6})
+Counter(over_samples_y):Counter({1: 61, 0: 61})
+som PFT07 element1 subp3: R2=0.895 , RMSE=0.58, slope=0.93, reMSE=0.11
+processing som, PFT 07, CNP 02...
+som, PFT 07, CNP 02, has 04 subpools:
+processing som, PFT 07, CNP 02, subpool 00...
+Counter(lab):Counter({1: 36, 2: 22, 0: 5})
+Counter(lab):Counter({0: 58, 1: 5})
+Counter(lab):Counter({0: 58, 1: 10})
+Counter(over_samples_y):Counter({0: 58, 1: 58})
+som PFT07 element2 subp0: R2=0.872 , RMSE=0.02, slope=0.93, reMSE=0.13
+processing som, PFT 07, CNP 02, subpool 01...
+Counter(lab):Counter({0: 30, 2: 28, 1: 5})
+Counter(lab):Counter({1: 58, 0: 5})
+Counter(lab):Counter({1: 58, 0: 10})
+Counter(over_samples_y):Counter({1: 58, 0: 58})
+som PFT07 element2 subp1: R2=0.882 , RMSE=0.72, slope=0.92, reMSE=0.12
+processing som, PFT 07, CNP 02, subpool 02...
+Counter(lab):Counter({1: 32, 2: 26, 0: 5})
+Counter(lab):Counter({0: 58, 1: 5})
+Counter(lab):Counter({0: 58, 1: 10})
+Counter(over_samples_y):Counter({0: 58, 1: 58})
+som PFT07 element2 subp2: R2=0.880 , RMSE=3.82, slope=0.92, reMSE=0.13
+processing som, PFT 07, CNP 02, subpool 03...
+Counter(lab):Counter({1: 36, 0: 24, 2: 3})
+Counter(lab):Counter({0: 60, 1: 3})
+Counter(lab):Counter({0: 60, 1: 6})
+Counter(over_samples_y):Counter({0: 60, 1: 60})
+som PFT07 element2 subp3: R2=0.847 , RMSE=0.01, slope=0.94, reMSE=0.15
+processing som, PFT 08...
+processing som, PFT 08, CNP 00...
+som, PFT 08, CNP 00, has 04 subpools:
+processing som, PFT 08, CNP 00, subpool 00...
+Counter(lab):Counter({1: 58, 2: 36, 0: 24})
+Counter(over_samples_y):Counter({0: 58, 1: 58, 2: 58})
+som PFT08 element0 subp0: R2=0.886 , RMSE=9.18, slope=0.86, reMSE=0.14
+processing som, PFT 08, CNP 00, subpool 01...
+Counter(lab):Counter({0: 55, 2: 39, 1: 24})
+Counter(over_samples_y):Counter({1: 55, 0: 55, 2: 55})
+som PFT08 element0 subp1: R2=0.862 , RMSE=296.49, slope=0.84, reMSE=0.17
+processing som, PFT 08, CNP 00, subpool 02...
+Counter(lab):Counter({1: 49, 0: 44, 2: 25})
+Counter(over_samples_y):Counter({2: 49, 1: 49, 0: 49})
+som PFT08 element0 subp2: R2=0.885 , RMSE=822.36, slope=0.87, reMSE=0.14
+processing som, PFT 08, CNP 00, subpool 03...
+Counter(lab):Counter({1: 46, 0: 41, 2: 31})
+Counter(over_samples_y):Counter({2: 46, 1: 46, 0: 46})
+som PFT08 element0 subp3: R2=0.859 , RMSE=2.88, slope=0.86, reMSE=0.17
+processing som, PFT 08, CNP 01...
+som, PFT 08, CNP 01, has 04 subpools:
+processing som, PFT 08, CNP 01, subpool 00...
+Counter(lab):Counter({0: 58, 1: 36, 2: 24})
+Counter(over_samples_y):Counter({2: 58, 0: 58, 1: 58})
+som PFT08 element1 subp0: R2=0.865 , RMSE=0.66, slope=0.84, reMSE=0.16
+processing som, PFT 08, CNP 01, subpool 01...
+Counter(lab):Counter({1: 55, 2: 39, 0: 24})
+Counter(over_samples_y):Counter({0: 55, 1: 55, 2: 55})
+som PFT08 element1 subp1: R2=0.867 , RMSE=14.57, slope=0.84, reMSE=0.16
+processing som, PFT 08, CNP 01, subpool 02...
+Counter(lab):Counter({0: 49, 2: 44, 1: 25})
+Counter(over_samples_y):Counter({1: 49, 0: 49, 2: 49})
+som PFT08 element1 subp2: R2=0.881 , RMSE=83.45, slope=0.86, reMSE=0.14
+processing som, PFT 08, CNP 01, subpool 03...
+Counter(lab):Counter({0: 45, 2: 41, 1: 32})
+Counter(over_samples_y):Counter({1: 45, 0: 45, 2: 45})
+som PFT08 element1 subp3: R2=0.877 , RMSE=0.18, slope=0.86, reMSE=0.14
+processing som, PFT 08, CNP 02...
+som, PFT 08, CNP 02, has 04 subpools:
+processing som, PFT 08, CNP 02, subpool 00...
+Counter(lab):Counter({0: 69, 1: 47, 2: 2})
+Counter(lab):Counter({0: 70, 1: 48})
+Counter(lab):Counter({0: 70, 1: 48})
+Counter(over_samples_y):Counter({1: 70, 0: 70})
+som PFT08 element2 subp0: R2=0.877 , RMSE=0.02, slope=0.81, reMSE=0.16
+processing som, PFT 08, CNP 02, subpool 01...
+Counter(lab):Counter({1: 58, 0: 58, 2: 2})
+Counter(lab):Counter({0: 60, 1: 58})
+Counter(lab):Counter({0: 60, 1: 58})
+Counter(over_samples_y):Counter({1: 60, 0: 60})
+som PFT08 element2 subp1: R2=0.873 , RMSE=0.35, slope=0.83, reMSE=0.16
+processing som, PFT 08, CNP 02, subpool 02...
+Counter(lab):Counter({1: 59, 0: 57, 2: 2})
+Counter(lab):Counter({1: 59, 0: 59})
+Counter(lab):Counter({1: 59, 0: 59})
+Counter(over_samples_y):Counter({1: 59, 0: 59})
+som PFT08 element2 subp2: R2=0.886 , RMSE=2.01, slope=0.82, reMSE=0.15
+processing som, PFT 08, CNP 02, subpool 03...
+Counter(lab):Counter({1: 50, 0: 42, 2: 26})
+Counter(over_samples_y):Counter({1: 50, 2: 50, 0: 50})
+som PFT08 element2 subp3: R2=0.862 , RMSE=0.01, slope=0.86, reMSE=0.16
+processing som, PFT 09...
+processing som, PFT 09, CNP 00...
+som, PFT 09, CNP 00, has 04 subpools:
+processing som, PFT 09, CNP 00, subpool 00...
+Counter(lab):Counter({1: 12, 0: 6, 2: 5})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element0 subp0: R2=0.910 , RMSE=5.81, slope=0.87, reMSE=0.11
+processing som, PFT 09, CNP 00, subpool 01...
+Counter(lab):Counter({1: 12, 0: 6, 2: 5})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element0 subp1: R2=0.915 , RMSE=233.78, slope=0.88, reMSE=0.10
+processing som, PFT 09, CNP 00, subpool 02...
+Counter(lab):Counter({0: 12, 1: 6, 2: 5})
+Counter(lab):Counter({1: 12, 0: 11})
+Counter(lab):Counter({1: 12, 0: 11})
+Counter(over_samples_y):Counter({1: 12, 0: 12})
+som PFT09 element0 subp2: R2=0.928 , RMSE=614.27, slope=0.89, reMSE=0.08
+processing som, PFT 09, CNP 00, subpool 03...
+Counter(lab):Counter({0: 12, 2: 7, 1: 4})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element0 subp3: R2=0.910 , RMSE=3.14, slope=0.88, reMSE=0.11
+processing som, PFT 09, CNP 01...
+som, PFT 09, CNP 01, has 04 subpools:
+processing som, PFT 09, CNP 01, subpool 00...
+Counter(lab):Counter({0: 12, 1: 6, 2: 5})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element1 subp0: R2=0.909 , RMSE=0.39, slope=0.87, reMSE=0.11
+processing som, PFT 09, CNP 01, subpool 01...
+Counter(lab):Counter({0: 12, 1: 6, 2: 5})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element1 subp1: R2=0.913 , RMSE=11.85, slope=0.88, reMSE=0.10
+processing som, PFT 09, CNP 01, subpool 02...
+Counter(lab):Counter({0: 12, 1: 6, 2: 5})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element1 subp2: R2=0.929 , RMSE=61.06, slope=0.89, reMSE=0.08
+processing som, PFT 09, CNP 01, subpool 03...
+Counter(lab):Counter({0: 12, 1: 7, 2: 4})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(lab):Counter({0: 12, 1: 11})
+Counter(over_samples_y):Counter({0: 12, 1: 12})
+som PFT09 element1 subp3: R2=0.906 , RMSE=0.19, slope=0.86, reMSE=0.12
+processing som, PFT 09, CNP 02...
+som, PFT 09, CNP 02, has 04 subpools:
+processing som, PFT 09, CNP 02, subpool 00...
+Counter(lab):Counter({2: 12, 0: 10, 1: 1})
+Counter(lab):Counter({0: 22, 1: 1})
+Counter(lab):Counter({0: 22, 1: 6})
+Counter(over_samples_y):Counter({0: 22, 1: 22})
+som PFT09 element2 subp0: R2=0.315 , RMSE=0.01, slope=0.29, reMSE=2.63
+processing som, PFT 09, CNP 02, subpool 01...
+Counter(lab):Counter({0: 12, 2: 10, 1: 1})
+Counter(lab):Counter({0: 22, 1: 1})
+Counter(lab):Counter({0: 22, 1: 6})
+Counter(over_samples_y):Counter({0: 22, 1: 22})
+som PFT09 element2 subp1: R2=0.486 , RMSE=0.27, slope=0.46, reMSE=1.18
+processing som, PFT 09, CNP 02, subpool 02...
+Counter(lab):Counter({2: 12, 0: 10, 1: 1})
+Counter(lab):Counter({1: 22, 0: 1})
+Counter(lab):Counter({1: 22, 0: 6})
+Counter(over_samples_y):Counter({1: 22, 0: 22})
+som PFT09 element2 subp2: R2=0.506 , RMSE=1.51, slope=0.48, reMSE=1.08
+processing som, PFT 09, CNP 02, subpool 03...
+Counter(lab):Counter({0: 18, 2: 4, 1: 1})
+Counter(lab):Counter({0: 22, 1: 1})
+Counter(lab):Counter({0: 22, 1: 6})
+Counter(over_samples_y):Counter({0: 22, 1: 22})
+som PFT09 element2 subp3: R2=0.237 , RMSE=0.01, slope=0.21, reMSE=4.31
+processing som, PFT 10...
+processing som, PFT 10, CNP 00...
+som, PFT 10, CNP 00, has 04 subpools:
+processing som, PFT 10, CNP 00, subpool 00...
+Counter(lab):Counter({0: 92, 2: 79, 1: 29})
+Counter(over_samples_y):Counter({0: 92, 2: 92, 1: 92})
+som PFT10 element0 subp0: R2=0.920 , RMSE=6.27, slope=0.94, reMSE=0.08
+processing som, PFT 10, CNP 00, subpool 01...
+Counter(lab):Counter({2: 94, 0: 74, 1: 32})
+Counter(over_samples_y):Counter({2: 94, 0: 94, 1: 94})
+som PFT10 element0 subp1: R2=0.932 , RMSE=262.53, slope=0.94, reMSE=0.07
+processing som, PFT 10, CNP 00, subpool 02...
+Counter(lab):Counter({1: 97, 2: 71, 0: 32})
+Counter(over_samples_y):Counter({1: 97, 2: 97, 0: 97})
+som PFT10 element0 subp2: R2=0.929 , RMSE=958.90, slope=0.94, reMSE=0.07
+processing som, PFT 10, CNP 00, subpool 03...
+Counter(lab):Counter({0: 108, 2: 69, 1: 23})
+Counter(over_samples_y):Counter({0: 108, 2: 108, 1: 108})
+som PFT10 element0 subp3: R2=0.928 , RMSE=7.83, slope=0.93, reMSE=0.08
+processing som, PFT 10, CNP 01...
+som, PFT 10, CNP 01, has 04 subpools:
+processing som, PFT 10, CNP 01, subpool 00...
+Counter(lab):Counter({0: 92, 1: 79, 2: 29})
+Counter(over_samples_y):Counter({0: 92, 1: 92, 2: 92})
+som PFT10 element1 subp0: R2=0.916 , RMSE=0.71, slope=0.95, reMSE=0.09
+processing som, PFT 10, CNP 01, subpool 01...
+Counter(lab):Counter({0: 94, 2: 74, 1: 32})
+Counter(over_samples_y):Counter({0: 94, 2: 94, 1: 94})
+som PFT10 element1 subp1: R2=0.929 , RMSE=16.75, slope=0.93, reMSE=0.08
+processing som, PFT 10, CNP 01, subpool 02...
+Counter(lab):Counter({1: 97, 2: 71, 0: 32})
+Counter(over_samples_y):Counter({1: 97, 2: 97, 0: 97})
+som PFT10 element1 subp2: R2=0.929 , RMSE=112.60, slope=0.94, reMSE=0.08
+processing som, PFT 10, CNP 01, subpool 03...
+Counter(lab):Counter({0: 108, 2: 68, 1: 24})
+Counter(over_samples_y):Counter({0: 108, 2: 108, 1: 108})
+som PFT10 element1 subp3: R2=0.921 , RMSE=0.52, slope=0.94, reMSE=0.08
+processing som, PFT 10, CNP 02...
+som, PFT 10, CNP 02, has 04 subpools:
+processing som, PFT 10, CNP 02, subpool 00...
+Counter(lab):Counter({1: 103, 0: 93, 2: 4})
+Counter(lab):Counter({1: 114, 0: 86})
+Counter(lab):Counter({1: 114, 0: 86})
+Counter(over_samples_y):Counter({1: 114, 0: 114})
+som PFT10 element2 subp0: R2=0.898 , RMSE=0.03, slope=0.91, reMSE=0.11
+processing som, PFT 10, CNP 02, subpool 01...
+Counter(lab):Counter({1: 98, 2: 71, 0: 31})
+Counter(over_samples_y):Counter({1: 98, 2: 98, 0: 98})
+som PFT10 element2 subp1: R2=0.933 , RMSE=0.55, slope=0.92, reMSE=0.07
+processing som, PFT 10, CNP 02, subpool 02...
+Counter(lab):Counter({2: 89, 0: 68, 1: 43})
+Counter(over_samples_y):Counter({2: 89, 0: 89, 1: 89})
+som PFT10 element2 subp2: R2=0.916 , RMSE=4.02, slope=0.91, reMSE=0.09
+processing som, PFT 10, CNP 02, subpool 03...
+Counter(lab):Counter({1: 96, 2: 78, 0: 26})
+Counter(over_samples_y):Counter({1: 96, 2: 96, 0: 96})
+som PFT10 element2 subp3: R2=0.907 , RMSE=0.02, slope=0.93, reMSE=0.10
+processing som, PFT 11...
+processing som, PFT 11, CNP 00...
+som, PFT 11, CNP 00, has 04 subpools:
+processing som, PFT 11, CNP 00, subpool 00...
+Counter(lab):Counter({1: 69, 0: 62, 2: 24})
+Counter(over_samples_y):Counter({1: 69, 0: 69, 2: 69})
+som PFT11 element0 subp0: R2=0.926 , RMSE=2.62, slope=0.96, reMSE=0.07
+processing som, PFT 11, CNP 00, subpool 01...
+Counter(lab):Counter({0: 73, 2: 61, 1: 21})
+Counter(over_samples_y):Counter({0: 73, 2: 73, 1: 73})
+som PFT11 element0 subp1: R2=0.924 , RMSE=126.82, slope=0.97, reMSE=0.07
+processing som, PFT 11, CNP 00, subpool 02...
+Counter(lab):Counter({2: 68, 1: 65, 0: 22})
+Counter(over_samples_y):Counter({1: 68, 2: 68, 0: 68})

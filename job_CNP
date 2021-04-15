@@ -2,7 +2,7 @@
 #PBS -S /bin/tcsh
 
 export dirpython='/home/orchidee04/ysun/MLacc_Python_Tool/SPINacc/'
-export dirdef='DEF_Trunk/'
+export dirdef='DEF_CNP/'
 
 limit descriptors 10000
 

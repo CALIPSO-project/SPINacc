@@ -22,6 +22,7 @@ import calendar
 import matplotlib 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import random
 import json
 import sys
@@ -54,4 +55,6 @@ import Cluster
 import train
 import mapGlobe
 import MLeval
-
+import eval_plot
+import ML_som_litter
+import ML_biomass

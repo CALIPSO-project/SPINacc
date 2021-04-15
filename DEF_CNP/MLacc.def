@@ -1,11 +1,11 @@
   # config[1] : logfile
 log.MLacc_CNP
-  # config[3] : task (1=test clustering/2=clustering/3=ML)
-1,2,3
+  # config[3] : task (1=test clustering/2=clustering/3=ML/4=evaluation)
+3,4
   # config[5] : execution directory
-/home/satellites8/ylwang/MLacc/CNP_res/
+/home/orchidee04/ysun/MLacc_Python_Tool/CNP_res/
   # config[7] : start from scratch (0) or read previous results (1)
-0
+1
   # config[9] : number of K for final Kmean algorithm
 4
   # config[11] : maximum number of Ks to test for Kmean algorithm

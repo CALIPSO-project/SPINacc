@@ -3,6 +3,8 @@
   "coord_ref":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc",
   "lat_reso":2,
   "lon_reso":2,
+  "cnp":3,
+  "npfts":14,
   "climate":
   {
     "sourcepath":"/home/orchidee04/ysun/crujra/crujra_1901_1920_v2/",
@@ -64,6 +66,9 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn.ORI000.clim3_77081231_stomate_rest.nc",
+    "pool_name_som":["Active","Passive","Slow","Surface"],
+    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
+    "pool_name_litter":["StructuralAB","WoodyAB","MetaAB","StructuralBE","WoodyBE","MetaBE"],
     "variables":
     {
       "som":
@@ -84,15 +89,18 @@
       "biomass":
       [
         {"name_prefix":"biomass",
-         "pfts":[1,2,3,4,5,6,7,8,9],
+         "pools":[1,2,3,4,5,6,7,8,9],
+         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
          "name_postfix":""
         },
         {"name_prefix":"biomass",
-         "pfts":[1,2,3,4,5,6,7,8,9],
+         "pools":[1,2,3,4,5,6,7,8,9],
+         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
          "name_postfix":"_n"
         },
         {"name_prefix":"biomass",
-         "pfts":[1,2,3,4,5,6,7,8,9],
+         "pools":[1,2,3,4,5,6,7,8,9],
+         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
          "name_postfix":"_p"
         }
       ],

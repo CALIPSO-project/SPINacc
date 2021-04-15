@@ -1,20 +1,17 @@
 # SPINacc
 A spinup acceleration procedure for land surface models which is model independent.
 
-Documentation of underlying concepts and the workflow are found in file: !MISSING!
+Documentation of aims, concepts, workflows are found in file: !MISSING!
+
 
 The SPINacc package includes:
 * job
 * main.py
 * Tools/*
-* DEF_*/ : folders which contains specifications for different model versions (CNP, trunk 2.0, MICT, CNP-MIMICS) as well as simulation setup (e.g. forcing data)
+* DEF_*/
 
-========================================================
 
 HOW TO RUN THE CODE:
-
-Prerequisite: Currently we only support the use of the tool on the LSCE IT infrastructure (i.e. obelix):
-
 1. copy the code to your own directory (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
 
 2. change the dirpython in job (L4) to the path where the code is copied, and the dirdef to the DEF_* directory where the configuration file (e.g., MLacc.def) is located.
@@ -27,18 +24,20 @@ Prerequisite: Currently we only support the use of the tool on the LSCE IT infra
 
 4. qsub -q long job   
 
-=======================================================
 
-INFORMATION FOR CODE DEVELOPERS:
 
-1. HOW TO UPDATE THE CODE ON GITHUB: 
-you need to do multiple steps:
-First, "git add" to add all the files that you changed.
-Second, "git commit" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to).
-Third, "git push" to push them to the master repository (here).
-This might help: https://git-scm.com/docs/gittutorial
+How to modify the varlist.json files:
+You need to modify the sourcepath & sourcefile for the required variables.
+-climate: climate forcing data, e.g. CRUJRA-1901-1920
+-pred: other predictor variables used for the ML
+	var1: NPP and LAI with pre-run for X years, *_stomate_history.nc
+	var2 - var4: soil properties and/or nutrient-related variables, which vary with the model versions. In principle, those variables with original spatial resolution (half deg) are in the forcing files. When you apply the ML to a case with 2 deg resolution, you can use the values in the *_stomate_rest.nc or *_sechiba_rest.nc with pre-run for 1 or X years.
+	For var2 - var4, if there is no output in *_rest.nc (e.g. N and P deposition), please use the values in *_stomate_history.nc with pre-run 1 year to replace.
+-PFTmask: max PFT fractions, which was used to mask grids with extreme low PFT fractions. It is usually in the *_stomate_history.nc (VEGET_COV_MAX).
+-resp: response variables, i.e. the equlibrium pools from the traditional spin-up , which were used for extracting site data and global evaluation, e.g. SOC. They are usually in the *_stomate_history.nc of the last year of the whole spin-up.
 
-2. USEFUL COMMANDS:
-"git diff" will show you all the changes you have made.
-"git pull" will update all your local files with what exists in the master code (here).
-"git status" will show you what files have been modified.
+You can find the detailed information for each variable in the Trunk and CNP examples: DEF_Trunk/varlist.json, DEF_CNP/varlist.json 
+You can create your varlist.json according to your case.
+
+
+

@@ -4,6 +4,7 @@ A spinup acceleration procedure for land surface models which is model independe
 Documentation of aims, concepts, workflows are found in file: !MISSING!
 
 
+## CONTENT
 The SPINacc package includes:
 * job
 * main.py
@@ -12,11 +13,11 @@ The SPINacc package includes:
 
  
 ## INFORMATION FOR USERS:
- 
 ### HOW TO RUN THE CODE:
 
 * First: copy the code to your own directory on obelix (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
-* Second: specify in the file 'job' where the code is located using dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using dirdef. See more details below.
+* Second: specify in the file 'job' where the code is located using dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using dirdef (for now we have: CNP= CNP v1.2, Trunk = Trunk 2.0) 
+*   See more details below.
 * Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation:
 	* MLacc.def defines the tasks to do and the executation directory: tasks are 1= clustering, 2=training , 3=extrapolation.
 	* varlist.json defines the specification of the input data: e.g. resolution, state variables to predict, etc.
@@ -44,14 +45,27 @@ You can create your varlist.json according to your case.
 
 ## INFORMATION FOR CODE DEVELOPERS:
 
+### SIMULATIONS NEEDED TO TEST THE TOOL
+You need the output and restart files from a conventional spinup simulation with ORCHIDEE over the whole(!) spatial domain. At this stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium.
 
-HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
+We need information from early during the spinup (transient phase) to 
+* extract all boundary conditions (i.e. ORCHIDEE forcings) on the spatial resolution of ORCHIDEE. 
+* information on NPP and LAI during early spinup (transient phase) vastly improves ML predictions.
+We need information from end of the spinup  (steady state)
+* to train and test the machine learning tool
+
+The exact simulation lenghts depend on the model version.
+
+### HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
 * First, "git add" to add all the files that you changed. 
 * Second, "git commit" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to). 
 * Third, "git push" to push them to the master repository (here). 
 This might help: https://git-scm.com/docs/gittutorial
 
-USEFUL COMMANDS: "git diff" will show you all the changes you have made. "git pull" will update all your local files with what exists in the master code (here). "git status" will show you what files have been modified.
+### Other USEFUL COMMANDS: 
+* "git diff" will show you all the changes you have made. 
+* "git pull" will update all your local files with what exists in the master code (here). 
+* "git status" will show you what files have been modified.
 
 
 

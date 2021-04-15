@@ -16,12 +16,11 @@ The SPINacc package includes:
 ### HOW TO RUN THE CODE:
 
 * First: copy the code to your own directory on obelix (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
-* Second: specify in the file 'job' where the code is located using dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using dirdef (for now we have: CNP= CNP v1.2, Trunk = Trunk 2.0) 
-*   See more details below.
+* Second: specify in the file 'job' where the code is located using dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using dirdef (for now we have: CNP= CNP v1.2, Trunk = Trunk 2.0). See more details below.
 * Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation:
 	* MLacc.def defines the tasks to do and the executation directory: tasks are 1= clustering, 2=training , 3=extrapolation.
 	* varlist.json defines the specification of the input data: e.g. resolution, state variables to predict, etc.
-*Forth: execute the tool by: qsub -q long job   
+* Forth: execute the tool by: qsub -q long job   
 
 
 ### HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:

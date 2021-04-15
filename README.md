@@ -10,8 +10,11 @@ The SPINacc package includes:
 * Tools/*
 * DEF_*/
 
+======================================================= 
+1. INFORMATION FOR USERS:
+======================================================= 
+1A HOW TO RUN THE CODE:
 
-HOW TO RUN THE CODE:
 1. copy the code to your own directory (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc").
 
 2. change the dirpython in job (L4) to the path where the code is copied, and the dirdef to the DEF_* directory where the configuration file (e.g., MLacc.def) is located.
@@ -25,8 +28,9 @@ HOW TO RUN THE CODE:
 4. qsub -q long job   
 
 
+1B HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:
+using the varlist.json files in fiolder DEF_:
 
-How to modify the varlist.json files:
 You need to modify the sourcepath & sourcefile for the required variables.
 -climate: climate forcing data, e.g. CRUJRA-1901-1920
 -pred: other predictor variables used for the ML
@@ -38,6 +42,17 @@ You need to modify the sourcepath & sourcefile for the required variables.
 
 You can find the detailed information for each variable in the Trunk and CNP examples: DEF_Trunk/varlist.json, DEF_CNP/varlist.json 
 You can create your varlist.json according to your case.
+
+
+======================================================= 
+INFORMATION FOR CODE DEVELOPERS:
+======================================================= 
+
+HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: First, "git add" to add all the files that you changed. Second, "git commit" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to). Third, "git push" to push them to the master repository (here). This might help: https://git-scm.com/docs/gittutorial
+
+USEFUL COMMANDS: "git diff" will show you all the changes you have made. "git pull" will update all your local files with what exists in the master code (here). "git status" will show you what files have been modified.
+
+
 
 
 

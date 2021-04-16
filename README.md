@@ -57,7 +57,7 @@ We need information from end of the spinup  (steady state)
 The exact simulation lenghts depend on the model version.
 
 ### HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
-* First, "git add" to add all the files that you changed. 
+* First, "git add" to add all the files that you changed. It is recommended to only add files you have changed and make sure you updated with any changes updated to github since you downloaded your copies.
 * Second, "git commit" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to). 
 * Third, "git push" to push them to the master repository (here). 
 This might help: https://git-scm.com/docs/gittutorial

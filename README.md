@@ -34,7 +34,7 @@ You need to modify where the data for ML training is located using sourcepath & 
 	* var1: NPP and LAI from last year of initial short simulation. (These two variables are not boundary conditions for ORCHIDEE but state variables. Information on these variables from the transient spinup phase have been found to improve ML performance for ORCHIDEE-CNP.)
 	* var2 - var4: soil properties and/or nutrient-related variables. 
 	* For var2 - var4, if they are missing in *_rest.nc (e.g. N and P deposition), please use the variables in *_stomate_history.nc.	
-* -PFTmask: max PFT cover fractions, which are used to mask grids with extreme low PFT fractions. This information is usually found in the *_stomate_history.nc (VEGET_COV_MAX).
+* -PFTmask: max PFT cover fractions, which are used to mask grids with extreme low PFT fractions. This information is usually found in the *_stomate_history.nc (VEGET_COV_MAX). In case that cover fractions are kept constant in time (i.e. DYNVEG=no), you can use any year of the initial short simulation for the whole domain. In case you have dynamic cover fractions: not supported (yet).
 
 * -resp: response variables, i.e. the equlibrium pools from the traditional spin-up. Ultimately, it should specify the conventional spinup for part of the spatial domain. At the moment we use simulation for the whole spatial domain. They are usually in the *_stomate_history.nc
 

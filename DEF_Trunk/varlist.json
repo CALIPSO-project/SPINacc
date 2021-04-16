@@ -8,6 +8,7 @@
   "climate":
   {
     "sourcepath":"/home/orchidee04/ysun/crujra/crujra_1901_1920_v2/",
+    "filename":"crujra_twodeg_v2_",
     "year_start":1901,
     "year_end":1910,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]

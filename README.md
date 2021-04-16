@@ -50,6 +50,7 @@ You need the output and restart files from a conventional spinup simulation with
 We need information from early during the spinup (transient phase) to 
 * extract all boundary conditions (i.e. ORCHIDEE forcings) on the spatial resolution of ORCHIDEE. 
 * information on NPP and LAI during early spinup (transient phase) vastly improves ML predictions.
+
 We need information from end of the spinup  (steady state)
 * to train and test the machine learning tool
 

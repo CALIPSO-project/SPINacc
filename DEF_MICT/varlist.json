@@ -11,7 +11,7 @@
     "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2/halfdeg/",
     "filename":"crujra_halfdeg_v2_",
     "year_start":1901,
-    "year_end":1910,
+    "year_end":1920,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
   },
   "PFTmask":

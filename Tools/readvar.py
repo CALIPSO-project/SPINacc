@@ -25,8 +25,13 @@ def readvar(packdata,auxil,varlist,config,logfile):
   adict=locals()
   # 0 initialize latitude and longitudes
   f=Dataset(varlist['coord_ref'],'r')
-  nav_lat=f['nav_lat'][:]
-  nav_lon=f['nav_lon'][:]
+  # DSG bugfix_start: remove hardcode
+  #nav_lat=f['nav_lat'][:]
+  #nav_lon=f['nav_lon'][:]
+  latlon_name=varlist['axes_name']
+  nav_lat=f[str(latlon_name[0])][:]
+  nav_lon=f[str(latlon_name[1])][:]
+  # DSG bugfix_end: remove hardcode
   latlon=np.vstack((nav_lat.flatten(),nav_lon.flatten()))
   auxil.latlon=latlon
   auxil.nlat=nav_lat.shape[0]

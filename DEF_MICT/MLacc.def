@@ -1,0 +1,14 @@
+  # config[1] : logfile
+log.MLacc_MICT
+  # config[3] : task (1=test clustering/100=plot clustering test results/2=clustering/200=plot clustering results/3=ML and plotting the results)
+1
+  # config[5] : execution directory
+/home/surface3/dgoll/SPINUP_ML/EXECUTION/
+  # config[7] : start from scratch (0) or read previous results (1)
+0
+  # config[9] : number of K for final Kmean algorithm
+2
+  # config[11] : maximum number of Ks to test for Kmean algorithm
+9
+  # config[13] : random seed
+1000

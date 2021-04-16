@@ -1,6 +1,7 @@
 {
 
   "coord_ref":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc",
+  "axes_name":["nav_lat","nav_lon"],
   "lat_reso":2,
   "lon_reso":2,
   "cnp":3,

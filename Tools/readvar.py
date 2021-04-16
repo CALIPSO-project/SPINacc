@@ -43,8 +43,11 @@ def readvar(packdata,auxil,varlist,config,logfile):
     var_month_year=np.full((nyear,12,auxil.nlat,auxil.nlon),np.nan)
     for year in range(climvar['year_start'],climvar['year_end']+1):
       check.display('reading %s from year %i'%(varname_clim[index],year),logfile)
-      filename='crujra_twodeg_v2_'+str(year)+'.nc'
-      f=Dataset(climvar['sourcepath']+filename,'r')
+      # DSG bugfix_start: remove hardcode
+      #filename='crujra_twodeg_v2_'+str(year)+'.nc'
+      #f=Dataset(climvar['sourcepath']+filename,'r')
+      f=Dataset(climvar['sourcepath']+climvar['filename']+str(year)+'.nc','r')
+      #DSG bugfix_end
       da=f[varname_clim[index]][:]
       # calculate the monthly value from 6h data
       zstart=1

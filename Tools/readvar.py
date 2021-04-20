@@ -54,6 +54,17 @@ def readvar(packdata,auxil,varlist,config,logfile):
       f=Dataset(climvar['sourcepath']+climvar['filename']+str(year)+'.nc','r')
       #DSG bugfix_end
       da=f[varname_clim[index]][:]
+      #DSG: fix to read in compressed netCDF files
+      if "land" in f[varname_clim[index]].dimensions:
+          land=f["land"][:]-1
+          ntime=len(da)
+          nlat=len(f.dimensions["y"])
+          nlon=len(f.dimensions["x"])
+          uncomp=np.ma.masked_all((ntime,nlat*nlon))
+          uncomp[:,land]=da
+          da=uncomp.reshape((ntime,nlat,nlon))
+       #DSG: end
+      
       # calculate the monthly value from 6h data
       zstart=1
       var_month=np.full((12,auxil.nlat,auxil.nlon),np.nan)

@@ -34,9 +34,11 @@ def evaluation_map(Global_Predicted_Y_map,Y_map,ipft,PFTmask):
   allyy=DataFrame(np.concatenate((all_Y, all_predY),axis=1))
   allyy=allyy.dropna()
   comp_Y=allyy.values
-  MSE=mean_squared_error(comp_Y[:,0],comp_Y[:,1])
+  # DSG: not used: MSE=mean_squared_error(comp_Y[:,0],comp_Y[:,1])
   RMSE=np.sqrt(mean_squared_error(comp_Y[:,0],comp_Y[:,1]))
+  # DSG: nRMSE - tbc
+  # nRMSE=np.sqrt(mean_squared_error(comp_Y[:,0],comp_Y[:,1])/(comp_Y[:,1].max()-comp_Y[:,1].min()))
   R2=r2_score(comp_Y[:,0],comp_Y[:,1])
   slope, intercept, r_value, p_value, std_err = stats.linregress(comp_Y[:,0],comp_Y[:,1])
 
-  return R2, RMSE, slope
+  return R2, RMSE, slope # DSG: tbc, nRMSE

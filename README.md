@@ -3,6 +3,10 @@ A spinup acceleration procedure for land surface models which is model independe
 
 Documentation of aims, concepts, workflows are found in file: !MISSING!
 
+For more information about git, see these pages:
+https://rogerdudler.github.io/git-guide/
+https://www.freecodecamp.org/
+
 
 ## CONTENT
 The SPINacc package includes:

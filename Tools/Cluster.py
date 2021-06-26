@@ -81,7 +81,7 @@ def Cluster_test(packdata,auxil,varlist,logfile):
   # Make a mask map according to PFT fractions: nan - <0.00000001; 1 - >=0.00000001
   # I used the output 'VEGET_COV_MAX' by ORCHIDEE-CNP with run the spin-up for 1 year. 
   # Please provide the file path and name for PFT fractions with resolution of 2 deg.
-  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['cluster_thres'],logfile)
+  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['cluster_thres'])
 
   # predictor metrcis
   var_pred_name=varlist['pred']['clustering']
@@ -110,7 +110,7 @@ def Cluster_all(packdata,auxil,varlist,KK,logfile):
   adict=locals()
   kpfts=varlist['clustering']['pfts']
   Ncc=varlist['clustering']['Ncc']
-  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['cluster_thres'],logfile)
+  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['cluster_thres'])
 
   var_pred_name=varlist['pred']['clustering']
   var_pred=np.full((len(var_pred_name),auxil.nlat,auxil.nlon),np.nan)

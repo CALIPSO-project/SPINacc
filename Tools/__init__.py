@@ -15,6 +15,7 @@
 #=============================================================================================
 
 # Ready-made
+import os
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset
@@ -26,6 +27,7 @@ import matplotlib.colors as mcolors
 import random
 import json
 import sys
+import itertools
 
 from pandas import DataFrame, Series
 from sklearn.cluster import KMeans
@@ -39,6 +41,7 @@ from imblearn.over_sampling import SMOTE
 from collections import Counter
 from scipy import stats 
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import LeaveOneOut
 
 import warnings
 warnings.simplefilter(action='ignore')
@@ -48,7 +51,6 @@ from classes import pack,auxiliary
 import check
 import genMask
 import extract_X
-import extract_Y
 import encode
 from readvar import readvar
 import Cluster
@@ -56,5 +58,5 @@ import train
 import mapGlobe
 import MLeval
 import eval_plot
-import ML_som_litter
-import ML_biomass
+import eval_plot_loocv
+import ML

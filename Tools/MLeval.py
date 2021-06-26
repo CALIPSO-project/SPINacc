@@ -34,11 +34,23 @@ def evaluation_map(Global_Predicted_Y_map,Y_map,ipft,PFTmask):
   allyy=DataFrame(np.concatenate((all_Y, all_predY),axis=1))
   allyy=allyy.dropna()
   comp_Y=allyy.values
-  # DSG: not used: MSE=mean_squared_error(comp_Y[:,0],comp_Y[:,1])
+  MSE=mean_squared_error(comp_Y[:,0],comp_Y[:,1])
   RMSE=np.sqrt(mean_squared_error(comp_Y[:,0],comp_Y[:,1]))
-  # DSG: nRMSE - tbc
-  # nRMSE=np.sqrt(mean_squared_error(comp_Y[:,0],comp_Y[:,1])/(comp_Y[:,1].max()-comp_Y[:,1].min()))
+  # normalized root mean squared error
+  dNRMSE=RMSE/(np.max(comp_Y[:,0])-np.min(comp_Y[:,0]))
+  sNRMSE=RMSE/np.std(comp_Y[:,0])
+  iNRMSE=RMSE/(np.quantile(comp_Y[:,0],0.75)-np.quantile(comp_Y[:,1],0.25))
+  
   R2=r2_score(comp_Y[:,0],comp_Y[:,1])
+  SB=(np.mean(comp_Y[:,0]-comp_Y[:,1]))**2
+  SDS=np.std(comp_Y[:,0])
+  SDM=np.std(comp_Y[:,1])
+  SDSD=(SDS-SDM)**2
+  LSC=MSE-SB-SDSD
+  f_SB=SB/MSE
+  f_SDSD=SDSD/MSE
+  f_LSC=LSC/MSE
+  reMSE=(1/len(comp_Y[:,0]))*np.sum((comp_Y[:,1]-comp_Y[:,0])**2)/np.sum((comp_Y[:,0]-np.mean(comp_Y[:,0]))**2)
   slope, intercept, r_value, p_value, std_err = stats.linregress(comp_Y[:,0],comp_Y[:,1])
 
-  return R2, RMSE, slope # DSG: tbc, nRMSE
+  return R2, RMSE, slope, reMSE, dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC

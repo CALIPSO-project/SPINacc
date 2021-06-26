@@ -28,19 +28,19 @@ from Tools import *
 def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
     subps=len(xTickLabel)
     if ipool=='biomass':
-        R22 = np.genfromtxt(data_path+ipool+"_R2.txt",delimiter=",").T
-        slope=np.genfromtxt(data_path+ipool+"_slope.txt",delimiter=",").T
-        dNRMSE=np.genfromtxt(data_path+ipool+"_dNRMSE.txt",delimiter=",").T
+        R22 = np.genfromtxt(data_path+ipool+"_loocv_R2.txt",delimiter=",").T
+        slope=np.genfromtxt(data_path+ipool+"_loocv_slope.txt",delimiter=",").T
+        dNRMSE=np.genfromtxt(data_path+ipool+"_loocv_sNRMSE.txt",delimiter=",").T
     else:
-        R22 = np.genfromtxt(data_path+ipool+"_R2.txt",delimiter=",")
-        slope=np.genfromtxt(data_path+ipool+"_slope.txt",delimiter=",")
-        dNRMSE=np.genfromtxt(data_path+ipool+"_dNRMSE.txt",delimiter=",")
+        R22 = np.genfromtxt(data_path+ipool+"_loocv_R2.txt",delimiter=",")
+        slope=np.genfromtxt(data_path+ipool+"_loocv_slope.txt",delimiter=",")
+        dNRMSE=np.genfromtxt(data_path+ipool+"_loocv_sNRMSE.txt",delimiter=",")
     print(R22)
+    print(dNRMSE)
     yTickLabel= ['PFT02','PFT03','PFT04','PFT05','PFT06','PFT07','PFT08',\
 		'PFT09','PFT10','PFT11','PFT12','PFT13','PFT14','PFT15']
     yTickLabel=yTickLabel[0:npfts]
     R22=R22[:,0:subps]
-    print(R22)
     fonts=7
     slope=slope[:,0:subps]
     dNRMSE=dNRMSE[:,0:subps]
@@ -80,7 +80,7 @@ def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
         cbar_ax = fig.add_axes(rect) 
         sc = axs[0].imshow(R22,vmin = 0.5,vmax = 1,cmap = mymap_R2)
         plt.colorbar(sc,cax=cbar_ax)
-    # slope
+    # sloop
         axs[1].imshow(slope,vmin = 0.75,vmax = 1.25,cmap = mymap_slope)
         for jj in range(0,subps):
             for ii in range(0,npfts):
@@ -128,9 +128,7 @@ def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
         fig,axs = plt.subplots(nrows = 3, ncols = n_cnp,figsize = (8,18))
         for kn in range(0,n_cnp):
             Rm=R22[kn*npfts:(kn+1)*npfts,:]
-            print(Rm)
-            print(kn)
-            axs[0,kn].imshow(Rm,vmin = 0.5,vmax = 1,cmap = mymap_R2)
+            axs[0,kn].imshow(Rm,vmin = 0.5,vmax = 1,cmap = mymap_rmse)
             for jj in range(0,subps):
                 for ii in range(0,npfts):
                     axs[0,kn].text(-0.5+jj, ii,str(Rm[ii,jj]), size = fonts, color='k')
@@ -149,7 +147,7 @@ def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
         h = 0.22
         rect = [l,b,w,h] 
         cbar_ax = fig.add_axes(rect) 
-        sc = axs[0,n_cnp-1].imshow(Rm,vmin = 0.5,vmax = 1,cmap = mymap_R2)
+        sc = axs[0,n_cnp-1].imshow(Rm,vmin = 0.5,vmax = 1,cmap = mymap_rmse)
         plt.colorbar(sc,cax=cbar_ax)
 
 
@@ -179,7 +177,7 @@ def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
         sc = axs[0,n_cnp-1].imshow(sl,vmin = 0.75,vmax = 1.25,cmap = mymap_slope)
         plt.colorbar(sc,cax=cbar_ax)
 
-# dNRMSE
+# reMSE
         for kn in range(0,n_cnp):
             remse=dNRMSE[kn*npfts:(kn+1)*npfts,:]
             axs[2,kn].imshow(remse,vmin = 0,vmax = 0.25,cmap = mymap_rmse)
@@ -205,7 +203,7 @@ def plot_metric(data_path,npfts,ipool,n_cnp,xTickLabel):
         plt.colorbar(sc,cax=cbar_ax)
 
 
-    plt.savefig(data_path+"Eval_all_"+ipool+".png")
+    plt.savefig(data_path+"Eval_all_loocv_"+ipool+".png")
     plt.close('all')
     return
 

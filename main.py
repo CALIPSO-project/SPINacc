@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ##### -*- coding: utf-8 -*-
 """
  MLacc - Machine-Learning-based acceleration of spin-up
@@ -70,12 +70,14 @@ else:
 # range of Ks to be tested, and the final K
 maxK=int(config[11].strip())
 auxil.Ks=range(2,maxK+1)
-auxil.K=int(config[9].strip())  
-  
+auxil.K=int(config[9].strip())
+
 # Define random seed
 iseed=int(config[13].strip())
 random.seed(iseed)
 check.display('random seed = %i'%iseed,logfile)
+# Define do leave-one-out crosee validation (loocv=1) or not (loocv=0)
+loocv=int(config[15].strip())
 
 if '1' in itask:
   #
@@ -103,8 +105,8 @@ if '2' in itask:
   KK=int(config[9].strip())
   check.display('Kmean algorithm, K=%i'%KK,logfile)
   IDx,IDloc,IDsel=Cluster.Cluster_all(packdata,auxil,varlist,KK,logfile)
-  IDx.dump(resultpath+'IDx.npy')
   np.savetxt(resultpath+'IDx.txt',IDx,fmt='%.2f')
+  IDx.dump(resultpath+'IDx.npy')
   IDloc.dump(resultpath+'IDloc.npy')
   IDsel.dump(resultpath+'IDsel.npy')
   check.display('clustering done!\nResults have been stored as IDx.npy',logfile)
@@ -141,36 +143,56 @@ if '3' in itask:
   check.check_file(resultpath+'IDx.npy',logfile)
   IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
   # generate PFT mask
-  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['pred_thres'],logfile)
+  PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['pred_thres'])
 
-  auxil.Nlat=(np.trunc((90-IDx[:,0])/auxil.lat_reso)).astype(int)
+  auxil.Nlat=np.trunc(( 90-IDx[:,0])/auxil.lat_reso).astype(int)
   auxil.Nlon=np.trunc((180+IDx[:,1])/auxil.lon_reso).astype(int)
   labx=['Y']+var_pred_name+['pft']
   for ipool in Yvar.keys():
     check.display('processing %s...'%ipool,logfile)
-    fx=open(resultpath+ipool+'_R2.txt','w')
-    fy=open(resultpath+ipool+'_slope.txt','w')
-    fz=open(resultpath+ipool+'_reMSE.txt','w')
-    if ipool!='biomass':
-      auxil.pfts=Yvar[ipool][0]['pfts']
-      print(auxil.pfts)
-      ML_som_litter.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz)
-    else:
-      auxil.pfts=range(2,varlist['npfts']+2)#[1:]#Yvar[ipool][0]['pfts']
-      print(auxil.pfts)
-      ML_biomass.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz)
+    fx=open(resultpath+ipool+'_R2.txt','w',1)
+    fy=open(resultpath+ipool+'_slope.txt','w',1)
+    fz=open(resultpath+ipool+'_dNRMSE.txt','w',1)
+    fz2=open(resultpath+ipool+'_sNRMSE.txt','w',1)
+    fz3=open(resultpath+ipool+'_iNRMSE.txt','w',1)
+    f1=open(resultpath+ipool+'_f_SB.txt','w',1)
+    f2=open(resultpath+ipool+'_f_SDSD.txt','w',1)
+    f3=open(resultpath+ipool+'_f_LSC.txt','w',1)
+    fxx=open(resultpath+ipool+'_loocv_R2.txt','w',1)
+    fyy=open(resultpath+ipool+'_loocv_slope.txt','w',1)
+    fzz=open(resultpath+ipool+'_loocv_dNRMSE.txt','w',1)
+    ff1=open(resultpath+ipool+'_loocv_f_SB.txt','w',1)
+    ff2=open(resultpath+ipool+'_loocv_f_SDSD.txt','w',1)
+    ff3=open(resultpath+ipool+'_loocv_f_LSC.txt','w',1)
+    ffz2=open(resultpath+ipool+'_loocv_sNRMSE.txt','w',1)
+    ffz3=open(resultpath+ipool+'_loocv_iNRMSE.txt','w',1) 
+#    if ipool!='biomass':
+#      auxil.pfts=Yvar[ipool][0]['pfts']
+#      print(auxil.pfts)
+#      ML_som_litter.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+#    else:
+#      auxil.pfts=range(2,varlist['npfts']+2)#[1:]#Yvar[ipool][0]['pfts']
+#      print(auxil.pfts)
+#      ML_biomass.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+#    else:continue
+    ML.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
     fx.close()
     fy.close()
     fz.close()     
+    fxx.close()
+    fyy.close()
+    fzz.close()
   check.display('task 3 done!',logfile)
 if '4' in itask:
   Yvar=varlist['resp']['variables']
   for ipool in Yvar.keys():
-    if ipool!="biomass":continue
+    #if ipool!="som":continue
     subpool_name=varlist['resp']['pool_name_'+ipool]
-    #check.display(subpool_name,logfile)
-    npfts=varlist['npfts']
-    n_cnp=varlist['cnp']
+    npfts=varlist['resp']['npfts']
+    n_cnp=varlist['resp']['cnp']
     eval_plot.plot_metric(resultpath,npfts,ipool,n_cnp,subpool_name)
+    if loocv==1:
+      eval_plot_loocv.plot_metric(resultpath,npfts,ipool,n_cnp,subpool_name)
+    else:continue
   check.display('task 4 done!',logfile)
   

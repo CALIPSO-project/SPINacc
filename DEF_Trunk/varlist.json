@@ -1,11 +1,8 @@
 {
 
   "coord_ref":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
-  "axes_name":["nav_lat","nav_lon"],
   "lat_reso":2,
   "lon_reso":2,
-  "cnp":1,
-  "npfts":14,
   "climate":
   {
     "sourcepath":"/home/orchidee04/ysun/crujra/crujra_1901_1920_v2/",
@@ -52,35 +49,67 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
-    "pool_name_som":["Active","Passive","Slow"],
-    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
-    "pool_name_litter":["StructuralAB","WoodyAB","MetaAB","StructuralBE","WoodyBE","MetaBE"],
     "variables":
     {
       "som":
       [
-        {"name_prefix":"carbon",
-         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-         "name_postfix":""
+        {"name_prefix":["carbon"],
+         "name_loop":"pft",
+         "name_postfix":"",
+         "dim_loop":["asp"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "asp":[1,2,3],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
         }
       ],
       "biomass":
       [
-        {"name_prefix":"biomass",
-         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-         "pools":[1,2,3,4,5,6,7,8],
-         "name_postfix":""
+        {"name_prefix":["biomass"],
+         "name_loop":"pool",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "pool":[1,2,3,4,5,6,7,8,9],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
         }
       ],
       "litter":
       [
-        {"name_prefix":"litter",
-         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-         "name_postfix":"_ab"
+        {"name_prefix":["litter"],
+         "name_loop":"pft",
+         "name_postfix":"_ab",
+         "dim_loop":["met.or.str"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "met.or.str":[1,2],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
         },
-        {"name_prefix":"litter",
-         "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-         "name_postfix":"_be"
+        {"name_prefix":["litter"],
+         "name_loop":"pft",
+         "name_postfix":"_be",
+         "dim_loop":["met.or.str"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "met.or.str":[1,2],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
         }
       ]
     }

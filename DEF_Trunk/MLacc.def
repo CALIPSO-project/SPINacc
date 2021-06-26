@@ -1,7 +1,7 @@
   # config[1] : logfile
 log.MLacc_Trunk
   # config[3] : task (1=test clustering/100=plot clustering test results/2=clustering/200=plot clustering results/3=ML and plotting the results)
-3,4
+1,3
   # config[5] : execution directory
 /home/orchidee04/ysun/MLacc_Python_Tool/Trunk_res/
   # config[7] : start from scratch (0) or read previous results (1)
@@ -12,3 +12,5 @@ log.MLacc_Trunk
 9
   # config[13] : random seed
 1000
+ # config[15] : leave-one-out crosee validation (1) or not (0)
+1

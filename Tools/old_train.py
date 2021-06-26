@@ -18,26 +18,22 @@ from Tools import *
 
 ##@param[in]   XY_train               latitudes of selected pixels 
 ##@param[in]   logfile                logfile 
-##@param[in]   loocv                  do leave-one-out-cross-validation(1) or not (0)
 ##@retval      TreeEns                Tree ensemble
 ##@retval      predY                  predicted Y
-def training_BAT(XY_train,logfile,loocv):
+def training_BAT(XY_train,logfile):
   XX=XY_train.iloc[:,1:].values
   YY=XY_train.iloc[:,0].values
   #labels=np.zeros(shape=(len(YY),1))
-  
+  mod=KMeans(n_clusters=3)
+  lab=mod.fit_predict(np.reshape(YY,(-1,1)))
+  count=Counter(lab)
+  check.display('Counter(lab):'+str(count),logfile)
   # only one value
   if len(np.unique(YY))==1:
-    TreeEns=[];predY=YY;loocv_R2=np.nan;loocv_reMSE=np.nan
-    loocv_slope=np.nan;loocv_dNRMSE=np.nan;loocv_sNRMSE=np.nan
-    loocv_iNRMSE=np.nan;loocv_f_SB=np.nan;loocv_f_SDSD=np.nan;loocv_f_LSC=np.nan;
-    return TreeEns, predY, loocv_R2, loocv_reMSE, loocv_slope, loocv_dNRMSE, loocv_sNRMSE, loocv_iNRMSE, loocv_f_SB, loocv_f_SDSD, loocv_f_LSC
+    TreeEns=[];predY=YY
+    return TreeEns, predY
 
   try:
-    mod=KMeans(n_clusters=3)
-    lab=mod.fit_predict(np.reshape(YY,(-1,1)))
-    count=Counter(lab)
-    check.display('Counter(lab):'+str(count),logfile)
     over_samples=SMOTE()
     over_samples_X,over_samples_y = over_samples.fit_resample(XY_train, lab)
     check.display('Counter(over_samples_y):'+str(Counter(over_samples_y)),logfile)
@@ -54,7 +50,7 @@ def training_BAT(XY_train,logfile,loocv):
       if number<6:
         XY_train=pd.concat((XY_train,)+(XY_train[lab==label],)*int(np.ceil(6/number)-1))
         lab=np.hstack((lab,np.repeat(lab[lab==label],int(np.ceil(6/number)-1))))
-#        print(len(lab),number,int(np.ceil(6/number)))
+        print(len(lab),number,int(np.ceil(6/number)))
     check.display('Counter(lab):'+str(Counter(lab)),logfile)
     over_samples=SMOTE()
     over_samples_X,over_samples_y = over_samples.fit_resample(XY_train, lab)
@@ -74,50 +70,8 @@ def training_BAT(XY_train,logfile,loocv):
 
   bag = BaggingRegressor(base_estimator=tree, max_samples=0.8,
                          n_estimators=300, random_state=1000)
-  TreeEns=bag.fit(Xtrain,Ytrain,sample_weight=SW) #sample_weight=SW
-  #predict
+  TreeEns=bag.fit(Xtrain,Ytrain,sample_weight=SW)
+  #sample_weight=SW
   predY= bag.predict(XX)
-  #leave one out cross validations
-  loo = LeaveOneOut()
-  ytests = []
-  ypreds = []
-  loocv_R2=np.nan
-  loocv_reMSE=np.nan 
-  loocv_slope=np.nan
-  loocv_RMSE=np.nan
-  loocv_dNRMSE=np.nan
-  loocv_sNRMSE=np.nan
-  loocv_iNRMSE=np.nan
-  loocv_f_SB=np.nan
-  loocv_f_SDSD=np.nan
-  loocv_f_LSC=np.nan
-  if loocv==1:
-    XM=Xtrain.values
-    YM=Ytrain.values
-    #check.display('weidu'+str(np.shape(Xtrain)),logfile)
-    for train_idx, test_idx in loo.split(XM):
-      #check.display('train_idx='+str(train_idx),logfile)
-      #check.display('type'+str(type(XM)),logfile)
-      X_train, X_test = XM[train_idx,:], XM[test_idx,:]
-      y_train, y_test = YM[train_idx], YM[test_idx]
-      SW_train = SW[train_idx]
-      bag =BaggingRegressor(base_estimator=tree, max_samples=0.8,
-                         n_estimators=300, random_state=1000)
-      bag.fit(X_train,y_train,sample_weight=SW_train)
-      y_pred = bag.predict(X_test)
-      ytests += list(y_test)
-      ypreds += list(y_pred)
-    ytests=np.array(ytests)
-    ypreds=np.array(ypreds)
-    loocv_R2 = r2_score(ytests,ypreds)
-    loocv_MSE = mean_squared_error(ytests, ypreds)
-    loocv_RMSE = np.sqrt(mean_squared_error(ypreds,ytests))
-    loocv_dNRMSE = loocv_RMSE/(np.max(ytests)-np.min(ytests))
-    loocv_sNRMSE = loocv_RMSE/np.std(ytests)
-    loocv_iNRMSE = loocv_RMSE/(np.quantile(ytests,0.75)-np.quantile(ytests,0.75)) 
-    loocv_f_SB = (np.mean(ypreds-ytests))**2/loocv_MSE
-    loocv_f_SDSD = (np.std(ytests)-np.std(ypreds))**2/loocv_MSE
-    loocv_f_LSC = 1-loocv_f_SB-loocv_f_SDSD   
-    loocv_reMSE = (1/len(ypreds))*np.sum((ypreds-ytests)**2)/np.sum((ytests-np.mean(ytests))**2)
-    loocv_slope, intercept, r_value, p_value, std_err = stats.linregress(ytests,ypreds) 
-  return TreeEns, predY, loocv_R2, loocv_reMSE, loocv_slope, loocv_dNRMSE, loocv_sNRMSE, loocv_iNRMSE, loocv_f_SB, loocv_f_SDSD, loocv_f_LSC
+  # leave one out cross validations
+  return TreeEns, predY

@@ -65,11 +65,24 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn.ORI000.clim3_77081231_stomate_rest.nc",
-    "pool_name_som":["Active","Passive","Slow"],
-    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
-    "pool_name_litter":["StructuralAB","WoodyAB","MetaAB","StructuralBE","WoodyBE","MetaBE"],
+    "pool_name_som":["Active","Passive","Slow","Surface"],
+    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
+    "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE","MetaAB","MetaBE"],
+    "sub_item":["Cpool","Npool","Ppool"],
     "cnp":3,
     "npfts":14,
+    "dim":
+    {
+      "som":["pft","pool"],
+      "biomass":["pool","pft"],
+      "litter":["pft","pool"]
+    },
+    "sect_n":
+    {
+      "som":1,
+      "biomass":1,
+      "litter":2
+    },
     "variables":
     {
       "som":
@@ -96,7 +109,7 @@
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -109,7 +122,7 @@
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -122,7 +135,7 @@
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":

@@ -186,11 +186,18 @@ if '3' in itask:
 if '4' in itask:
   Yvar=varlist['resp']['variables']
   for ipool in Yvar.keys():
-    #if ipool!="som":continue
+    #if ipool!="litter":continue
     subpool_name=varlist['resp']['pool_name_'+ipool]
     npfts=varlist['resp']['npfts']
-    n_cnp=varlist['resp']['cnp']
-    eval_plot.plot_metric(resultpath,npfts,ipool,n_cnp,subpool_name)
+    subLabel=varlist['resp']['sub_item']
+    print(subLabel)
+    pp=varlist['resp']['dim'][ipool]
+    sect_n=varlist['resp']['sect_n'][ipool]
+    if pp[0]=='pft':
+      dims=np.array([0,1])
+    else:
+      dims=np.array([1,0])
+    eval_plot_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     if loocv==1:
       eval_plot_loocv.plot_metric(resultpath,npfts,ipool,n_cnp,subpool_name)
     else:continue

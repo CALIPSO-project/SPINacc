@@ -49,6 +49,24 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
+    "pool_name_som":["Active","Passive","Slow"],
+    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
+    "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE"],
+    "sub_item":["Cpool"],
+    "cnp":1,
+    "npfts":14,
+    "dim":
+    {
+      "som":["pft","pool"],
+      "biomass":["pool","pft"],
+      "litter":["pft","pool"]
+    },
+    "sect_n":
+    {
+      "som":1,
+      "biomass":1,
+      "litter":2
+    },
     "variables":
     {
       "som":
@@ -64,7 +82,8 @@
            },
          "skip_loop":
            {"pft":[1]
-           }
+           },
+         "dim":["pft","pool"]
         }
       ],
       "biomass":
@@ -75,12 +94,13 @@
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "pool":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8],
             "null":[""]
            },
          "skip_loop":
            {"pft":[1]
-           }
+           },
+         "dim":["pool","pft"]
         }
       ],
       "litter":
@@ -96,7 +116,8 @@
            },
          "skip_loop":
            {"pft":[1]
-           }
+           },
+         "dim":["pft","pool"]
         },
         {"name_prefix":["litter"],
          "name_loop":"pft",
@@ -109,7 +130,8 @@
            },
          "skip_loop":
            {"pft":[1]
-           }
+           },
+         "dim":["pft","pool"]
         }
       ]
     }

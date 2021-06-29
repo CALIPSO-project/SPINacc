@@ -332,7 +332,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
         ivar=responseY[varname]
         if ii['dim_loop']==['null']:
           figname=resultpath+'Eval_%s'%varname+'.png'
-          if os.path.isfile(figname):continue
+#          if os.path.isfile(figname):continue
           if ipft in ii['skip_loop']['pft']:continue
           MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
         else:
@@ -341,7 +341,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
 #          print(index);sys.exit()
           for ind in index:
             figname=resultpath+'Eval_%s'%varname+''.join(['_'+ii['dim_loop'][ll]+'%2.2i'%ind[ll] for ll in range(len(ind))]+['.png'])
-            if os.path.isfile(figname):continue
+#            if os.path.isfile(figname):continue
             if 'pft' in ii['dim_loop']:ipft=ind[ii['dim_loop'].index('pft')]
             if ipft in ii['skip_loop']['pft']:continue
             MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)

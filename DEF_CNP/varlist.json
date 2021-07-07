@@ -104,7 +104,7 @@
       "biomass":
       [
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"",
          "dim_loop":["pft"],
          "loops":
@@ -117,7 +117,7 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"_n",
          "dim_loop":["pft"],
          "loops":
@@ -130,7 +130,7 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"_p",
          "dim_loop":["pft"],
          "loops":

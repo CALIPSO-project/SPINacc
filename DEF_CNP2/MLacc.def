@@ -12,3 +12,5 @@ log.MLacc_CNP2
 9
   # config[13] : random seed
 1000
+  # config[15] : do a loocv (0=no, 1=yes)
+0

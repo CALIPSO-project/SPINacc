@@ -7,7 +7,7 @@ log.MLacc_CNP2
   # config[7] : start from scratch (0) or read previous results (1)
 1
   # config[9] : number of K for final Kmean algorithm
-2
+4
   # config[11] : maximum number of Ks to test for Kmean algorithm
 9
   # config[13] : random seed

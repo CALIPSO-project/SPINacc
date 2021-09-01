@@ -1,0 +1,17 @@
+#PBS -eo
+#PBS -S /bin/tcsh
+
+setenv dirpython '/home/surface4/jchang/SPINacc/'
+setenv dirdef 'DEF_Trunk/'
+#setenv dirdef 'DEF_MICT/'
+
+limit descriptors 10000
+
+#source /etc/profile.d/modules.sh
+module unload python
+setenv PYTHONPATH $dirpython/Tools
+module load python/3
+uname -a
+
+cd $dirpython
+python3 main.py ${dirdef} || exit

@@ -149,6 +149,7 @@ if '3' in itask:
   auxil.Nlon=np.trunc((180+IDx[:,1])/auxil.lon_reso).astype(int)
   labx=['Y']+var_pred_name+['pft']
   for ipool in Yvar.keys():
+    #if ipool!="litter":continue
     check.display('processing %s...'%ipool,logfile)
     fx=open(resultpath+ipool+'_R2.txt','w',1)
     fy=open(resultpath+ipool+'_slope.txt','w',1)
@@ -186,7 +187,7 @@ if '3' in itask:
 if '4' in itask:
   Yvar=varlist['resp']['variables']
   for ipool in Yvar.keys():
-    #if ipool!="litter":continue
+   # if ipool!="litter":continue
     subpool_name=varlist['resp']['pool_name_'+ipool]
     npfts=varlist['resp']['npfts']
     subLabel=varlist['resp']['sub_item']
@@ -199,7 +200,7 @@ if '4' in itask:
       dims=np.array([1,0])
     eval_plot_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     if loocv==1:
-      eval_plot_loocv.plot_metric(resultpath,npfts,ipool,n_cnp,subpool_name)
+      eval_plot_loocv_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     else:continue
   check.display('task 4 done!',logfile)
   

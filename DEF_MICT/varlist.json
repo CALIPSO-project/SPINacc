@@ -46,20 +46,38 @@
   "clustering":
   {
     "test_K":[2,3,4,5,6,7,8,9],
-    "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-    "Ncc":[10,20,10,10,10,20,20,20,10,10,10,10,10,10]
+    "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
+    "Ncc":[10,20,10,10,10,20,20,20,10,10,10,10,10,10,10,10,10,10]
   },
   "resp":
   {
     "sourcefile":"/home/surface3/dgoll/SPINUP_ML/TEST_DATA/MICT/MICT-CRUJRAv2_for_Yan_MLtaskforce/firemip.spin5.equil2_15001231_stomate_rest.nc",
+    "pool_name_som":["L01","L02","L03","L04","L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16","L17","L18","L19","L20","L21","L22","L23","L24","L25","L26","L27","L28","L29","L30","L31","L32"],
+    "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
+    "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE"],
+    "sub_item":["CpoolA","CpoolS","CpoolP"],
+    "cnp":1,
+    "npfts":18,
+    "dim":
+    {
+      "som":["pft","pool"],
+      "biomass":["pool","pft"],
+      "litter":["pft","pool"]
+    },
+    "sect_n":
+    {
+      "som":1,
+      "biomass":1,
+      "litter":2
+    },
     "variables":
     {
       "som":
       [
         {"name_prefix":["deepC_a","deepC_s","deepC_p"],
-         "name_loop":"null",
+         "name_loop":"pft",
          "name_postfix":"",
-         "dim_loop":["pft","ndeep"],
+         "dim_loop":["ndeep"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
             "ndeep":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
@@ -78,8 +96,8 @@
          "dim_loop":["veg.comp","pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
-            "null":[""],
-            "veg.comp":[1,2,3,4,5,6,7,8]
+            "veg.comp":[1,2,3,4,5,6,7,8],
+            "null":[""]
            },
          "skip_loop":
            {"pft":[1]

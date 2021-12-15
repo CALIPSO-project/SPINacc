@@ -112,7 +112,7 @@ if '2' in itask:
   check.display('clustering done!\nResults have been stored as IDx.npy',logfile)
 
   # write compressed forcing
-  forcing.write(varlist,resultpath,IDx)
+  # forcing.write(varlist,resultpath,IDx)
   
   #
   # plot clustering results

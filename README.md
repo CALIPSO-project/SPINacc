@@ -37,7 +37,7 @@ the sum of distance for different numbers of clusters, i.e. using different Ks. 
 needed using config[11] in MLacc.def.
 * Task 2 prepares the data for the ML training in task 3 which is saved in the
 ‘dirdef’ folder (config[7]=1).
-* Task 3 performs the ML training based on the data prepared by task 2.
+* Task 3 performs the ML training based on the data prepared by task 2 and write the state variables into a template of a restart file of ORCHIDEE.
 * Task 4 visualizes the performance of the ML in task 3, Two kinds of evaluations
 are designed: (1) the evaluation for global pixels (config[15]=0) which is designed
 for the use by developers; (2) the leave-one-cross-validation (LOOCV) for

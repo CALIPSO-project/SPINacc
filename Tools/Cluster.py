@@ -54,7 +54,8 @@ def Cluster_Ana(packdata,auxil,PFT_mask,ipft,var_pred,var_pred_name,K,Nc):
   All_selectedID=np.zeros(shape=(0,2))
   SelectedID=np.zeros(shape=(0,2))
   for clus in range(K):
-    A=np.argwhere(Cluster_output[0]==clus)
+    #A=np.argwhere(Cluster_output[0]==clus)
+    A=np.argwhere(Cluster_output[0].values==clus)
     A.tolist()
     A=np.reshape(A,(1,len(A)))
     locations=Cluster_output.loc[A[0],[1,2]]

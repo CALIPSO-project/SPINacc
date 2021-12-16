@@ -14,7 +14,7 @@
 
 from Tools import *
 
-def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv):
+def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar):
   check.display('processing %s, variable %s...'%(ipool,varname),logfile)
 
   # extract data
@@ -88,7 +88,9 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
   else:
     Global_Predicted_Y_map,predY=mapGlobe.extrp_global(packdata,auxil,ipft,PFT_mask,var_pred_name,\
                                                        Tree_Ens,col_type,type_val,var_pred_name)
-
+    # write to restart file
+    restvar[:]=Global_Predicted_Y_map[:]
+  
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
     R2,RMSE,slope,reMSE,dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC = MLeval.evaluation_map(Global_Predicted_Y_map,pool_map,ipft,PFT_mask)
@@ -160,7 +162,7 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
   ffz3.write("\n")
   return
 
-def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv):
+def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar):
   check.display('processing %s, variable %s, index %s (dim: %s)...'%(ipool,varname,ind,ii['dim_loop']),logfile)
 
   # extract data
@@ -235,7 +237,9 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
   else:
     Global_Predicted_Y_map,predY=mapGlobe.extrp_global(packdata,auxil,ipft,PFT_mask,var_pred_name,\
                                                        Tree_Ens,col_type,type_val,var_pred_name)
-
+    # write to restart file
+    restvar[:,tuple(ind-1),:,:]=Global_Predicted_Y_map[:]
+    
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
     R2,RMSE,slope,reMSE,dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC = MLeval.evaluation_map(Global_Predicted_Y_map,pool_map,ipft,PFT_mask)
@@ -321,7 +325,11 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
 
   responseY=Dataset(varlist['resp']['sourcefile'],'r')
   PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['pred_thres'])
-
+  
+  # Copy restart file template (might have to be changed)
+  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
+  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+  
   Yvar=varlist['resp']['variables'][ipool]
   for ii in Yvar:
     for jj in ii['name_prefix']:
@@ -330,6 +338,11 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
         if ii['name_loop']=='pft':ipft=kk
 #        print(responseY.variables.keys())
         ivar=responseY[varname]
+        
+        # open restart file and select variable (memory is exceeded if open outside this loop)
+        restnc=Dataset(restfile,'a')
+        restvar=restnc[varname]
+        
         if ii['dim_loop']==['null']:
           figname=resultpath+'Eval_%s'%varname+'.png'
 #          if os.path.isfile(figname):continue
@@ -345,5 +358,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
             if 'pft' in ii['dim_loop']:ipft=ind[ii['dim_loop'].index('pft')]
             if ipft in ii['skip_loop']['pft']:continue
             MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+        # close&save netCDF file
+        restnc.close()  
   return
 

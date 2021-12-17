@@ -49,6 +49,7 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
+    "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
     "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE"],

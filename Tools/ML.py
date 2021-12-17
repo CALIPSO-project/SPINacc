@@ -89,7 +89,11 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
     Global_Predicted_Y_map,predY=mapGlobe.extrp_global(packdata,auxil,ipft,PFT_mask,var_pred_name,\
                                                        Tree_Ens,col_type,type_val,var_pred_name)
     # write to restart file
-    restvar[:]=Global_Predicted_Y_map[:]
+    pmask=np.nansum(PFT_mask,axis=0)
+    pmask[np.isnan(pmask)]==0
+    Pred_Y_out=np.where(pmask==0,missVal, Global_Predicted_Y_map[:])
+    restvar[:]=Pred_Y_out[:]
+    
   
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
@@ -238,7 +242,10 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
     Global_Predicted_Y_map,predY=mapGlobe.extrp_global(packdata,auxil,ipft,PFT_mask,var_pred_name,\
                                                        Tree_Ens,col_type,type_val,var_pred_name)
     # write to restart file
-    restvar[:,tuple(ind-1),:,:]=Global_Predicted_Y_map[:]
+    pmask=np.nansum(PFT_mask,axis=0)
+    pmask[np.isnan(pmask)]==0
+    Pred_Y_out=np.where(pmask==0,missVal, Global_Predicted_Y_map[:])
+    restvar[:,ind-1,:,:]=Pred_Y_out[:]
     
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
@@ -329,6 +336,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
   # Copy restart file template (might have to be changed)
   restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
   os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+  missVal=varlist['resp']['missing_value']
   
   Yvar=varlist['resp']['variables'][ipool]
   for ii in Yvar:

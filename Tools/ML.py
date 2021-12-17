@@ -91,7 +91,11 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
     # write to restart file
     pmask=np.nansum(PFT_mask,axis=0)
     pmask[np.isnan(pmask)]==0
+    # set all ocean pixels to missVal
     Pred_Y_out=np.where(pmask==0,missVal, Global_Predicted_Y_map[:])
+    # some pixel with nan remain, so set them zero
+    Pred_Y_out=np.nan_to_num(Pred_Y_out)
+    
     restvar[:]=Pred_Y_out[:]
     
   
@@ -244,7 +248,10 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
     # write to restart file
     pmask=np.nansum(PFT_mask,axis=0)
     pmask[np.isnan(pmask)]==0
+    # set ocean pixel to missVal
     Pred_Y_out=np.where(pmask==0,missVal, Global_Predicted_Y_map[:])
+    # some pixel with nan remain, so set them zero
+    Pred_Y_out=np.nan_to_num(Pred_Y_out)
     restvar[:,ind-1,:,:]=Pred_Y_out[:]
     
   if (PFT_mask[ipft-1]>0).any():

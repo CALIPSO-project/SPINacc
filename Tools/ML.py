@@ -14,7 +14,7 @@
 
 from Tools import *
 
-def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar):
+def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar,missVal):
   check.display('processing %s, variable %s...'%(ipool,varname),logfile)
 
   # extract data
@@ -166,7 +166,7 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
   ffz3.write("\n")
   return
 
-def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar):
+def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restvar,missVal):
   check.display('processing %s, variable %s, index %s (dim: %s)...'%(ipool,varname,ind,ii['dim_loop']),logfile)
 
   # extract data
@@ -355,7 +355,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
           figname=resultpath+'Eval_%s'%varname+'.png'
 #          if os.path.isfile(figname):continue
           if ipft in ii['skip_loop']['pft']:continue
-          MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+          MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,missVal)
         else:
 #          index=np.array(np.meshgrid(*[ii['loops'][ll] for ll in ii['dim_loop']])).T.reshape(-1,len(ii['dim_loop']))
           index=np.array(list(itertools.product(*[ii['loops'][ll] for ll in ii['dim_loop']])))
@@ -365,7 +365,7 @@ def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3
 #            if os.path.isfile(figname):continue
             if 'pft' in ii['dim_loop']:ipft=ind[ii['dim_loop'].index('pft')]
             if ipft in ii['skip_loop']['pft']:continue
-            MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+            MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,logfile,varname,varlist,labx,ind,ii,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,missVal)
         # close&save netCDF file
         restnc.close()  
   return

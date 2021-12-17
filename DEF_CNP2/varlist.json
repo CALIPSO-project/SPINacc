@@ -68,6 +68,7 @@
   "resp":
   {
     "sourcefile":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1_23901231_stomate_rest.nc",
+    "missing_value":1e20,
     "pool_name_som":["Active","ChemProtect","PhysProtect"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
     "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE","MetaAB","MetaBE"],

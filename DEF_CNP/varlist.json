@@ -5,8 +5,8 @@
   "lon_reso":2,
   "climate":
   {
-    "sourcepath":"/home/orchidee04/ysun/crujra/crujra_1901_1920_v2/",
-    "filename":"crujra_twodeg_v2_",
+    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/",
+    "filename":"crujra_twodeg_v2.2_",
     "year_start":1901,
     "year_end":1920,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]

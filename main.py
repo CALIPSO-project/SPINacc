@@ -151,6 +151,11 @@ if '3' in itask:
   auxil.Nlat=np.trunc(( 90-IDx[:,0])/auxil.lat_reso).astype(int)
   auxil.Nlon=np.trunc((180+IDx[:,1])/auxil.lon_reso).astype(int)
   labx=['Y']+var_pred_name+['pft']
+  
+  # copy the restart file to be modified 
+  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
+  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+
   for ipool in Yvar.keys():
     #if ipool!="litter":continue
     check.display('processing %s...'%ipool,logfile)
@@ -179,7 +184,7 @@ if '3' in itask:
 #      print(auxil.pfts)
 #      ML_biomass.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
 #    else:continue
-    ML.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
+    ML.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv, restfile)
     fx.close()
     fy.close()
     fz.close()     

@@ -332,17 +332,19 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
 ##@param[in]   logfile                logfile
 ##@
 ##@param[in]
-def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv):
+def MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv,restfile):
   var_pred_name1=varlist['pred']['allname']
   var_pred_name2=varlist['pred']['allname_pft']
   var_pred_name=var_pred_name1+var_pred_name2
 
   responseY=Dataset(varlist['resp']['sourcefile'],'r')
   PFT_mask,PFT_mask_lai=genMask.PFT(packdata,varlist,varlist['PFTmask']['pred_thres'])
-  
-  # Copy restart file template (might have to be changed)
-  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
-  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+
+# We can't do it here: we would overwrite the file repeatidly loosing the information we wrote before
+# it's done now in main.py
+# Copy restart file template (might have to be changed)
+#  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
+#  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
   missVal=varlist['resp']['missing_value']
   
   Yvar=varlist['resp']['variables'][ipool]

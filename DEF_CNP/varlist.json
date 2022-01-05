@@ -5,8 +5,8 @@
   "lon_reso":2,
   "climate":
   {
-    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/",
-    "filename":"crujra_twodeg_v2.2_",
+    "sourcepath":"/home/surface3/maignan/ORCHIDEE/FORCAGES/CRUJRA/v2/twodeg_RH_Filter/",
+    "filename":"crujra_twodeg_v2_",
     "year_start":1901,
     "year_end":1920,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
@@ -65,7 +65,6 @@
   "resp":
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn.ORI000.clim3_77081231_stomate_rest.nc",
-    "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow","Surface"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
     "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE","MetaAB","MetaBE"],
@@ -105,12 +104,12 @@
       "biomass":
       [
         {"name_prefix":["biomass"],
-         "name_loop":"pool",
+         "name_loop":"veg",
          "name_postfix":"",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "pool":[1,2,3,4,5,6,7,8,9],
+            "veg":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -118,12 +117,12 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"pool",
+         "name_loop":"veg",
          "name_postfix":"_n",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "pool":[1,2,3,4,5,6,7,8,9],
+            "veg":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -131,12 +130,12 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"pool",
+         "name_loop":"veg",
          "name_postfix":"_p",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "pool":[1,2,3,4,5,6,7,8,9],
+            "veg":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -224,7 +223,37 @@
            {"pft":[1]
            }
         }
-      ]
+      ],
+      "npp":
+      [
+        {"name_prefix":["npp_longterm"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+     ],
+    "lai":
+      [
+        {"name_prefix":["lai_target_longterm"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+     ]
     }
   }
 }  

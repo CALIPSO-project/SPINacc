@@ -1,19 +1,19 @@
 {
 
-  "coord_ref":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc",
-  "lat_reso":2,
-  "lon_reso":2,
+  "coord_ref":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01.IOtest_22661231_stomate_rest.nc",
+  "lat_reso":0.5,
+  "lon_reso":0.5,
   "climate":
   {
-    "sourcepath":"/home/surface3/maignan/ORCHIDEE/FORCAGES/CRUJRA/v2/twodeg_RH_Filter/",
-    "filename":"crujra_twodeg_v2_",
+    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/halfdeg/",
+    "filename":"crujra_halfdeg_v2.2_",
     "year_start":1901,
     "year_end":1920,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
   },
   "PFTmask":
   {
-    "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn_13000101_13001231_1M_stomate_history.nc",
+    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01.IOtest_22660101_22661231_1M_stomate_history.nc",
     "var":"VEGET_COV_MAX",
     "cluster_thres":0.00000001,
     "pred_thres":0.1
@@ -22,26 +22,26 @@
   {
     "var1":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn_13000101_13001231_1M_stomate_history.nc",
+      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01.IOtest_22660101_22661231_1M_stomate_history.nc",
       "variables":["NPP","LAI"],
       "rename":["NPP0","LAI0"]
     },
     "var2":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc",
+      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01cc5_69251231_stomate_rest.nc",
       "variables":["soil_orders","soil_shield"],
       "missing_value":1e20
 
     },
     "var3":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4_16471231_sechiba_rest.nc",
+      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01.IOtest_22661231_sechiba_rest.nc",
       "variables":["clay_frac","silt_frac","bulk","soil_ph"],
       "missing_value":1e20
     },
     "var4":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10000101_10001231_1M_stomate_history.nc",
+      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01cc5_69270101_69271231_1M_stomate_history.nc",
       "variables":["NHX_DEPOSITION","NOY_DEPOSITION","P_DEPOSITION"],
       "rename":["Ndep_nhx","Ndep_noy","Pdep"],
       "missing_value":1e20
@@ -64,7 +64,8 @@
   },
   "resp":
   {
-    "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc0.rrn.ORI000.clim3_77081231_stomate_rest.nc",
+    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01cc5_69251231_stomate_rest.nc",
+    "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow","Surface"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
     "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE","MetaAB","MetaBE"],
@@ -104,12 +105,12 @@
       "biomass":
       [
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -117,12 +118,12 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"_n",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -130,12 +131,12 @@
            }
         },
         {"name_prefix":["biomass"],
-         "name_loop":"veg",
+         "name_loop":"pool",
          "name_postfix":"_p",
          "dim_loop":["pft"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "veg":[1,2,3,4,5,6,7,8,9],
+            "pool":[1,2,3,4,5,6,7,8,9],
             "null":[""]
            },
          "skip_loop":
@@ -239,9 +240,60 @@
            }
         }
      ],
-    "lai":
-      [
+     "lai":
+     [
         {"name_prefix":["lai_target_longterm"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+     ],
+    "lignin":
+     [
+        {"name_prefix":["lignin_struc_ab"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_wood_ab"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_struc_be"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_wood_be"],
          "name_loop":"null",
          "name_postfix":"",
          "dim_loop":["pft"],

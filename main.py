@@ -191,6 +191,27 @@ if '3' in itask:
     fxx.close()
     fyy.close()
     fzz.close()
+    
+  #  # Fill the redundant variables in restart file:
+  # This is for CNP version (should be externalized)
+  vars=['npp_daily','npp_week','gpp_week','maxgppweek_lastyear', 'gpp_daily']
+
+  for var in vars:
+      check.display('processing %s...'%var,logfile)
+      restnc=Dataset(restfile,'a')
+      # all variables derive from npp longterm prediction
+      restvar=restnc['npp_longterm']
+      restvar1=restnc[var]
+
+      if var == 'gpp_week' or var == 'maxgppweek_lastyear' or var == 'gpp_daily':
+        tmpvar=restvar[:]*2.
+      else:
+        tmpvar=restvar[:]
+
+      restvar1[:]=tmpvar
+      restnc.close()     
+    
+    
   check.display('task 3 done!',logfile)
 if '4' in itask:
   Yvar=varlist['resp']['variables']

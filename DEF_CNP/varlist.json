@@ -15,8 +15,8 @@
   {
     "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/NMIP_testcase/r5976.globe.highres.CNP01.IOtest_22660101_22661231_1M_stomate_history.nc",
     "var":"VEGET_COV_MAX",
-    "cluster_thres":0.00000001,
-    "pred_thres":0.1
+    "cluster_thres":0.001,
+    "pred_thres":0.001
   },
   "pred":
   {

@@ -252,8 +252,10 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
     Pred_Y_out=np.where(pmask==0,missVal, Global_Predicted_Y_map[:])
     # some pixel with nan remain, so set them zero
     Pred_Y_out=np.nan_to_num(Pred_Y_out)
-    restvar[:,ind-1,:,:]=Pred_Y_out[:]
-    
+#    restvar[:,ind-1,:,:]=Pred_Y_out[:]
+    command='restvar[...,'+'%s,'*len(ind)+':,:]=Pred_Y_out[:]'
+    exec(command%tuple(ind-1))
+   
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
     R2,RMSE,slope,reMSE,dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC = MLeval.evaluation_map(Global_Predicted_Y_map,pool_map,ipft,PFT_mask)

@@ -136,5 +136,8 @@
         }
       ]
     }
-  }
+  },
+  "restart": ["/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_driver_rest.nc",
+              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_sechiba_rest.nc",
+              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_stomate_rest.nc"]
 }  

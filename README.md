@@ -42,7 +42,8 @@ needed using config[11] in MLacc.def.
 are designed: (1) the evaluation for global pixels (config[15]=0) which is designed
 for the use by developers; (2) the leave-one-cross-validation (LOOCV) for
 training sites (config[15]=1) which is the default case which evaluates the
-performance of the ML training, It is time consuming,
+performance of the ML training, It is time consuming.
+* Task 5 creates new forcing/restart files with selected pixels only. The data is aligned uniformly across the globe and stored on the new global pseudo-grid.
 
 ### HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:
 

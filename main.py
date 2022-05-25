@@ -111,9 +111,6 @@ if '2' in itask:
   IDsel.dump(resultpath+'IDsel.npy')
   check.display('clustering done!\nResults have been stored as IDx.npy',logfile)
 
-  # write compressed forcing
-  # forcing.write(varlist,resultpath,IDx)
-  
   #
   # plot clustering results
   kpfts=varlist['clustering']['pfts']
@@ -235,4 +232,12 @@ if '4' in itask:
       eval_plot_loocv_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     else:continue
   check.display('task 4 done!',logfile)
+  
+if '5' in itask:
+  #
+  # build aligned forcing and aligned restart files
+  check.check_file(resultpath+'IDx.npy',logfile)
+  IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
+  forcing.write(varlist,resultpath,IDx)
+  check.display('task 5 done!',logfile)
   

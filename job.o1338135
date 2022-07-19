@@ -1,3 +1,9 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+Linux obelix44 3.10.0-1160.42.2.el7.x86_64 #1 SMP Tue Sep 7 14:49:57 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+/home/surface3/dgoll/SPINUP_ML/20220719/SPINacc
+3.9.7 (default, Sep 16 2021, 13:09:58) 
+[GCC 7.5.0]
 DEF directory: DEF_CNP2/
 running task: ['1', '2', '3']
 results are stored at: /home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2/
@@ -143,9 +149,7 @@ reading LWdown from year 1918
 reading LWdown from year 1919
 reading LWdown from year 1920
 reading NPP...
-warning: using NPP at the last year
 reading LAI...
-warning: using LAI at the last year
 reading soil_orders...
 reading soil_shield...
 reading clay_frac...

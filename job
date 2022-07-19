@@ -1,14 +1,14 @@
 #PBS -eo
 #PBS -S /bin/tcsh
 
-export dirpython='/home/orchidee04/ysun/MLacc_Python_Tool/SPINacc/'
-export dirdef='DEF_Trunk/'
+setenv dirpython '/home/surface3/dgoll/SPINUP_ML/20220719/SPINacc'
+setenv dirdef 'DEF_CNP2/'
 
 limit descriptors 10000
 
 source /etc/profile.d/modules.sh
 module unload python
-export PYTHONPATH=$dirpython/Tools
+setenv PYTHONPATH $dirpython/Tools
 module load python/3
 uname -a
 

@@ -1,31 +1,28 @@
 {
 
-  "coord_ref":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_stomate_rest.nc",
-  "axes_name":["nav_lat","nav_lon"],
+  "coord_ref":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
   "lat_reso":2,
   "lon_reso":2,
-  "cnp":3,
-  "npfts":14,
   "climate":
   {
-    "sourcepath":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/",
-    "filename":"crujra_twodeg_v2.1_",
+    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/",
+    "filename":"crujra_twodeg_v2.2_",
     "year_start":1901,
-    "year_end":1910,
+    "year_end":1920,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
   },
   "PFTmask":
   {
-    "sourcefile":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_12910101_13001231_1M_stomate_history.nc",
+    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Output/MO/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63010101_63101231_1M_stomate_history.nc",
     "var":"VEGET_COV_MAX",
-    "cluster_thres":0.00000001,
-    "pred_thres":0.1
+    "cluster_thres":0.001,
+    "pred_thres":0.001
   },
   "pred":
   {
     "var1":
     {
-      "sourcefile":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_12910101_13001231_1M_stomate_history.nc",
+      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Output/MO/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63010101_63101231_1M_stomate_history.nc",
       "variables":["NPP","LAI"],
       "rename":["NPP0","LAI0"]
     },
@@ -67,7 +64,7 @@
   },
   "resp":
   {
-    "sourcefile":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1_23901231_stomate_rest.nc",
+    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
     "missing_value":1e20,
     "pool_name_som":["Active","ChemProtect","PhysProtect"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
@@ -231,6 +228,36 @@
            }
         }
       ],
+      "npp":
+      [
+        {"name_prefix":["npp_longterm"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+     ],
+     "lai":
+     [
+        {"name_prefix":["lai_target_longterm"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+     ],
       "litter":
       [
         {"name_prefix":["litter"],
@@ -239,7 +266,7 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
             "null":[""]
            },
          "skip_loop":
@@ -252,7 +279,7 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
             "null":[""]
            },
          "skip_loop":
@@ -265,7 +292,7 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
             "null":[""]
            },
          "skip_loop":
@@ -278,7 +305,7 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
             "null":[""]
            },
          "skip_loop":
@@ -291,7 +318,7 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
             "null":[""]
            },
          "skip_loop":
@@ -304,7 +331,58 @@
          "dim_loop":["z_d"],
          "loops":
            {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            "z_d":[1,2,3],
+            "z_d":[1,2],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        }
+      ],
+    "lignin":
+     [
+        {"name_prefix":["lignin_struc_ab"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_wood_ab"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_struc_be"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "null":[""]
+           },
+         "skip_loop":
+           {"pft":[1]
+           }
+        },
+        {"name_prefix":["lignin_wood_be"],
+         "name_loop":"null",
+         "name_postfix":"",
+         "dim_loop":["pft"],
+         "loops":
+           {"pft":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
             "null":[""]
            },
          "skip_loop":

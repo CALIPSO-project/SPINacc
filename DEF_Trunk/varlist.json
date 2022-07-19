@@ -15,7 +15,7 @@
   {
     "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/FG1low.ORCH21r5695_19010101_19101231_1Y_stomate_history.nc",
     "var":"VEGET_COV_MAX",
-    "cluster_thres":0.00000001,
+    "cluster_thres":0.001,
     "pred_thres":0.1
   },
   "pred":

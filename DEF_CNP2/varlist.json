@@ -391,5 +391,8 @@
         }
       ]
     }
-  }
+  },
+  "restart": ["/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_driver_rest.nc",
+              "/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_sechiba_rest.nc",
+              "/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_stomate_rest.nc"]
 }  

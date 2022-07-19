@@ -256,5 +256,8 @@
         }
      ]
     }
-  }
+  },
+  "restart": ["MISSING_driver_rest.nc",
+              "MISSING_sechiba_rest.nc",
+              "/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc"]
 }  

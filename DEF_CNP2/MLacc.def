@@ -1,11 +1,11 @@
   # config[1] : logfile
 log.MLacc_CNP2
   # config[3] : task (1=test clustering/2=clustering/3=ML/4=evaluation)
-1,2,3
+5
   # config[5] : execution directory
 /home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2
   # config[7] : start from scratch (0) or read previous results (1)
-0
+1
   # config[9] : number of K for final Kmean algorithm
 4
   # config[11] : maximum number of Ks to test for Kmean algorithm

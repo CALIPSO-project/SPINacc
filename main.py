@@ -239,5 +239,6 @@ if '5' in itask:
   check.check_file(resultpath+'IDx.npy',logfile)
   IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
   forcing.write(varlist,resultpath,IDx)
+  check.display('task 5 forcing and restart files have been written ',logfile)
   check.display('task 5 done!',logfile)
   

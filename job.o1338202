@@ -1,0 +1,16 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+Linux obelix53 3.10.0-1160.42.2.el7.x86_64 #1 SMP Tue Sep 7 14:49:57 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+/home/surface3/dgoll/SPINUP_ML/20220719/SPINacc
+3.9.7 (default, Sep 16 2021, 13:09:58) 
+[GCC 7.5.0]
+DEF directory: DEF_CNP2/
+running task: ['2']
+results are stored at: /home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2/
+read from previous results...
+random seed = 1000
+Kmean algorithm, K=4
+clustering done!
+Results have been stored as IDx.npy
+clustering results plotted!
+Results have been stored as ClustRes_PFT*.png

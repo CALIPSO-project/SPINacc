@@ -1,0 +1,6 @@
+DEF directory: DEF_CNP2/
+running task: ['5']
+results are stored at: /home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2/
+read from previous results...
+random seed = 1000
+task 5 done!

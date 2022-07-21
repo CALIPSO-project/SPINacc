@@ -6,7 +6,7 @@ Documentation of aims, concepts, workflows are found in file: !MISSING!
 For more information about git, see these pages:
 https://rogerdudler.github.io/git-guide/
 https://www.freecodecamp.org/
-
+https://panjeh.medium.com/makefile-git-add-commit-push-github-all-in-one-command-9dcf76220f48
 
 ## CONTENT
 The SPINacc package includes:
@@ -20,10 +20,10 @@ The SPINacc package includes:
 ### HOW TO RUN THE CODE:
 
 * First: copy the code to your own directory on obelix (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc"). This requires that you generate a token and use it instead of your password (see here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token )
-* Second: specify in the file 'job' or 'job_tcsh' (depending on your environment) where the code is located using dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using dirdef (for now we have: CNP= CNP v1.2 (CENTURY soil), CNP2 = CNP v1.3 (MIMICS soil), Trunk = Trunk 2.0, MICT = MICT). 
+* Second: specify in the file 'job' or 'job_tcsh' (depending on your environment) where the code is located using the variable dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using the variable dirdef (for now we have: CNP= CNP v1.2 (CNP with CENTURY soil), CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.x, MICT = MICT). 
 * Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation:
 	* MLacc.def defines the tasks to do and the execution directory; tasks are 1= test number of k clusters 2=clustering, 3= ML training,
-evaluation and extrapolation, 4 visualizations of ML performance (see below for more information), 5  = writing of ORCHIDEE restart files
+evaluation and extrapolation, 4 visualizations of ML performance (see below for more information), 5  = writing of ORCHIDEE restart files for pixel-level simulations [can be run after task=2]
 	* varlist.json defines the specification of the input data: e.g. resolution, state variables to predict, etc.
 * Forth: execute the tool by: qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
 
@@ -33,17 +33,15 @@ evaluation and extrapolation, 4 visualizations of ML performance (see below for 
 model and the simulation setup. The number of clusters which are a tradeoff
 between computation demand and ML performance. Task 1 helps you to decide
 on the number of clusters. Task 1 produces the figure ‘dist_all.png’ which shows
-the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if
-needed using config[11] in MLacc.def.
-* Task 2 prepares the data for the ML training in task 3 which is saved in the
-‘dirdef’ folder (config[7]=1).
-* Task 3 performs the ML training based on the data prepared by task 2 and write the state variables into a template of a restart file of ORCHIDEE.
-* Task 4 visualizes the performance of the ML in task 3, Two kinds of evaluations
+the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
+* Task 2 prepares the data for [now] the ML training in task 3 and [final use] for the generation of pixel-level ORCHIDEE simulations which is saved in the ‘dirdef’ folder (config[7]=1).
+* Task 3 performs the ML training based on the data prepared by task 2 and write the state variables into restart files for global simulations with ORCHIDEE.
+* Task 4 visualizes the performance of the ML in task 3. Two kinds of evaluations
 are designed: (1) the evaluation for global pixels (config[15]=0) which is designed
 for the use by developers; (2) the leave-one-cross-validation (LOOCV) for
 training sites (config[15]=1) which is the default case which evaluates the
 performance of the ML training, It is time consuming.
-* Task 5 creates new forcing/restart files with selected pixels only. The data is aligned uniformly across the globe and stored on the new global pseudo-grid.
+* Task 5 creates new forcing/restart files with selected pixels only. The data is aligned uniformly across the globe and stored on the new global pseudo-grid. 
 
 ### HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:
 
@@ -67,16 +65,16 @@ You can create your varlist.json according to your case.
 ## INFORMATION FOR CODE DEVELOPERS:
 
 ### SIMULATIONS NEEDED TO TEST THE TOOL
-You need the output and restart files from a conventional spinup simulation with ORCHIDEE over the whole(!) spatial domain. At this stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium.
+You need the output and restart files from a conventional spinup simulation with ORCHIDEE. At this DEV stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium. FINAL: it should be trained on the pixel-level simulation results.
 
-We need information from early during the spinup (transient phase) to 
+Specifically, we need information from early during the spinup (transient phase) and when the pools have approached a steady-state.
+From the transient phase, we
 * extract all boundary conditions (i.e. ORCHIDEE forcings) on the spatial resolution of ORCHIDEE. 
 * information on NPP and LAI during early spinup (transient phase) vastly improves ML predictions.
+From the stable state, we 
+* extract all state variables to train the machine learning allgorithm
 
-We need information from end of the spinup  (steady state)
-* to train and test the machine learning tool
-
-The exact simulation lenghts depend on the model version.
+The exact simulation lenghts needed to reach steady-state depends on the model version, and steady-state criteria.
 
 ### HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
 * First, "git add" to add all the files that you changed. It is recommended to only add files you have changed and make sure you updated with any changes updated to github since you downloaded your copies.

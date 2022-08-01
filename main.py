@@ -98,7 +98,7 @@ if '1' in itask:
   fig.savefig(resultpath+'dist_all.png') 
   plt.close('all')
   check.display('test clustering results plotted!\nResults have been stored as dist_all.png',logfile)
-
+  check.display('task 1: done',logfile)
 if '2' in itask:
   #
   # clustering
@@ -123,7 +123,7 @@ if '2' in itask:
     fig.savefig(resultpath+'ClustRes_PFT%i.png'%kpfts[ipft])
     plt.close('all')
   check.display('clustering results plotted!\nResults have been stored as ClustRes_PFT*.png',logfile)
-
+  check.display('task 2: done',logfile)
 if '3' in itask:
   #
   # ML extrapolation
@@ -212,7 +212,7 @@ if '3' in itask:
       restnc.close()     
     
     
-  check.display('task 3 done!',logfile)
+  check.display('task 3: done',logfile)
 if '4' in itask:
   Yvar=varlist['resp']['variables']
   for ipool in Yvar.keys():
@@ -231,7 +231,7 @@ if '4' in itask:
     if loocv==1:
       eval_plot_loocv_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     else:continue
-  check.display('task 4 done!',logfile)
+  check.display('task 4: done',logfile)
   
 if '5' in itask:
   #
@@ -240,5 +240,5 @@ if '5' in itask:
   IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
   forcing.write(varlist,resultpath,IDx)
   check.display('task 5 forcing and restart files have been written ',logfile)
-  check.display('task 5 done!',logfile)
+  check.display('task 5: done',logfile)
   

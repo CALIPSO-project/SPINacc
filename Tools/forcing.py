@@ -73,13 +73,13 @@ def write(varlist,resultpath,IDx):
     for var in nc.variables:
       ncout.createVariable(var, nc.variables[var].dtype, nc.variables[var].dimensions)
       ncout.variables[var].setncatts(nc.variables[var].__dict__)
-      if var in ["nav_lat", "lat", "latitude", "y"]:
+      if var in ["nav_lat", "lat", "LAT", "latitude", "y"]:
         if len(nc.variables[var].dimensions) == 2: ncout.variables[var][:] = pnavlat
         else: ncout.variables[var][:] = plat
-      elif var in ["nav_lon", "lon", "longitude", "x"]:
+      elif var in ["nav_lon", "lon", "LON", "longitude", "x"]:
         if len(nc.variables[var].dimensions) == 2: ncout.variables[var][:] = pnavlon
         else: ncout.variables[var][:] = plon
-      elif nc.variables[var].dimensions[-1] == "x" and nc.variables[var].dimensions[-2] == "y":
+      elif nc.variables[var].dimensions[-1] in ["lon", "longitude", "x"] and nc.variables[var].dimensions[-2] in ["lat", "latitude", "y"]:
         for idx, (ilat, ilon, iland) in enumerate(pts):
           ncout.variables[var][..., idx//nlon, idx%nlon] = nc.variables[var][..., ilat, ilon]
       else:

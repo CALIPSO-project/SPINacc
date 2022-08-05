@@ -137,7 +137,9 @@
       ]
     }
   },
-  "restart": ["/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_driver_rest.nc",
+  "restart": ["/home/surface3/hzhang/NPdep/Ndep_Pdep_Trendy2019_final_input_halfdeg_1700.nc",
+              "/home/surface3/hzhang/NPdep/NMIP_NP_agricultural_input_halfdeg_1700.nc",
+              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_driver_rest.nc",
               "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_sechiba_rest.nc",
               "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_stomate_rest.nc"]
 }  

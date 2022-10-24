@@ -41,7 +41,7 @@ are designed: (1) the evaluation for global pixels (config[15]=0) which is desig
 for the use by developers; (2) the leave-one-cross-validation (LOOCV) for
 training sites (config[15]=1) which is the default case which evaluates the
 performance of the ML training, It is time consuming.
-* Task 5 creates new forcing/restart files with selected pixels only. The data is aligned uniformly across the globe and stored on the new global pseudo-grid. 
+* Task 5 creates new input files for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid. This new input files ensure high computational efficiency for the pixel level simulations with ORCHIDEE. 
 
 ### HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:
 

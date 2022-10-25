@@ -3,7 +3,7 @@ A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
 
 Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML. 
 
-Documentation of aims, concepts, workflows are found in file: !MISSING!
+Documentation of aims, concepts, workflows are described in Sun et al. in prep.
 
 ## CONTENT
 The SPINacc package includes:

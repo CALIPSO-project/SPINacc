@@ -1,12 +1,9 @@
 # SPINacc
-A spinup acceleration procedure for land surface models which is model independent.
+A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
+
+Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML. 
 
 Documentation of aims, concepts, workflows are found in file: !MISSING!
-
-For more information about git, see these pages:
-https://rogerdudler.github.io/git-guide/
-https://www.freecodecamp.org/
-https://panjeh.medium.com/makefile-git-add-commit-push-github-all-in-one-command-9dcf76220f48
 
 ## CONTENT
 The SPINacc package includes:
@@ -19,29 +16,25 @@ The SPINacc package includes:
 ## INFORMATION FOR USERS:
 ### HOW TO RUN THE CODE:
 
-* First: copy the code to your own directory on obelix (this can be done from the command line with "git clone https://github.com/dsgoll123/SPINacc"). This requires that you generate a token and use it instead of your password (see here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token )
-* Second: specify in the file 'job' or 'job_tcsh' (depending on your environment) where the code is located using the variable dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using the variable dirdef (for now we have: CNP= CNP v1.2 (CNP with CENTURY soil), CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.x, MICT = MICT). 
-* Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation:
-	* MLacc.def defines the tasks to do and the execution directory; tasks are 1= test number of k clusters 2=clustering, 3= ML training,
-evaluation and extrapolation, 4 visualizations of ML performance (see below for more information), 5  = writing of ORCHIDEE restart files for pixel-level simulations [can be run after task=2]
+* First: copy the code from github to your own machine ( code is tested for LSCE's obelix ).
+* Second: specify in the file 'job' or 'job_tcsh' (depending on your environment) where the code is located using the variable dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using the variable dirdef. The supported model versions are CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.x, and CNP = CNP v1.2 (CNP with CENTURY soil), MICT = MICT). 
+* Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation. The tool can run specific tasks individually.
+	* MLacc.def defines the tasks to do and the execution directory; 
 	* varlist.json defines the specification of the input data: e.g. resolution, state variables to predict, etc.
 * Forth: execute the tool by: qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
+* Fifth: the output of the tool is stored in the folder specified in MLacc.def under 'config[5] : execution directory'
 
 ### GUIDELINES FOR SETTING UP THE CONFIGURATION (MLacc.def):
-
-* Task 1 [optional]: The optimal number of clusters (Ks) can vary according to your
-model and the simulation setup. The number of clusters which are a tradeoff
-between computation demand and ML performance. Task 1 helps you to decide
-on the number of clusters. Task 1 produces the figure ‘dist_all.png’ which shows
-the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
-* Task 2 prepares the data for [now] the ML training in task 3 and [final use] for the generation of pixel-level ORCHIDEE simulations which is saved in the ‘dirdef’ folder (config[7]=1).
-* Task 3 performs the ML training based on the data prepared by task 2 and write the state variables into restart files for global simulations with ORCHIDEE.
-* Task 4 visualizes the performance of the ML in task 3. Two kinds of evaluations
-are designed: (1) the evaluation for global pixels (config[15]=0) which is designed
-for the use by developers; (2) the leave-one-cross-validation (LOOCV) for
-training sites (config[15]=1) which is the default case which evaluates the
-performance of the ML training, It is time consuming.
-* Task 5 creates new input files for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid. This new input files ensure high computational efficiency for the pixel level simulations with ORCHIDEE. 
+The different tasks are:
+* Task 1 [optional]: Provides information on the expected gain in model performance by incrasing the number of clusters. The optimal number of clusters (Ks) can vary according to your model and the simulation setup. The default number is 4 and is set via  'config[9] : number of K for final Kmean algorithm' in MLacc.def. The optimal number of clusters is a tradeoff between computation demand and ML performance.  This task produces the figure ‘dist_all.png’ which shows the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
+* Task 2 performs the clustering using a K mean algorithm and saves the information on the location of the selected pixels.
+* Task 5 generates compressed forcing files for ORCHIDEE simulations which only contain information for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid. This new input files ensure high computational efficiency for the pixel level simulations with ORCHIDEE. 
+* Task 3 performs the ML training and write the state variables into restart files for global simulations with ORCHIDEE.
+* Task 4 [optional] visualizes the performance of the ML in task 3. Two kinds of evaluations
+are available: (1) the evaluation for global pixels (config[15]=0)  (developer mode) ; 
+(2) the leave-one-cross-validation (LOOCV) for training sites (config[15]=1) which is the default case which evaluates the
+performance of the ML training. It is very time consuming.
+ 
 
 ### HOW TO SPECIFY THE INPUT DATA / SIMULATIONS:
 

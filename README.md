@@ -27,7 +27,7 @@ The SPINacc package includes:
 * Forth: execute the tool by: qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
 * Fifth: the output of the tool is stored in the folder specified in MLacc.def under 'config[5] : execution directory'. The progress of the tool is writen in the file specifed in MLacc.def under 'config[1] : logfile'
 
-### GUIDELINES FOR SETTING UP THE CONFIGURATION (MLacc.def):
+### The individual tasks of the tool
 The different tasks are:
 * Task 1 [optional]: Provides information on the expected gain in model performance by incrasing the number of clusters. The optimal number of clusters (Ks) can vary according to your model and the simulation setup. The default number is 4 and is set via  'config[9] : number of K for final Kmean algorithm' in MLacc.def. The optimal number of clusters is a tradeoff between computation demand and ML performance.  This task produces the figure ‘dist_all.png’ which shows the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
 ![dist_all](https://user-images.githubusercontent.com/79981678/197764400-deaac192-a26b-4f38-8eb1-6a0b50da65c9.png)

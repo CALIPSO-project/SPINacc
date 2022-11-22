@@ -3,36 +3,41 @@ A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
 
 Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML. 
 
-Documentation of aims, concepts, workflows are described in Sun et al. in prep.
-![MLfig1](https://user-images.githubusercontent.com/79981678/197766383-b37d8b34-54e0-4c89-bb3f-300bcaf444e1.png)
+Documentation of aims, concepts, workflows are described in Sun et al. (submitted). A preliminary version is available here: https://sharebox.lsce.ipsl.fr/index.php/s/kZB5zJG9PPONozD (see 3 files starting with MS_Acc_Sun2022 )
 
+![MLfig1](https://user-images.githubusercontent.com/79981678/197766383-b37d8b34-54e0-4c89-bb3f-300bcaf444e1.png)
 
 
 ## CONTENT
 The SPINacc package includes:
-* job
-* main.py
-* Tools/*
-* DEF_*/
+* job - the job file for a bash environment
+* job_tcsh - the job file for a tcsh environment
+* main.py - the main python module
+* Tools/* - folder with the other python modules
+* DEF_*/  - folders containting the configuration files for each of the supported ORCHIDEE versions
 
  
 ## INFORMATION FOR USERS:
 ### HOW TO RUN THE CODE:
 
-* First: copy the code from github to your own machine ( code is tested for LSCE's obelix ).
-* Second: specify in the file 'job' or 'job_tcsh' (depending on your environment) where the code is located using the variable dirpython (L4), and specify the folder with the configuration for your version of ORCHIDEE using the variable dirdef. The supported model versions are CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.x, and CNP = CNP v1.2 (CNP with CENTURY soil), MICT = MICT). 
-* Third: adjust the files in configuration folder: i.e. the type of task to be performed as well as the specifis of your simulation. The tool can run specific tasks individually.
-	* MLacc.def defines the tasks to do and the execution directory; 
-	* varlist.json defines the specification of the input data: e.g. resolution, state variables to predict, etc.
-* Forth: execute the tool by: qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
+This is a step by step description how to use the tool.
+
+* First: copy the code from github to your own machine ( code is tested for LSCE's obelix ). Please see the github information on how to download code.
+* Second: specify in the job file where the code of the tool is located using the variable dirpython (L4), and sfolders containting the configuration files for your version of ORCHIDEE using the variable dirdef. The supported model versions are CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.2, and CNP = CNP v1.2 (CNP with CENTURY soil), MICT = MICT [incomplete!] ). 
+
+* Third: adjust the files in configuration folder: i.e. the type of task to be performed (which are described below) as well as the specifications of your ORCHIDEE simulation. The tool can run a single task or a sequence of tasks.
+	* MLacc.def defines the task(s) to do and the execution directory; 
+	* varlist.json defines the specification of the input data (ORCHIDEE training data, ORCHIDEE forcing data): e.g. resolution, state variables to predict, etc.
+* Forth: execute the tool by (for obelix): qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
 * Fifth: the output of the tool is stored in the folder specified in MLacc.def under 'config[5] : execution directory'. The progress of the tool is writen in the file specifed in MLacc.def under 'config[1] : logfile'
 
+
 ### The individual tasks of the tool
-The different tasks are:
-* Task 1 [optional]: Provides information on the expected gain in model performance by incrasing the number of clusters. The optimal number of clusters (Ks) can vary according to your model and the simulation setup. The default number is 4 and is set via  'config[9] : number of K for final Kmean algorithm' in MLacc.def. The optimal number of clusters is a tradeoff between computation demand and ML performance.  This task produces the figure ‘dist_all.png’ which shows the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
+The different tasks are (the number of tasks does not correspond to sequence - YET):
+* Task 1 [optional]: Provides information on the expected gain in model performance by incrasing the number of (k-mean) clusters.  The optimal number of clusters (Ks) is a tradeoff between computation demand and ML performance; and Ks can vary according to your model and the simulation setup. The default number is 4 and is set via  'config[9] : number of K for final Kmean algorithm' in MLacc.def. This task produces the figure ‘dist_all.png’ which shows the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
 ![dist_all](https://user-images.githubusercontent.com/79981678/197764400-deaac192-a26b-4f38-8eb1-6a0b50da65c9.png)
 
-* Task 2 performs the clustering using a K mean algorithm and saves the information on the location of the selected pixels (files starting with 'ID'). The location of the selected pixel (red) for a given PFT and all pixel with cover fraction exceeding 'cluster_thres' [defined in varlist.json] (grey) are plotted in the figures 'ClustRes_PFT*.png'. Example of PFT2 is shown here:
+* Task 2 performs the clustering using a K mean algorithm and saves the information on the location of the selected pixels (files starting with 'ID'). The location of the selected pixel (red) for a given PFT and all pixel with a cover fraction exceeding 'cluster_thres' [defined in varlist.json] (grey) are plotted in the figures 'ClustRes_PFT*.png'. Example of PFT2 is shown here:
 ![ClustRes_PFT2_trimed](https://user-images.githubusercontent.com/79981678/197765127-05ef8271-79a0-4775-803c-a1759c413376.png)
 
 * Task 5 generates compressed forcing files for ORCHIDEE which only contain information for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid which ensures high computational efficiency for the pixel level simulations with ORCHIDEE. The forcing files which need to be processed must be listed in varlist.json under "sourcepath" for climate and "restart" for others (e.g. nutrient inputs).These files are compatible with ORCHIDEE and can be directly used in ORCHIDDEE simulations (e.g. using your COMP/X.cards in the libIGCM simulation configuration folder).

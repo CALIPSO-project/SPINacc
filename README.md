@@ -74,16 +74,18 @@ You can create your varlist.json according to your case.
 ## INFORMATION FOR CODE DEVELOPERS:
 
 ### SIMULATIONS NEEDED TO TEST THE TOOL
-You need the output and restart files from a conventional spinup simulation with ORCHIDEE. At this DEV stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium. FINAL: it should be trained on the pixel-level simulation results.
+At current DEV state: You need the output and restart files from a conventional spinup simulation with ORCHIDEE. At this DEV stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium to benchmark the ML based predictions. 
 
-Specifically, we need information from early during the spinup (transient phase) and when the pools have approached a steady-state.
-From the transient phase, we
-* extract all boundary conditions (i.e. ORCHIDEE forcings) on the spatial resolution of ORCHIDEE. 
-* information on NPP and LAI during early spinup (transient phase) vastly improves ML predictions.
-From the stable state, we 
-* extract all state variables to train the machine learning allgorithm
+Specifically, we need information from early during the spinup (transient phase, e.g. for ORCHIDEE trunk we use the year before the first analytical spinup up step, for ORCHIDEE-CNP which has not analytical spinup we use year 300) and from a year when the pools have approached a steady-state (e.g. 99% of pixels have absolute drifts in total C of less than 1 g per m2 per year).
 
-The exact simulation lenghts needed to reach steady-state depends on the model version, and steady-state criteria.
+The tool extracts from the transient phase:
+* all boundary conditions (i.e. ORCHIDEE forcings) on the (final) spatial resolution of ORCHIDEE. 
+* information on NPP and LAI during early spinup (transient phase) which we found vastly improves ML predictions.
+
+From the stable state, we extract 
+* all state variables to train the machine learning allgorithm
+
+MIND: The exact simulation lenghts needed to reach steady-state depends on the model version, and steady-state criteria.
 
 ### HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
 * First, "git add" to add all the files that you changed. It is recommended to only add files you have changed and make sure you updated with any changes updated to github since you downloaded your copies.

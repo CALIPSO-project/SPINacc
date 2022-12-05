@@ -47,9 +47,7 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 * Task 4 [optional] visualizes the performance of the ML in task 3. Two kinds of evaluations
 are available: (1) the evaluation for global pixels (config[15]=0)  (developer mode; not described in the following) ; 
 (2) the leave-one-cross-validation (LOOCV) for training sites (config[15]=1) which is the default case which evaluates the
-performance of the ML training. It is very time consuming.
-
-Plots for are producte for all state variables on PFT level ('Eval_all_*'). Depending on the model version this includes separates files for biomass, soil, litter, som, and microbes. The plots show the correlation between ML predicted state variables on PFT and the ones from the conventional spinup. Shown are: coefficient of determination (R2), relative bias (rs), normalized root mean squared error by the difference between maximum and minimum (NRMSE).
+performance of the ML training. The computational time required for the LOOCV is large compared to other tasks. Thus, it is envisioned to be performed in parallel to the main task. Plots fo are producte for all state variables at the leve of PFTs ('Eval_all_*'). Depending on the model version this includes separates files for biomass, soil, litter, som, and microbes. In case of the developer mode [0]: the plots show the correlation between ML predicted state variables on PFT and the ones from the conventional spinup. Shown are: coefficient of determination (R2), relative bias (rs), normalized root mean squared error by the difference between maximum and minimum (NRMSE). 
 ![Eval_all_loocv_biomassCpool_trim](https://user-images.githubusercontent.com/79981678/197768665-c868f95b-d7f4-4a2f-a942-d37c9e509596.png)
 
  

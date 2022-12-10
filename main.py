@@ -126,6 +126,13 @@ if '2' in itask:
   check.display('task 2: done',logfile)
 if '3' in itask:
   #
+  # build aligned forcing and aligned restart files
+  check.check_file(resultpath+'IDx.npy',logfile)
+  IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
+  forcing.write(varlist,resultpath,IDx)
+  check.display('task 3: done',logfile)
+if '4' in itask:
+  #
   # ML extrapolation
 
   adict=locals()
@@ -212,8 +219,8 @@ if '3' in itask:
       restnc.close()     
     
     
-  check.display('task 3: done',logfile)
-if '4' in itask:
+  check.display('task 4: done',logfile)
+if '5' in itask:
   Yvar=varlist['resp']['variables']
   for ipool in Yvar.keys():
    # if ipool!="litter":continue
@@ -231,14 +238,4 @@ if '4' in itask:
     if loocv==1:
       eval_plot_loocv_un.plot_metric(resultpath,npfts,ipool,subLabel,dims,sect_n,subpool_name)
     else:continue
-  check.display('task 4: done',logfile)
-  
-if '5' in itask:
-  #
-  # build aligned forcing and aligned restart files
-  check.check_file(resultpath+'IDx.npy',logfile)
-  IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
-  forcing.write(varlist,resultpath,IDx)
-  check.display('task 5 forcing and restart files have been written ',logfile)
   check.display('task 5: done',logfile)
-  

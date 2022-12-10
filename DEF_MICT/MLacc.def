@@ -1,6 +1,6 @@
   # config[1] : logfile
 log11.MLacc_MICT
-  # config[3] : task (1=test clustering/100=plot clustering test results/2=clustering/200=plot clustering results/3=ML and /4=plotting the results)
+  # config[3] : task (1=test clustering/2=clustering/3=compress forcing/4=ML/5=evaluation)
 1,2,3,4
   # config[5] : execution directory
 /home/surface4/jchang/SPINacc_Test/MICT_Test3/

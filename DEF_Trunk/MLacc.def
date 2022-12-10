@@ -1,6 +1,6 @@
   # config[1] : logfile
 log.MLacc_Trunk
-  # config[3] : task (1=test clustering/100=plot clustering test results/2=clustering/200=plot clustering results/3=ML and plotting the results)
+  # config[3] : task (1=test clustering/2=clustering/3=compress forcing/4=ML/5=evaluation)
 4
   # config[5] : execution directory
 /home/orchidee04/ysun/MLacc_Python_Tool/Trunk_res/

@@ -1,6 +1,6 @@
   # config[1] : logfile
 log.MLacc_CNP2
-  # config[3] : task (1=test clustering/2=clustering/3=ML/4=evaluation)
+  # config[3] : task (1=test clustering/2=clustering/3=compress forcing/4=ML/5=evaluation)
 5
   # config[5] : execution directory
 /home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2

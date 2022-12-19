@@ -157,8 +157,9 @@ if '4' in itask:
   labx=['Y']+var_pred_name+['pft']
   
   # copy the restart file to be modified 
-  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
-  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+  targetfile=varlist['resp']['targetfile'] if 'targetfile' in varlist['resp'] else varlist['resp']['sourcefile']
+  restfile=resultpath+targetfile.split('/')[-1]
+  os.system('cp -f %s %s'%(targetfile,restfile))
 
   for ipool in Yvar.keys():
     #if ipool!="litter":continue

@@ -51,6 +51,9 @@ def evaluation_map(Global_Predicted_Y_map,Y_map,ipft,PFTmask):
   f_SDSD=SDSD/MSE
   f_LSC=LSC/MSE
   reMSE=(1/len(comp_Y[:,0]))*np.sum((comp_Y[:,1]-comp_Y[:,0])**2)/np.sum((comp_Y[:,0]-np.mean(comp_Y[:,0]))**2)
-  slope, intercept, r_value, p_value, std_err = stats.linregress(comp_Y[:,0],comp_Y[:,1])
+  if comp_Y[:,0].min() == comp_Y[:,0].max(): # exception if all x values are identical
+    slope=1
+  else:
+    slope, intercept, r_value, p_value, std_err = stats.linregress(comp_Y[:,0],comp_Y[:,1])
 
   return R2, RMSE, slope, reMSE, dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC

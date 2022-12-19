@@ -26,8 +26,12 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
   pool_arr=np.full(len(auxil.Nlat),np.nan)
   pool_map=np.squeeze(ivar)#[tuple(ind-1)] # all indices start from 1, but python loop starts from 0
   pool_map[pool_map==1e20]=np.nan
-  for cc in range(len(auxil.Nlat)):
-    pool_arr[cc]=pool_map[auxil.Nlat[cc],auxil.Nlon[cc]]
+  if 'format' in varlist['resp'] and varlist['resp']['format']=='compressed':
+    for cc in range(len(auxil.Nlat)):
+      pool_arr[cc]=pool_map.flatten()[cc]
+  else:
+    for cc in range(len(auxil.Nlat)):
+      pool_arr[cc]=pool_map[auxil.Nlat[cc],auxil.Nlon[cc]]
   # end extract Y 
   extracted_Y=np.reshape(pool_arr,(len(auxil.Nlat),1))
   extr_all=np.concatenate((extracted_Y,extr_var,pft_ny),axis=1)
@@ -98,6 +102,7 @@ def MLmap(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool,ipft,log
     
     restvar[:]=Pred_Y_out[:]
     
+  if 'format' in varlist['resp'] and varlist['resp']['format']=='compressed': return
   
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
@@ -182,8 +187,12 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
   pool_arr=np.full(len(auxil.Nlat),np.nan)
   pool_map=np.squeeze(ivar)[tuple(ind-1)] # all indices start from 1, but python loop starts from 0
   pool_map[pool_map==1e20]=np.nan
-  for cc in range(len(auxil.Nlat)):
-    pool_arr[cc]=pool_map[auxil.Nlat[cc],auxil.Nlon[cc]]
+  if 'format' in varlist['resp'] and varlist['resp']['format']=='compressed':
+    for cc in range(len(auxil.Nlat)):
+      pool_arr[cc]=pool_map.flatten()[cc]
+  else:
+    for cc in range(len(auxil.Nlat)):
+      pool_arr[cc]=pool_map[auxil.Nlat[cc],auxil.Nlon[cc]]
   # end extract Y 
   extracted_Y=np.reshape(pool_arr,(len(auxil.Nlat),1))
   extr_all=np.concatenate((extracted_Y,extr_var,pft_ny),axis=1)
@@ -255,7 +264,9 @@ def MLmap_multidim(packdata,auxil,ivar,PFT_mask,PFT_mask_lai,var_pred_name,ipool
 #    restvar[:,ind-1,:,:]=Pred_Y_out[:]
     command='restvar[...,'+'%s,'*len(ind)+':,:]=Pred_Y_out[:]'
     exec(command%tuple(ind-1))
-   
+  
+  if 'format' in varlist['resp'] and varlist['resp']['format']=='compressed': return
+  
   if (PFT_mask[ipft-1]>0).any():
     # evaluation
     R2,RMSE,slope,reMSE,dNRMSE,sNRMSE,iNRMSE,f_SB,f_SDSD,f_LSC = MLeval.evaluation_map(Global_Predicted_Y_map,pool_map,ipft,PFT_mask)

@@ -42,7 +42,7 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 
 * Task 3 generates compressed forcing files for ORCHIDEE which only contain information for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid which ensures high computational efficiency for the pixel level simulations with ORCHIDEE. The forcing files which need to be processed must be listed in varlist.json under "sourcepath" for climate and "restart" for others (e.g. nutrient inputs).These files are compatible with ORCHIDEE and can be directly used in ORCHIDDEE simulations (e.g. using your COMP/X.cards in the libIGCM simulation configuration folder).
 
-* Task 4 performs the ML training on results from ORCHIDEE simulation using the compressed forcing, extrapolation to a global grid and writing the state variables into global restart files for ORCHIDEE.
+* Task 4 performs the ML training on results from ORCHIDEE simulation using the compressed forcing (production mode) or global forcing (debug mode), extrapolation to a global grid and writing the state variables into global restart files for ORCHIDEE. In debug mode Task 4 also performs the evaluation of ML training outputs vs real model outputs.
 
 * Task 5 [optional] visualizes the performance of the ML in task 3. Two kinds of evaluations
 are available: (1) the evaluation for global pixels (config[15]=0)  (developer mode; not described in the following) ; 
@@ -65,7 +65,7 @@ You need to modify where the data for ML training is located using sourcepath & 
 	* For var2 - var4, if they are missing in *_rest.nc (e.g. N and P deposition), please use the variables in *_stomate_history.nc.	
 * -PFTmask: max PFT cover fractions, which are used to mask grids with extreme low PFT fractions. This information is usually found in the *_stomate_history.nc (VEGET_COV_MAX). In case that cover fractions are kept constant in time (i.e. DYNVEG=no), you can use any year of the initial short simulation for the whole domain. In case you have dynamic cover fractions: not supported (yet).
 
-* -resp: response variables, i.e. the equlibrium pools from the traditional spin-up. Ultimately, it should specify the conventional spinup for part of the spatial domain. At the moment we use simulation for the whole spatial domain. They are usually in the *_stomate_history.nc
+* -resp: response variables, i.e. the equlibrium pools from the traditional spin-up done over part of the spatial domain (production mode) or globally (debug mode). The field 'format' defines the format of the source restart file provided: "compressed" (production mode) or "global" (debug mode). In production mode the 'sourcefile' should specify the path to the stomate restart file obtained with compressed forcing (spinup over selected pixels), the 'targetfile' should specify the path to the stomate restart file from any (even short) global run (it will be used to fill the fields with trained/predicted data). In debug mode 'targetfile' can be dropped (then 'sourcefile' is used for both training and filling with predicted data).
 
 You can find the detailed information for each variable in the Trunk and CNP examples: DEF_Trunk/varlist.json, DEF_CNP/varlist.json 
 You can create your varlist.json according to your case. 

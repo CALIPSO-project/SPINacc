@@ -64,7 +64,9 @@
   },
   "resp":
   {
-    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
+    "format": "compressed",
+    "sourcefile":"/home/surface7/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.allign3/SRF/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.allign3_99901231_sechiba_rest.nc",
+    "targetfile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
     "missing_value":1e20,
     "pool_name_som":["Active","ChemProtect","PhysProtect"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],

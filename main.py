@@ -160,7 +160,9 @@ if '4' in itask:
   targetfile=varlist['resp']['targetfile'] if 'targetfile' in varlist['resp'] else varlist['resp']['sourcefile']
   restfile=resultpath+targetfile.split('/')[-1]
   os.system('cp -f %s %s'%(targetfile,restfile))
-
+  # add rights to manipulate file:
+  os.chmod(restfile, 0666)
+  
   for ipool in Yvar.keys():
     #if ipool!="litter":continue
     check.display('processing %s...'%ipool,logfile)

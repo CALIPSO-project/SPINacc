@@ -5,8 +5,7 @@ Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedu
 
 Documentation of aims, concepts, workflows are described in Sun et al. (submitted). A preliminary version is available here: https://sharebox.lsce.ipsl.fr/index.php/s/kZB5zJG9PPONozD (see 3 files starting with MS_Acc_Sun2022 )
 
-![MLfig1](https://user-images.githubusercontent.com/79981678/197766383-b37d8b34-54e0-4c89-bb3f-300bcaf444e1.png)
-
+![202208_ML_manuscript_figures_v1 0 pptx (2)](https://user-images.githubusercontent.com/79981678/209093236-1601237a-7959-42b6-b6f1-306be1bc0b44.png)
 
 ## CONTENT
 The SPINacc package includes:
@@ -70,10 +69,16 @@ You need to modify where the data for ML training is located using sourcepath & 
 You can find the detailed information for each variable in the Trunk and CNP examples: DEF_Trunk/varlist.json, DEF_CNP/varlist.json 
 You can create your varlist.json according to your case. 
 
+## INFORMATION ON THE ORCHIDEE RUNS:
+* PRE-RUN simulation (needed for task 1): This is conventional global ORCHIDEE spinup simulation. You can use your usual configuration. If you have an analytic spinup available, the duration should equal the lenght till after the first spin up step; otherwise we use 300 years (not optimized lenght). This run needs to report the following variables (mind the names might be different in your ORC version):
+VEGET_COV_MAX, NPP, LAI and (for CNP only) soil_orders,soil_shield, NHX_DEPOSITION,NOY_DEPOSITION, and P_DEPOSITION  in stomate history. All time invariant boundary conditions variables of your ORCHIDEE version should be written in the restart files (e.g. clay_frac,silt_frac,bulk,soil_ph for CNP). 
+
+* SITE-LEVEL simulation (needed for task 4): This is a ORCHIDEE spinup simulation which makes use of the compressed forcing produced by the ML tool. You can use a PRE-RUN type simulation configuration as template and replace all input files with the compressed ones. These include climate forcing files, driver/stomate/sechiba restart files, and nutrient input files (for ORCHIDEE-CNP). These files are in the execution directory of the tool after the task 3.
+* RE-RUN Simulation: This is a conventional global ORCHIDEE spinup simulation restarting from the stomate restart file ( you find in the ML tool execution dir after task 4) from the ML tool, and sechiba and driver restart files from the PRE-RUN. This runs aims at reducing biases in the ML predicted steady state and it can be analyzed to diagnose to what extent a steady state has been achieved or not.
 
 ## INFORMATION FOR CODE DEVELOPERS:
 
-### SIMULATIONS NEEDED TO TEST THE TOOL
+### SIMULATIONS NEEDED TO TEST THE TOO
 At current DEV state: You need the output and restart files from a conventional spinup simulation with ORCHIDEE. At this DEV stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium to benchmark the ML based predictions. 
 
 Specifically, we need information from early during the spinup (transient phase, e.g. for ORCHIDEE trunk we use the year before the first analytical spinup up step, for ORCHIDEE-CNP which has not analytical spinup we use year 300) and from a year when the pools have approached a steady-state (e.g. 99% of pixels have absolute drifts in total C of less than 1 g per m2 per year).

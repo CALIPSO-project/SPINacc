@@ -130,10 +130,15 @@ def readvar(packdata,auxil,varlist,config,logfile):
         rename=vname
       for ivar in range(len(vname)):
         check.display('reading %s...'%vname[ivar],logfile)
-        if (vname[ivar]=='LAI' or vname[ivar]=='NPP') and len(f[vname[ivar]].shape)>3:
+        if (vname[ivar]=='LAI' or vname[ivar]=='NPP' or vname[ivar]=='P_DEPOSITION') and len(f[vname[ivar]].shape)>3:
           # one can modify here to use annual mean
           check.verbose('warning: using %s at the last year'%vname[ivar],logfile)
           da=np.squeeze(f[vname[ivar]][-1])
+        # N deposition fluxes miss PFT dimension
+        elif (vname[ivar]=='NOY_DEPOSITION' or vname[ivar]=='NHX_DEPOSITION' ) and len(f[vname[ivar]].shape)>2:
+          # one can modify here to use annual mean
+          check.verbose('warning: using %s at the last year'%vname[ivar],logfile)
+          da=np.squeeze(f[vname[ivar]][-1])         
         else:
           da=np.squeeze(f[vname[ivar]][:])
         if 'missing_value' in predvar[ipred].keys():

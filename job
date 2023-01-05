@@ -1,16 +1,33 @@
 #PBS -eo
 #PBS -S /bin/tcsh
 
+# Set the dirpython environment variable to the path '/home/surface3/dgoll/SPINUP_ML/20220719/SPINacc'
 setenv dirpython '/home/surface3/dgoll/SPINUP_ML/20220719/SPINacc'
+
+# Set the dirdef environment variable to the string 'DEF_CNP2/' 
 setenv dirdef 'DEF_CNP2/'
 
+# Increase the maximum number of file descriptors that the process can open
 limit descriptors 10000
 
+# Load the 'modules' shell library
 source /etc/profile.d/modules.sh
+
+# Unload the python module
 module unload python
+
+# Set the PYTHONPATH environment variable to the path $dirpython/Tools
 setenv PYTHONPATH $dirpython/Tools
+
+# Load the python/3 module
 module load python/3
+
+# Print the current system information
 uname -a
 
+# Change the current working directory to $dirpython
 cd $dirpython
+
+# Run the Python script 'main.py' in the $dirpython directory with the argument ${dirdef}
+# If the script exits with a non-zero exit code, exit the script
 python3 main.py ${dirdef} || exit

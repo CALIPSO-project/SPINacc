@@ -396,7 +396,10 @@
   },
   "restart": ["/home/surface3/hzhang/NPdep/Ndep_Pdep_Trendy2019_final_input_halfdeg_1700.nc",
               "/home/surface3/hzhang/NPdep/NMIP_NP_agricultural_input_halfdeg_1700.nc",
-              "/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_driver_rest.nc",
-              "/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_sechiba_rest.nc",
-              "/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_stomate_rest.nc"]
+              "/home/surface7/jchang/input_cnp/CNP_files/rev01/lithology.nc",
+              "/home/surface7/jchang/input_cnp/CNP_files/rev01/soils_param.nc",
+              "/home/surface7/jchang/input_cnp/CNP_files/rev01/USDA_SoilSuborder.nc",
+              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/OOL/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_driver_rest.nc",
+              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/SRF/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_sechiba_rest.nc",
+              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_stomate_rest.nc"]
 }  

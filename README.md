@@ -42,7 +42,7 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 
 * Task 3 generates compressed forcing files for ORCHIDEE which only contain information for the selected pixels. The data is aligned uniformly across the globe and stored on a new global pseudo-grid which ensures high computational efficiency for the pixel level simulations with ORCHIDEE. The forcing files which need to be processed must be listed in varlist.json under "sourcepath" for climate and "restart" for others (e.g. nutrient inputs).These files are compatible with ORCHIDEE and can be directly used in ORCHIDDEE simulations (e.g. using your COMP/X.cards in the libIGCM simulation configuration folder).
 
-* Task 4 performs the ML training on results from ORCHIDEE simulation using the compressed forcing (production mode) or global forcing (debug mode), extrapolation to a global grid and writing the state variables into global restart files for ORCHIDEE. In debug mode Task 4 also performs the evaluation of ML training outputs vs real model outputs.
+* Task 4 performs the ML training on results from ORCHIDEE simulation using the compressed forcing (production mode: resp-format=compressed) or global forcing (debug mode: resp-format=global), extrapolation to a global grid and writing the state variables into global restart files for ORCHIDEE. In debug mode Task 4 also performs the evaluation of ML training outputs vs real model outputs.
 
 * Task 5 [optional] visualizes the performance of the ML in task 3. Two kinds of evaluations
 are available: (1) the evaluation for global pixels (config[15]=0)  (developer mode; not described in the following) ; 

@@ -26,13 +26,16 @@ def training_BAT(XY_train,logfile,loocv):
   YY=XY_train.iloc[:,0].values
   #labels=np.zeros(shape=(len(YY),1))
   
-  # only one value
+  # if length of unique target is one
   if len(np.unique(YY))==1:
+    # return a set of default values and an empty TreeEnsemble
     TreeEns=[];predY=YY;loocv_R2=np.nan;loocv_reMSE=np.nan
     loocv_slope=np.nan;loocv_dNRMSE=np.nan;loocv_sNRMSE=np.nan
     loocv_iNRMSE=np.nan;loocv_f_SB=np.nan;loocv_f_SDSD=np.nan;loocv_f_LSC=np.nan;
     return TreeEns, predY, loocv_R2, loocv_reMSE, loocv_slope, loocv_dNRMSE, loocv_sNRMSE, loocv_iNRMSE, loocv_f_SB, loocv_f_SDSD, loocv_f_LSC
-
+  
+  # If the length of unique target variable is not 1, 
+  # run the KMeans algorithm to find the cluster centers, and resample the data
   try:
     mod=KMeans(n_clusters=3)
     lab=mod.fit_predict(np.reshape(YY,(-1,1)))
@@ -77,6 +80,7 @@ def training_BAT(XY_train,logfile,loocv):
   TreeEns=bag.fit(Xtrain,Ytrain,sample_weight=SW) #sample_weight=SW
   #predict
   predY= bag.predict(XX)
+  
   #leave one out cross validations
   loo = LeaveOneOut()
   ytests = []

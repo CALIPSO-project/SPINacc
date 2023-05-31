@@ -138,7 +138,11 @@ def readvar(packdata,auxil,varlist,config,logfile):
         elif (vname[ivar]=='NOY_DEPOSITION' or vname[ivar]=='NHX_DEPOSITION' ) and len(f[vname[ivar]].shape)>2:
           # one can modify here to use annual mean
           check.verbose('warning: using %s at the last year'%vname[ivar],logfile)
-          da=np.squeeze(f[vname[ivar]][-1])         
+          da=np.squeeze(f[vname[ivar]][-1])    
+        elif (vname[ivar]=='clayfraction') and len(f[vname[ivar]].shape)>2:
+            #if clayfraction is discretized vertically, use 1st soil layer   
+            check.verbose('warning: using only the first soil layer value for %s'%vname[ivar],logfile)
+            da=np.squeeze(f[vname[ivar]][0])          
         else:
           da=np.squeeze(f[vname[ivar]][:])
         if 'missing_value' in predvar[ipred].keys():

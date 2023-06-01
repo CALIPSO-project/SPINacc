@@ -201,13 +201,9 @@ if '4' in itask:
     fzz.close()
     
   #  # Fill the redundant variables in restart file:
+  additional_vars=varlist['resp']['additional_vars']
   
-  # WARNING This is for CNP version (this vars should be externalized)
-  vars=['npp_daily','npp_week','gpp_week','maxgppweek_lastyear', 'gpp_daily']
-  # WARNING This is for CNP version (should be externalized)
-  
-  
-  for var in vars:
+  for var in additional_vars:
       check.display('processing %s...'%var,logfile)
       restnc=Dataset(restfile,'a')
       # all variables derive from npp longterm prediction

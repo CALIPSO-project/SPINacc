@@ -73,6 +73,7 @@
     "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE","MetaAB","MetaBE"],
     "pool_name_microbe":["RmicrAB","RmicrBE","KmicrAB","KmicrBE"],
     "sub_item":["Cpool","Npool","Ppool"],
+    "additional_vars":["npp_daily","npp_week","gpp_week","maxgppweek_lastyear", "gpp_daily"],
     "cnp":3,
     "npfts":14,
     "dim":

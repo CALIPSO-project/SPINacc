@@ -200,23 +200,28 @@ if '4' in itask:
     fyy.close()
     fzz.close()
     
-  #  # Fill the redundant variables in restart file:
-  additional_vars=varlist['resp']['additional_vars']
+  # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE  
   
-  for var in additional_vars:
-      check.display('processing %s...'%var,logfile)
-      restnc=Dataset(restfile,'a')
-      # all variables derive from npp longterm prediction
-      restvar=restnc['npp_longterm']
-      restvar1=restnc[var]
+  if 'additional_vars' not in varlist['resp']:
+    # Handle the case where 'additional_vars' is not present
+    print("We only modify true state variables of ORCHIDEE")  
+  else:
+    additional_vars = varlist['resp']['additional_vars']
 
-      if var == 'gpp_week' or var == 'maxgppweek_lastyear' or var == 'gpp_daily':
-        tmpvar=restvar[:]*2.
-      else:
-        tmpvar=restvar[:]
+    for var in additional_vars:
+        check.display('processing %s...'%var,logfile)
+        restnc=Dataset(restfile,'a')
+        # all variables derive from npp longterm prediction
+        restvar=restnc['npp_longterm']
+        restvar1=restnc[var]
 
-      restvar1[:]=tmpvar
-      restnc.close()     
+        if var == 'gpp_week' or var == 'maxgppweek_lastyear' or var == 'gpp_daily':
+          tmpvar=restvar[:]*2.
+        else:
+          tmpvar=restvar[:]
+
+        restvar1[:]=tmpvar
+        restnc.close()     
     
     
   check.display('task 4: done',logfile)

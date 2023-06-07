@@ -55,8 +55,8 @@ def write(varlist,resultpath,IDx):
           ncout.variables[var][:, idx//nlon, idx%nlon] = nc.variables[var][:, iland]
       elif var == "nav_lat": ncout.variables[var][:] = pnavlat
       elif var == "nav_lon": ncout.variables[var][:] = pnavlon
-      elif var == "lat": ncout.variables[var][:] = plat
-      elif var == "lon": ncout.variables[var][:] = plon
+      elif var in ["lat", "latitude", "y"]: ncout.variables[var][:] = plat
+      elif var in ["lon", "longitude", "x"]: ncout.variables[var][:] = plon
       elif var == "contfrac": ncout.variables[var][:] = 1
       else: ncout.variables[var][:] = nc.variables[var][:]
     ncout.close()

@@ -1,0 +1,10 @@
+semap==1.2.1
+imblearn==0.0
+matplotlib==3.2.2
+netCDF4==1.5.3
+netCDF4==1.6.5
+numpy==1.18.5
+pandas==1.0.5
+scikit_learn==0.23.1
+scipy==1.5.0
+torch==2.1.1

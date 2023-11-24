@@ -16,6 +16,8 @@
 """
 
 from Tools import *
+#added line
+import numpy as np
 
 # print Python version 
 print(sys.version)
@@ -75,6 +77,10 @@ auxil.K=int(config[9].strip())
 # Define random seed
 iseed=int(config[13].strip())
 random.seed(iseed)
+
+# added line, randomize with np also because Cluster_all 
+np.random.seed(iseed)
+
 check.display('random seed = %i'%iseed,logfile)
 # Define do leave-one-out crosee validation (loocv=1) or not (loocv=0)
 loocv=int(config[15].strip())
@@ -83,6 +89,8 @@ if '1' in itask:
   #
   # test clustering
   dis_all=Cluster.Cluster_test(packdata,auxil,varlist,logfile) 
+  #added line 
+  np.random.seed(iseed)
   dis_all.dump(resultpath+'dist_all.npy')
   check.display('test clustering done!\nResults have been stored as dist_all.npy',logfile)
 

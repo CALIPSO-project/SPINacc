@@ -1,6 +1,7 @@
 import netCDF4 as nc
 
 # -------------------------------variables----------------------------------------------------
+from config import reference_path, test_path, output_file
 # Define the base file path
 #reference_path='/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR_2/'
 #test_path='/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR/'

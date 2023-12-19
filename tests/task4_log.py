@@ -35,7 +35,7 @@ def compare_files(dir1, dir2, output_file):
 if __name__ == "__main__":
     directory1 = reference_path
     directory2 = test_path
-    output_file_path = '/home/surface10/mrasolon/tests/tests_results.txt'
+    output_file_path = output_file
 
     compare_files(directory1, directory2, output_file_path)
 

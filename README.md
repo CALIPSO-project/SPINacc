@@ -26,25 +26,25 @@ The SPINacc package includes:
 
 Here are the steps to launch the different tasks of this repository (and the reproducibility tests associated):
 
-* Download the code: git clone git@github.com:dsgoll123/SPINacc.git
-* cd SPINacc
-* If you want to stay on the main code skip this point, otherwise do : git checkout your_branch
-* Create an execution directory: mkdir EXE_DIR
-* Choose the test you want to launch. In DEF_TRUNK/MLacc.def: in config[3] section put 1 (for test 1), in config[7] section put 0,  in config[5] section put your path to your EXE_DIR
-* In job : setenv dirpython '/your/path/to/SPINacc/' and setenv dirdef 'DEF_Trunk/'
-* Download the reference produced files files for reprodcibility on ZENODO (here: link) to '/your/path/to/reference/'
-* In tests/config.py you have to modify: test_path=/your/path/to/SPINacc/EXE_DIR/
-* Also in tests/config.py you have to modify: reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/' to reference_path='/your/path/to/reference/'
-* Then launch via qsub -q short job, for test 1
-* For next tests (2, 3, 4 and 5) you just need to modify the config[3] and config[7] sections in DEF_TRUNK/MLacc.def 
-* For tasks 3 and 4, it is better to use qsub -q medium job
+* Download the code: **git clone git@github.com:dsgoll123/SPINacc.git**
+* __cd SPINacc__
+* If you want to stay on the main code skip this point, otherwise do : __git checkout your_branch__
+* Create an execution directory: __mkdir EXE_DIR__
+* Choose the test you want to launch. In **DEF_TRUNK/MLacc.def**: in config[3] section put **1** (for __test 1__), in config[7] section put 0,  in config[5] section put your path to your EXE_DIR
+* In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
+* Download the reference produced files files for reprodcibility on ZENODO (here: link) to __'/your/path/to/reference/'__
+* In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__
+* Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__
+* Then launch via **qsub -q short job**, for test 1
+* For next tests (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** 
+* For tasks 3 and 4, it is better to use **qsub -q medium job**
 * Launching tasks in chain (e.g. "1, 2" or "3, 4, 5") will be a possibility soon 
-* The results of the tasks are located in your EXE_DIR
-* The results of reproducibility tests are stored in EXE_DIR/tests_results.txt
+* The results of the tasks are located in your **EXE_DIR**
+* The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt**
 
 
-### The individual tasks of the tool
-The detail of each tasks of the tool is provided in docs/documentation.txt
+### OVERVIEW OF THE INDIVIDUAL TASKS OF THE TOOL:
+(The detail of each tasks of the tool is provided in docs/documentation.txt)
 
 The different tasks are (the number of tasks does not correspond to sequence - YET):
 * Task 1 [optional]: Evaluates the impact of varying the number of K-means clusters on model performance, setting a default of 4 clusters and producing a ‘dist_all.png’ graph.

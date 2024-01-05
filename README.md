@@ -30,9 +30,9 @@ Here are the steps to launch the different tasks of this repository (and the rep
 * cd SPINacc
 * If you want to stay on the main code skip this point, otherwise do : git checkout your_branch
 * Create an execution directory: mkdir EXE_DIR
-* Chose the test you want to launch. In DEF_TRUNK/MLacc.def: in config[3] section put 1 (for test 1), in config[7] section put 0,  in config[5] section put your path to your EXE_DIR
+* Choose the test you want to launch. In DEF_TRUNK/MLacc.def: in config[3] section put 1 (for test 1), in config[7] section put 0,  in config[5] section put your path to your EXE_DIR
 * In job : setenv dirpython '/your/path/to/SPINacc/' and setenv dirdef 'DEF_Trunk/'
-* Download the reference produced files files for reprodcibility on ZENODO to '/your/path/to/reference/'
+* Download the reference produced files files for reprodcibility on ZENODO (here: link) to '/your/path/to/reference/'
 * In tests/config.py you have to modify: test_path=/your/path/to/SPINacc/EXE_DIR/
 * Also in tests/config.py you have to modify: reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/' to reference_path='/your/path/to/reference/'
 * Then launch via qsub -q short job, for test 1
@@ -50,7 +50,7 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 * Task 1 [optional]: Evaluates the impact of varying the number of K-means clusters on model performance, setting a default of 4 clusters and producing a ‘dist_all.png’ graph.
 ![dist_all](https://user-images.githubusercontent.com/79981678/197764400-deaac192-a26b-4f38-8eb1-6a0b50da65c9.png)
 
-* Task 2 performs the clustering using a K mean algorithm and saves the information on the location of the selected pixels (files starting with 'ID'). The location of the selected pixel (red) for a given PFT and all pixel with a cover fraction exceeding 'cluster_thres' [defined in varlist.json] (grey) are plotted in the figures 'ClustRes_PFT*.png'. Example of PFT2 is shown here:
+* Task 2 performs the clustering using a K mean algorithm and saves the information on the location of the selected pixels (files starting with 'ID'). The location of the selected pixel (red) for a given PFT and all pixel with a cover fraction exceeding 'cluster_thres' [defined in varlist.json] (grey) are plotted in the figures 'ClustRes_PFT**.png'. Example of PFT2 is shown here:
 ![ClustRes_PFT2_trimed](https://user-images.githubusercontent.com/79981678/197765127-05ef8271-79a0-4775-803c-a1759c413376.png)
 
 * Task 3: Creates compressed forcing files for ORCHIDEE, containing data for selected pixels only, aligned on a global pseudo-grid for efficient pixel-level simulations, with file specifications listed in varlist.json.
@@ -62,7 +62,6 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 
 
 ### REPRODUCIBILITY TESTS : 
-Each tasks are tested. The reference files for comparison are in this Zenodo link: 
 The possibility to choose to run (or not) reproducibility tests is coming soon.
 
 

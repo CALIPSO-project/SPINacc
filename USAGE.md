@@ -7,32 +7,20 @@ Documentation of aims, concepts, workflows are described in Sun et al.202 [open-
 
 ![202208_ML_manuscript_figures_v1 0 pptx (2)](https://user-images.githubusercontent.com/79981678/209093236-1601237a-7959-42b6-b6f1-306be1bc0b44.png)
 
-## CONTENT
-The SPINacc package includes:
-* job - the job file for a bash environment
-* job_tcsh - the job file for a tcsh environment
-* main.py - the main python module
-* Tools/* - folder with the other python modules
-* DEF_*/  - folders containting the configuration files for each of the supported ORCHIDEE versions
-* AuxilaryTools/SteadyState_checker.py - tool to assess the state of equilibration in ORCHIDEE simulations
 
- 
 ## INFORMATION FOR USERS:
-### HOW TO RUN THE CODE:
+### MORE INFOS ON SOME OF THE TASKS OF THE TOOL:
 
-This is a step by step description how to use the tool.
+* For task 2: specify in the job file where the code of the tool is located using the variable dirpython (L4), and sfolders containting the configuration files for your version of ORCHIDEE using the variable dirdef. The supported model versions are CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.2, and CNP = CNP v1.2 (CNP with CENTURY soil), MICT = MICT [incomplete!] ). 
 
-* First: copy the code from github to your own machine ( code is tested for LSCE's obelix ). Please see the github information on how to download code.
-* Second: specify in the job file where the code of the tool is located using the variable dirpython (L4), and sfolders containting the configuration files for your version of ORCHIDEE using the variable dirdef. The supported model versions are CNP2 = CNP v1.3 (CNP with MIMICS soil), Trunk = Trunk 2.2, and CNP = CNP v1.2 (CNP with CENTURY soil), MICT = MICT [incomplete!] ). 
-
-* Third: adjust the files in configuration folder: i.e. the type of task to be performed (which are described below) as well as the specifications of your ORCHIDEE simulation. The tool can run a single task or a sequence of tasks.
+* For task 3: adjust the files in configuration folder: i.e. the type of task to be performed (which are described below) as well as the specifications of your ORCHIDEE simulation. The tool can run a single task or a sequence of tasks.
 	* MLacc.def defines the task(s) to do and the execution directory; 
 	* varlist.json defines the specification of the input data (ORCHIDEE training data, ORCHIDEE forcing data): e.g. resolution, state variables to predict, etc.
-* Forth: execute the tool by (for obelix): qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
-* Fifth: the output of the tool is stored in the folder specified in MLacc.def under 'config[5] : execution directory'. The progress of the tool is writen in the file specifed in MLacc.def under 'config[1] : logfile'
+* For the task 4: execute the tool by (for obelix): qsub -q long job   / qsub -q long job_tcsh (dependig on your environmnet)
+* For the task 5: the output of the tool is stored in the folder specified in MLacc.def under 'config[5] : execution directory'. The progress of the tool is writen in the file specifed in MLacc.def under 'config[1] : logfile'
 
+### DETAILED INDIVIDUAL TASKS OF THE TOOL: 
 
-### The individual tasks of the tool
 The different tasks are (the number of tasks does not correspond to sequence - YET):
 * Task 1 [optional]: Provides information on the expected gain in model performance by incrasing the number of (k-mean) clusters.  The optimal number of clusters (Ks) is a tradeoff between computation demand and ML performance; and Ks can vary according to your model and the simulation setup. The default number is 4 and is set via  'config[9] : number of K for final Kmean algorithm' in MLacc.def. This task produces the figure ‘dist_all.png’ which shows the sum of distance for different numbers of clusters, i.e. using different Ks. The default maximum number of Ks being tested is 9, you can set higher values if needed using config[11] in MLacc.def.
 ![dist_all](https://user-images.githubusercontent.com/79981678/197764400-deaac192-a26b-4f38-8eb1-6a0b50da65c9.png)
@@ -79,7 +67,7 @@ VEGET_COV_MAX, NPP, LAI and (for CNP only) soil_orders,soil_shield, NHX_DEPOSITI
 
 ## INFORMATION FOR CODE DEVELOPERS:
 
-### SIMULATIONS NEEDED TO TEST THE TOO
+### SIMULATIONS NEEDED TO TEST THE TOOL:
 At current DEV state: You need the output and restart files from a conventional spinup simulation with ORCHIDEE. At this DEV stage, we need the whole domain as it facilitates the validation of the tool to have the 'true' equilibrium to benchmark the ML based predictions. 
 
 Specifically, we need information from early during the spinup (transient phase, e.g. for ORCHIDEE trunk we use the year before the first analytical spinup up step, for ORCHIDEE-CNP which has not analytical spinup we use year 300) and from a year when the pools have approached a steady-state (e.g. 99% of pixels have absolute drifts in total C of less than 1 g per m2 per year).
@@ -92,17 +80,6 @@ From the stable state, we extract
 * all state variables to train the machine learning allgorithm
 
 MIND: The exact simulation lenghts needed to reach steady-state depends on the model version, and steady-state criteria.
-
-### HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps: 
-* First, "git add" to add all the files that you changed. It is recommended to only add files you have changed and make sure you updated with any changes updated to github since you downloaded your copies.
-* Second, "git commit" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to). 
-* Third, "git push" to push them to the master repository (here). 
-This might help: https://git-scm.com/docs/gittutorial
-
-### Other USEFUL COMMANDS: 
-* "git diff" will show you all the changes you have made. 
-* "git pull" will update all your local files with what exists in the master code (here). 
-* "git status" will show you what files have been modified.
 
 
 

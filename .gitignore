@@ -1,0 +1,17 @@
+#Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Log files
+log*
+
+
+# Jobs
+job.o*
+
+# Execution directories 
+EXE_DIR
+EXE_DIR* 
+
+#others
+Tools/__pycache__/*
+o

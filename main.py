@@ -16,7 +16,9 @@
 """
 
 from Tools import *
-
+#added line
+import numpy as np
+import subprocess
 # print Python version 
 print(sys.version)
 
@@ -75,14 +77,27 @@ auxil.K=int(config[9].strip())
 # Define random seed
 iseed=int(config[13].strip())
 random.seed(iseed)
+
+# added line, randomize with np also because Cluster_all 
+np.random.seed(iseed)
+
 check.display('random seed = %i'%iseed,logfile)
 # Define do leave-one-out crosee validation (loocv=1) or not (loocv=0)
 loocv=int(config[15].strip())
+
+# Read whether to run reproducibility tests for each task
+run_repro_test_task1 = int(config[17].strip())
+run_repro_test_task2 = int(config[19].strip())
+run_repro_test_task3 = int(config[21].strip())
+run_repro_test_task4 = int(config[23].strip())
+
 
 if '1' in itask:
   #
   # test clustering
   dis_all=Cluster.Cluster_test(packdata,auxil,varlist,logfile) 
+  #added line 
+  np.random.seed(iseed)
   dis_all.dump(resultpath+'dist_all.npy')
   check.display('test clustering done!\nResults have been stored as dist_all.npy',logfile)
 
@@ -98,6 +113,10 @@ if '1' in itask:
   fig.savefig(resultpath+'dist_all.png') 
   plt.close('all')
   check.display('test clustering results plotted!\nResults have been stored as dist_all.png',logfile)
+  # Run test of reproducibility for the task if yes
+  if run_repro_test_task1:
+     subprocess.run(['python', 'tests/task1_log.py'])
+     check.display('Task 1 reproducibility test results have been stored in tests_results.txt',logfile)
   check.display('task 1: done',logfile)
 if '2' in itask:
   #
@@ -123,6 +142,10 @@ if '2' in itask:
     fig.savefig(resultpath+'ClustRes_PFT%i.png'%kpfts[ipft])
     plt.close('all')
   check.display('clustering results plotted!\nResults have been stored as ClustRes_PFT*.png',logfile)
+  # Run test of reproducibility for the task if yes 
+  if run_repro_test_task2:
+     subprocess.run(['python', 'tests/task2_log.py'])
+     check.display('Task 2 reproducibility test results have been stored in tests_results.txt',logfile)
   check.display('task 2: done',logfile)
 if '3' in itask:
   #
@@ -130,6 +153,11 @@ if '3' in itask:
   check.check_file(resultpath+'IDx.npy',logfile)
   IDx=np.load(resultpath+'IDx.npy',allow_pickle=True)
   forcing.write(varlist,resultpath,IDx)
+  # Run test of reproducibility for the task if yes
+  if run_repro_test_task3:
+     subprocess.run(['python', 'tests/task3_log.py'])
+     subprocess.run(['python', 'tests/task3_2_log.py'])
+     check.display('Task 3 reproducibility test results have been stored in tests_results.txt',logfile)
   check.display('task 3: done',logfile)
 if '4' in itask:
   #
@@ -222,8 +250,11 @@ if '4' in itask:
 
         restvar1[:]=tmpvar
         restnc.close()     
-    
-    
+    # Run test of reproducibility for the task if yes
+  if run_repro_test_task4:  
+     subprocess.run(['python', 'tests/task4_log.py'])
+     subprocess.run(['python', 'tests/task4_2_log.py'])
+     check.display('Task 4 reproducibility test results have been stored in tests_results.txt',logfile)  
   check.display('task 4: done',logfile)
 if '5' in itask:
   Yvar=varlist['resp']['variables']

@@ -1,6 +1,6 @@
 {
 
-  "coord_ref":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
+  "coord_ref":"/home/surface5/vbastri/SPINacc_ref/10Y/SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest.nc",
   "lat_reso":2,
   "lon_reso":2,
   "climate":
@@ -13,7 +13,7 @@
   },
   "PFTmask":
   {
-    "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/FG1low.ORCH21r5695_19010101_19101231_1Y_stomate_history.nc",
+    "sourcefile":"/home/surface5/vbastri/SPINacc_ref/10Y/FGSPIN.10Y.ORC22v8034_19010101_19101231_1Y_stomate_history.nc",
     "var":"VEGET_COV_MAX",
     "cluster_thres":0.001,
     "pred_thres":0.1
@@ -22,13 +22,13 @@
   {
     "var1":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/FG1low.ORCH21r5695_19010101_19101231_1Y_stomate_history.nc",
+      "sourcefile":"/home/surface5/vbastri/SPINacc_ref/10Y/FGSPIN.10Y.ORC22v8034_19010101_19101231_1Y_stomate_history.nc",
       "variables":["NPP","LAI"],
       "rename":["NPP0","LAI0"]
     },
     "var2":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SRF_FG1low.ORCH21r5695_19011231_sechiba_rest.nc",
+      "sourcefile":"/home/surface5/vbastri/SPINacc_ref/10Y/SRF_FGSPIN.10Y.ORC22v8034_19101231_sechiba_rest.nc",
       "variables":["clay_frac"],
       "missing_value":1e20
     },
@@ -48,7 +48,7 @@
   },
   "resp":
   {
-    "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/Trunk2.0/SBG_FG1low.ORCH21r5695_22401231_stomate_rest.nc",
+    "sourcefile":"/home/surface5/vbastri/SPINacc_ref/GLOBAL340Y/SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc",
     "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
@@ -137,9 +137,8 @@
       ]
     }
   },
-  "restart": ["/home/surface3/hzhang/NPdep/Ndep_Pdep_Trendy2019_final_input_halfdeg_1700.nc",
-              "/home/surface3/hzhang/NPdep/NMIP_NP_agricultural_input_halfdeg_1700.nc",
-              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_driver_rest.nc",
-              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_sechiba_rest.nc",
-              "/home/surface5/vbastri/SPINacc/SP2.1Y/SP2.1Y_19011231_stomate_rest.nc"]
+  "restart": [ "/home/surface5/vbastri/SPINacc_ref/10Y/OOL_FGSPIN.10Y.ORC22v8034_19101231_driver_rest.nc",
+              "/home/surface5/vbastri/SPINacc_ref/10Y/SRF_FGSPIN.10Y.ORC22v8034_19101231_sechiba_rest.nc",
+              "/home/surface5/vbastri/SPINacc_ref/10Y/SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest.nc"   ]
+
 }  

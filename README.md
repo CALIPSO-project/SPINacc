@@ -30,7 +30,7 @@ Here are the steps to launch the different tasks of this repository (and the rep
 * __cd SPINacc__
 * If you want to stay on the main code skip this point, otherwise do : __git checkout your_branch__
 * Create an execution directory: __mkdir EXE_DIR__
-* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks 
+* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). 
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
 * Download the reference produced files files for reprodcibility on ZENODO (here: link) to __'/your/path/to/reference/'__
 * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__

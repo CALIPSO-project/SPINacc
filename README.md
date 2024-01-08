@@ -62,8 +62,14 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 
 
 ### REPRODUCIBILITY TESTS : 
-The possibility to choose to run (or not) reproducibility tests is coming soon.
+The configuration file has been updated to include new parameters that control the execution of reproducibility tests for each task. These parameters are:
 
+config[17]: Controls the reproducibility test for Task 1.
+config[19]: Controls the reproducibility test for Task 2.
+config[21]: Controls the reproducibility test for Task 3.
+config[23]: Controls the reproducibility test for Task 4.
+
+For each parameter, setting the value to 1 enables the reproducibility test for the corresponding task, while setting it to 0 disables it.
 
 
 

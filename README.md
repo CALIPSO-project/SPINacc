@@ -30,13 +30,13 @@ Here are the steps to launch the different tasks of this repository (and the rep
 * __cd SPINacc__
 * If you want to stay on the main code skip this point, otherwise do : __git checkout your_branch__
 * Create an execution directory: __mkdir EXE_DIR__
-* Choose the test you want to launch. In **DEF_TRUNK/MLacc.def**: in config[3] section put **1** (for __test 1__), in config[7] section put 0,  in config[5] section put your path to your EXE_DIR
+* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks 
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
 * Download the reference produced files files for reprodcibility on ZENODO (here: link) to __'/your/path/to/reference/'__
 * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__
 * Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__
-* Then launch via **qsub -q short job**, for test 1
-* For next tests (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** 
+* Then launch your first job using  **qsub -q short job**, for task 1
+* For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** 
 * For tasks 3 and 4, it is better to use **qsub -q medium job**
 * Launching tasks in chain (e.g. "1, 2" or "3, 4, 5") will be a possibility soon 
 * The results of the tasks are located in your **EXE_DIR**

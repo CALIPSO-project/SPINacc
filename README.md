@@ -27,7 +27,7 @@ The SPINacc package includes:
 Here are the steps to launch the different tasks of this repository (and the reproducibility tests associated):
 
 * Download the code: **git clone git@github.com:dsgoll123/SPINacc.git**
-* Find the associated ZENODO repository online (for reproducibility and forcing data) here: ![https://doi.org/10.5281/zenodo.10514124]
+* Find the associated ZENODO repository online (for reproducibility and forcing data) here: [https://doi.org/10.5281/zenodo.10514124]
 * From ZENODO: DOWNLOAD __ORCHIDEE_forcing_data.zip__, unzip and store it in a directory **'/your/path/to/SPINacc_ref/'**
 * From ZENODO: DOWNLOAD __Reproducibility_tests_reference.zip__, unzip and store it in a directory __'/your/path/to/reference/'__ 
 * In your local machine:  __cd SPINacc__
@@ -36,7 +36,6 @@ Here are the steps to launch the different tasks of this repository (and the rep
 * In __DEF_Trunk/varlist.json__ file : replace all the __'/home/surface5/vbastri/'__ occurences with **'/your/path/to/SPINacc_ref/vlad_files/vlad_files/'**
 * Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). 
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
-* Download the reference produced files for reprodcibility on ZENODO (here: https://doi.org/10.5281/zenodo.10514124) to __'/your/path/to/reference/'__
 * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__
 * Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__
 * Then launch your first job using  **qsub -q short job**, for task 1

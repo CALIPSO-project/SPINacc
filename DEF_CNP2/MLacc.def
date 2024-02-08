@@ -1,16 +1,24 @@
   # config[1] : logfile
 log.MLacc_CNP2
   # config[3] : task (1=test clustering/2=clustering/3=compress forcing/4=ML/5=evaluation)
-5
+1,2,3
   # config[5] : execution directory
-/home/surface3/dgoll/SPINUP_ML/EXECUTION/202207CNP2
+/home/surface3/dgoll/SPINUP_ML/20240208/EXE_DIR_CNP/
   # config[7] : start from scratch (0) or read previous results (1)
-1
+0
   # config[9] : number of K for final Kmean algorithm
 4
   # config[11] : maximum number of Ks to test for Kmean algorithm
 9
   # config[13] : random seed
 1000
-  # config[15] : do a loocv (0=no, 1=yes)
+ # config[15] : leave-one-out crosee validation (1) or not (0)
 0
+# config[17] : Run reproducibility test for task 1 (1=yes/0=no)
+1
+# config[19] : Run reproducibility test for task 2 (1=yes/0=no)
+1
+# config[21] : Run reproducibility test for task 3 (1=yes/0=no)
+1
+# config[23] : Run reproducibility test for task 4 (1=yes/0=no)
+1

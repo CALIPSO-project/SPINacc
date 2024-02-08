@@ -1,6 +1,6 @@
 {
 
-  "coord_ref":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
+  "coord_ref":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SBG/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_stomate_rest.nc",
   "lat_reso":2,
   "lon_reso":2,
   "climate":
@@ -13,7 +13,7 @@
   },
   "PFTmask":
   {
-    "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Output/MO/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63010101_63101231_1M_stomate_history.nc",
+    "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300/SBG/Output/MO/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300_13000101_13001231_1M_stomate_history.nc",
     "var":"VEGET_COV_MAX",
     "cluster_thres":0.001,
     "pred_thres":0.001
@@ -22,26 +22,26 @@
   {
     "var1":
     {
-      "sourcefile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Output/MO/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63010101_63101231_1M_stomate_history.nc",
+      "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300/SBG/Output/MO/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300_13000101_13001231_1M_stomate_history.nc",
       "variables":["NPP","LAI"],
       "rename":["NPP0","LAI0"]
     },
     "var2":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10001231_stomate_rest.nc",
+      "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SBG/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_stomate_rest.nc",
       "variables":["soil_orders","soil_shield"],
       "missing_value":1e20
 
     },
     "var3":
     {
-      "sourcefile":"/home/surface3/dgoll/SPINUP_ML/ORCHIDEE_OUTPUT/mimics/CNPmictau1.DSG_10101231_sechiba_rest.nc",
+      "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SRF/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_sechiba_rest.nc",
       "variables":["clay_frac","silt_frac","bulk","soil_ph"],
       "missing_value":1e20
     },
     "var4":
     {
-      "sourcefile":"/home/satellites8/ylwang/MLacc/forcing_var/ORCHIDEECNP/gcp.r5986.twodeg.trendyv9.CNP01cc4RR_10000101_10001231_1M_stomate_history.nc",
+      "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300/SBG/Output/MO/CNP13.global.halfdeg.trendyv10.spinup.1700.year1300_13000101_13001231_1M_stomate_history.nc",
       "variables":["NHX_DEPOSITION","NOY_DEPOSITION","P_DEPOSITION"],
       "rename":["Ndep_nhx","Ndep_noy","Pdep"],
       "missing_value":1e20
@@ -65,8 +65,8 @@
   "resp":
   {
     "format": "compressed",
-    "sourcefile":"/home/surface7/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.allign3/SRF/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.allign3_99901231_sechiba_rest.nc",
-    "targetfile":"/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.dsg_63101231_stomate_rest.nc",
+    "sourcefile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_MLA/CNP13.global.halfdeg.trendyv10.spinup.1700.compressed/SBG/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700.compressed_60001231_stomate_rest.nc",
+    "targetfile":"/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SBG/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_stomate_rest.nc",
     "missing_value":1e20,
     "pool_name_som":["Active","ChemProtect","PhysProtect"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Carbres","Labile"],
@@ -400,7 +400,7 @@
               "/home/surface7/jchang/input_cnp/CNP_files/rev01/lithology.nc",
               "/home/surface7/jchang/input_cnp/CNP_files/rev01/soils_param.nc",
               "/home/surface7/jchang/input_cnp/CNP_files/rev01/USDA_SoilSuborder.nc",
-              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/OOL/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_driver_rest.nc",
-              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/SRF/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_sechiba_rest.nc",
-              "/home/surface3/dgoll/IGCM_OUT/IGCM_OUT/OL2/PROD/CNP_ML/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN/SBG/Restart/gcp.lucfix.twodeg.trendyv10.M.S3.spin0.20221222.PRERUN_13001231_stomate_rest.nc"]
+              "/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/OOL/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_driver_rest.nc",
+              "/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SRF/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_sechiba_rest.nc",
+              "/home/surface10/dgoll/IGCM_OUT/OL2/PROD/CNP_CUE/CNP13.global.halfdeg.trendyv10.spinup.1700/SBG/Restart/CNP13.global.halfdeg.trendyv10.spinup.1700_13001231_stomate_rest.nc"]
 }  

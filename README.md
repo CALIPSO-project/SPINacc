@@ -27,7 +27,7 @@ The SPINacc package includes:
 Here are the steps to launch the different tasks of this repository (and the reproducibility tests associated):
 
 * Download the code: **git clone git@github.com:dsgoll123/SPINacc.git**
-* Find the associated ZENODO repository online (for reproducibility and forcing data) here: [https://doi.org/10.5281/zenodo.10514124]
+* Find the associated ZENODO repository online (for reproducibility test including the corresponding ORCHIDEE forcing data) here: [https://doi.org/10.5281/zenodo.10514124]
 * From ZENODO: DOWNLOAD __ORCHIDEE_forcing_data.zip__, unzip and store it in a directory **'/your/path/to/SPINacc_ref/'**
 * From ZENODO: DOWNLOAD __Reproducibility_tests_reference.zip__, unzip and store it in a directory __'/your/path/to/reference/'__ 
 * In your local machine:  __cd SPINacc__

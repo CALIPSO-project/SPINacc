@@ -65,4 +65,8 @@ def evaluation_map(Global_Predicted_Y_map, Y_map, ipft, PFTmask):
             comp_Y[:, 0], comp_Y[:, 1]
         )
 
-    return R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC
+    return dict(
+        R2=R2, RMSE=RMSE, slope=slope, reMSE=reMSE, 
+        dNRMSE=dNRMSE, sNRMSE=sNRMSE, iNRMSE=iNRMSE, 
+        f_SB=f_SB, f_SDSD=f_SDSD, f_LSC=f_LSC
+    )

@@ -30,8 +30,7 @@ print(sys.version)
 #
 
 if len(sys.argv) < 2:
-    print("Missing argument: DEF directory")
-    sys.exit()
+    dir_def = "DEF_Trunk/"
 else:
     dir_def = sys.argv[1]
 
@@ -182,7 +181,6 @@ if "3" in itask:
         )
     check.display("task 3: done", logfile)
 if "4" in itask:
-    #
     # ML extrapolation
 
     var_pred_name1 = varlist["pred"]["allname"]
@@ -218,35 +216,10 @@ if "4" in itask:
     # add rights to manipulate file:
     os.chmod(restfile, 0o644)
 
+    result = []
     for ipool in Yvar.keys():
-        # if ipool!="litter":continue
         check.display("processing %s..." % ipool, logfile)
-        fx = open(resultpath + ipool + "_R2.txt", "w", 1)
-        fy = open(resultpath + ipool + "_slope.txt", "w", 1)
-        fz = open(resultpath + ipool + "_dNRMSE.txt", "w", 1)
-        fz2 = open(resultpath + ipool + "_sNRMSE.txt", "w", 1)
-        fz3 = open(resultpath + ipool + "_iNRMSE.txt", "w", 1)
-        f1 = open(resultpath + ipool + "_f_SB.txt", "w", 1)
-        f2 = open(resultpath + ipool + "_f_SDSD.txt", "w", 1)
-        f3 = open(resultpath + ipool + "_f_LSC.txt", "w", 1)
-        fxx = open(resultpath + ipool + "_loocv_R2.txt", "w", 1)
-        fyy = open(resultpath + ipool + "_loocv_slope.txt", "w", 1)
-        fzz = open(resultpath + ipool + "_loocv_dNRMSE.txt", "w", 1)
-        ff1 = open(resultpath + ipool + "_loocv_f_SB.txt", "w", 1)
-        ff2 = open(resultpath + ipool + "_loocv_f_SDSD.txt", "w", 1)
-        ff3 = open(resultpath + ipool + "_loocv_f_LSC.txt", "w", 1)
-        ffz2 = open(resultpath + ipool + "_loocv_sNRMSE.txt", "w", 1)
-        ffz3 = open(resultpath + ipool + "_loocv_iNRMSE.txt", "w", 1)
-        #    if ipool!='biomass':
-        #      auxil.pfts=Yvar[ipool][0]['pfts']
-        #      print(auxil.pfts)
-        #      ML_som_litter.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
-        #    else:
-        #      auxil.pfts=range(2,varlist['npfts']+2)#[1:]#Yvar[ipool][0]['pfts']
-        #      print(auxil.pfts)
-        #      ML_biomass.MLloop(packdata,auxil,ipool,logfile,varlist,labx,resultpath,fx,fy,fz,fz2,fz3,f1,f2,f3,fxx,fyy,fzz,ff1,ff2,ff3,ffz2,ffz3,loocv)
-        #    else:continue
-        ML.MLloop(
+        res_df = ML.MLloop(
             packdata,
             auxil,
             ipool,
@@ -254,31 +227,12 @@ if "4" in itask:
             varlist,
             labx,
             resultpath,
-            fx,
-            fy,
-            fz,
-            fz2,
-            fz3,
-            f1,
-            f2,
-            f3,
-            fxx,
-            fyy,
-            fzz,
-            ff1,
-            ff2,
-            ff3,
-            ffz2,
-            ffz3,
             loocv,
             restfile,
         )
-        fx.close()
-        fy.close()
-        fz.close()
-        fxx.close()
-        fyy.close()
-        fzz.close()
+        result.append(res_df)
+    result_df = pd.concat(result, keys=Yvar.keys(), names=['comp'])
+    result_df.to_csv(resultpath + "MLacc_results.csv")
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 

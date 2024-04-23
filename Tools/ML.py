@@ -30,22 +30,6 @@ def MLmap(
     labx,
     ii,
     resultpath,
-    fx,
-    fy,
-    fz,
-    fz2,
-    fz3,
-    f1,
-    f2,
-    f3,
-    fxx,
-    fyy,
-    fzz,
-    ff1,
-    ff2,
-    ff3,
-    ffz2,
-    ffz3,
     loocv,
     restvar,
     missVal,
@@ -82,38 +66,7 @@ def MLmap(
         check.display(
             "%s, variable %s : NO DATA in training set!" % (ipool, varname), logfile
         )
-        fx.write("%.2f" % np.nan + ",")
-        fy.write("%.2f" % np.nan + ",")
-        fz.write("%.2f" % np.nan + ",")
-        f1.write("%.2f" % np.nan + ",")
-        f2.write("%.2f" % np.nan + ",")
-        f3.write("%.2f" % np.nan + ",")
-        fz2.write("%.2f" % np.nan + ",")
-        fz3.write("%.2f" % np.nan + ",")
-        fxx.write("%.2f" % np.nan + ",")
-        fyy.write("%.2f" % np.nan + ",")
-        fzz.write("%.2f" % np.nan + ",")
-        ff1.write("%.2f" % np.nan + ",")
-        ff2.write("%.2f" % np.nan + ",")
-        ff3.write("%.2f" % np.nan + ",")
-        ffz2.write("%.2f" % np.nan + ",")
-        ffz3.write("%.2f" % np.nan + ",")
-        print(varname, "ahhhhhhhh")
-        fx.write("\n")
-        fy.write("\n")
-        fz.write("\n")
-        fz2.write("\n")
-        fz3.write("\n")
-        f1.write("\n")
-        f2.write("\n")
-        f3.write("\n")
-        fxx.write("\n")
-        fyy.write("\n")
-        fzz.write("\n")
-        ff1.write("\n")
-        ff2.write("\n")
-        ff3.write("\n")
-        return
+        return None
     # need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
@@ -165,9 +118,10 @@ def MLmap(
         restvar[:] = Pred_Y_out[:]
 
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        return
-
+        return None
+    
     if (PFT_mask[ipft - 1] > 0).any():
+        return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         # evaluation
         R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
             MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
@@ -220,40 +174,6 @@ def MLmap(
         plt.close("all")
     else:
         check.display("%s, variable %s : NO DATA!" % (ipool, varname), logfile)
-    fx.write("%.2f" % R2 + ",")
-    fy.write("%.2f" % slope + ",")
-    fz.write("%.2f" % dNRMSE + ",")
-    f1.write("%.2f" % f_SB + ",")
-    f2.write("%.2f" % f_SDSD + ",")
-    f3.write("%.2f" % f_LSC + ",")
-    fz2.write("%.2f" % sNRMSE + ",")
-    fz3.write("%.2f" % iNRMSE + ",")
-    fxx.write("%.2f" % loocv_R2 + ",")
-    fyy.write("%.2f" % loocv_slope + ",")
-    fzz.write("%.2f" % loocv_dNRMSE + ",")
-    ff1.write("%.2f" % loocv_f_SB + ",")
-    ff2.write("%.2f" % loocv_f_SDSD + ",")
-    ff3.write("%.2f" % loocv_f_LSC + ",")
-    ffz2.write("%.2f" % loocv_sNRMSE + ",")
-    ffz3.write("%.2f" % loocv_iNRMSE + ",")
-    print(varname, "ahhhhh")
-    fx.write("\n")
-    fy.write("\n")
-    fz.write("\n")
-    fz2.write("\n")
-    fz3.write("\n")
-    f1.write("\n")
-    f2.write("\n")
-    f3.write("\n")
-    fxx.write("\n")
-    fyy.write("\n")
-    fzz.write("\n")
-    ff1.write("\n")
-    ff2.write("\n")
-    ff3.write("\n")
-    ffz2.write("\n")
-    ffz3.write("\n")
-    return
 
 
 def MLmap_multidim(
@@ -272,22 +192,6 @@ def MLmap_multidim(
     ind,
     ii,
     resultpath,
-    fx,
-    fy,
-    fz,
-    fz2,
-    fz3,
-    f1,
-    f2,
-    f3,
-    fxx,
-    fyy,
-    fzz,
-    ff1,
-    ff2,
-    ff3,
-    ffz2,
-    ffz3,
     loocv,
     restvar,
     missVal,
@@ -308,7 +212,7 @@ def MLmap_multidim(
     # extract Y
     pool_arr = np.full(len(auxil.Nlat), np.nan)
     pool_map = np.squeeze(ivar)[
-        tuple(ind - 1)
+        tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
     pool_map[pool_map == 1e20] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
@@ -330,39 +234,9 @@ def MLmap_multidim(
             % (ipool, varname, ind, ii["dim_loop"]),
             logfile,
         )
-        fx.write("%.2f" % np.nan + ",")
-        fy.write("%.2f" % np.nan + ",")
-        fz.write("%.2f" % np.nan + ",")
-        f1.write("%.2f" % np.nan + ",")
-        f2.write("%.2f" % np.nan + ",")
-        f3.write("%.2f" % np.nan + ",")
-        fz2.write("%.2f" % np.nan + ",")
-        fz3.write("%.2f" % np.nan + ",")
-        fxx.write("%.2f" % np.nan + ",")
-        fyy.write("%.2f" % np.nan + ",")
-        fzz.write("%.2f" % np.nan + ",")
-        ff1.write("%.2f" % np.nan + ",")
-        ff2.write("%.2f" % np.nan + ",")
-        ff3.write("%.2f" % np.nan + ",")
-        ffz2.write("%.2f" % np.nan + ",")
-        ffz3.write("%.2f" % np.nan + ",")
         if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
             print(varname, ind)
-            fx.write("\n")
-            fy.write("\n")
-            fz.write("\n")
-            fz2.write("\n")
-            fz3.write("\n")
-            f1.write("\n")
-            f2.write("\n")
-            f3.write("\n")
-            fxx.write("\n")
-            fyy.write("\n")
-            fzz.write("\n")
-            ff1.write("\n")
-            ff2.write("\n")
-            ff3.write("\n")
-        return
+        return None
     # need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
@@ -410,14 +284,16 @@ def MLmap_multidim(
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
         # some pixel with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
-        #    restvar[:,ind-1,:,:]=Pred_Y_out[:]
-        command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
-        exec(command % tuple(ind - 1))
+        idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
+        restvar[idx] = Pred_Y_out
+        # command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
+        # exec(command % tuple(ind - 1))
 
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        return
+        return None
 
     if (PFT_mask[ipft - 1] > 0).any():
+        return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         # evaluation
         R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
             MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
@@ -481,41 +357,8 @@ def MLmap_multidim(
             % (ipool, varname, ind, ii["dim_loop"]),
             logfile,
         )
-    fx.write("%.2f" % R2 + ",")
-    fy.write("%.2f" % slope + ",")
-    fz.write("%.2f" % dNRMSE + ",")
-    f1.write("%.2f" % f_SB + ",")
-    f2.write("%.2f" % f_SDSD + ",")
-    f3.write("%.2f" % f_LSC + ",")
-    fz2.write("%.2f" % sNRMSE + ",")
-    fz3.write("%.2f" % iNRMSE + ",")
-    fxx.write("%.2f" % loocv_R2 + ",")
-    fyy.write("%.2f" % loocv_slope + ",")
-    fzz.write("%.2f" % loocv_dNRMSE + ",")
-    ff1.write("%.2f" % loocv_f_SB + ",")
-    ff2.write("%.2f" % loocv_f_SDSD + ",")
-    ff3.write("%.2f" % loocv_f_LSC + ",")
-    ffz2.write("%.2f" % loocv_sNRMSE + ",")
-    ffz3.write("%.2f" % loocv_iNRMSE + ",")
     if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
         print(varname, ind)
-        fx.write("\n")
-        fy.write("\n")
-        fz.write("\n")
-        fz2.write("\n")
-        fz3.write("\n")
-        f1.write("\n")
-        f2.write("\n")
-        f3.write("\n")
-        fxx.write("\n")
-        fyy.write("\n")
-        fzz.write("\n")
-        ff1.write("\n")
-        ff2.write("\n")
-        ff3.write("\n")
-        ffz2.write("\n")
-        ffz3.write("\n")
-    return
 
 
 ##@param[in]   packdata               packaged data
@@ -532,22 +375,6 @@ def MLloop(
     varlist,
     labx,
     resultpath,
-    fx,
-    fy,
-    fz,
-    fz2,
-    fz3,
-    f1,
-    f2,
-    f3,
-    fxx,
-    fyy,
-    fzz,
-    ff1,
-    ff2,
-    ff3,
-    ffz2,
-    ffz3,
     loocv,
     restfile,
 ):
@@ -566,6 +393,8 @@ def MLloop(
     #  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
     #  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
     missVal = varlist["resp"]["missing_value"]
+    
+    result = []
 
     Yvar = varlist["resp"]["variables"][ipool]
     for ii in Yvar:
@@ -582,11 +411,9 @@ def MLloop(
                 restvar = restnc[varname]
 
                 if ii["dim_loop"] == ["null"]:
-                    figname = resultpath + "Eval_%s" % varname + ".png"
-                    #          if os.path.isfile(figname):continue
                     if ipft in ii["skip_loop"]["pft"]:
                         continue
-                    MLmap(
+                    res = MLmap(
                         packdata,
                         auxil,
                         ivar,
@@ -601,54 +428,24 @@ def MLloop(
                         labx,
                         ii,
                         resultpath,
-                        fx,
-                        fy,
-                        fz,
-                        fz2,
-                        fz3,
-                        f1,
-                        f2,
-                        f3,
-                        fxx,
-                        fyy,
-                        fzz,
-                        ff1,
-                        ff2,
-                        ff3,
-                        ffz2,
-                        ffz3,
                         loocv,
                         restvar,
                         missVal,
                     )
+                    if res:
+                        res['var'] = varname
+                        result.append(res)
                 else:
-                    #          index=np.array(np.meshgrid(*[ii['loops'][ll] for ll in ii['dim_loop']])).T.reshape(-1,len(ii['dim_loop']))
-                    index = np.array(
-                        list(
-                            itertools.product(
-                                *[ii["loops"][ll] for ll in ii["dim_loop"]]
-                            )
-                        )
+                    index = itertools.product(
+                        *[ii["loops"][ll] for ll in ii["dim_loop"]]
                     )
-                    #          print(index);sys.exit()
                     for ind in index:
-                        figname = (
-                            resultpath
-                            + "Eval_%s" % varname
-                            + "".join(
-                                [
-                                    "_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll]
-                                    for ll in range(len(ind))
-                                ]
-                                + [".png"]
-                            )
-                        )
-                        #            if os.path.isfile(figname):continue
+                        dim_ind = tuple(zip(ii["dim_loop"], ind))
                         if "pft" in ii["dim_loop"]:
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
-                        MLmap_multidim(
+                        res = MLmap_multidim(
                             packdata,
                             auxil,
                             ivar,
@@ -664,26 +461,17 @@ def MLloop(
                             ind,
                             ii,
                             resultpath,
-                            fx,
-                            fy,
-                            fz,
-                            fz2,
-                            fz3,
-                            f1,
-                            f2,
-                            f3,
-                            fxx,
-                            fyy,
-                            fzz,
-                            ff1,
-                            ff2,
-                            ff3,
-                            ffz2,
-                            ffz3,
                             loocv,
                             restvar,
                             missVal,
                         )
+                        if res:
+                            res['var'] = varname
+                            for i, (k, v) in enumerate(dim_ind):
+                                res[f'dim_{i+1}'] = k
+                                res[f'ind_{i+1}'] = v
+                            result.append(res)
                 # close&save netCDF file
                 restnc.close()
-    return
+
+    return pd.DataFrame(result).set_index('var')

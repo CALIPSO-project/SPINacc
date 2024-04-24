@@ -34,9 +34,8 @@ if len(sys.argv) < 2:
 else:
     dir_def = sys.argv[1]
 
-f = open(dir_def + "MLacc.def", "r")
-config = f.readlines()
-f.close()
+with open(dir_def + "MLacc.def", "r") as f:
+    config = f.readlines()
 
 # Define standard output file
 thefile = config[1].strip()
@@ -53,8 +52,8 @@ resultpath = config[5].strip()
 check.display("results are stored at: " + resultpath, logfile)
 
 # Read list of variables
-varfile = open(dir_def + "varlist.json", "r")
-varlist = json.loads(varfile.read())
+with open(dir_def + "varlist.json", "r") as f:
+    varlist = json.loads(f.read())
 
 # load stored results or start from scratch
 iprec = int(config[7].strip())

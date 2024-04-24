@@ -1,4 +1,4 @@
-
+# Input Files details 
 ## Coord Reference File
 - **File Name:** SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest.nc
 - **Usage:** Used as a reference file for coordinates, likely for geographic data alignment/validation in simulations or processing steps.

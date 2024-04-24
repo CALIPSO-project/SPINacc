@@ -50,7 +50,6 @@ warnings.simplefilter(action="ignore")
 sys.path.append(os.path.dirname(__file__))
 
 # Home-made
-from classes import pack, auxiliary
 import check
 import genMask
 import extract_X

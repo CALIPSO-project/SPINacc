@@ -15,25 +15,28 @@
 # =============================================================================================
 
 from Tools import *
+import xarray
+
+
+class PackData(dict):
+    __setattr__ = dict.__setitem__
+    __getattr__ = dict.__getitem__
 
 
 ##@param[in]   packdata               packaged data
-##@param[in]   auxil                  auxiliary data
+##@param[in]   packdata               packdata data
 ##@param[in]   varlist                list of variables, including name of source files, variable names, etc.
 ##@param[in]   config                 configurations
 ##@param[in]   logfile                logfile
-def readvar(packdata, auxil, varlist, config, logfile):
+def readvar(varlist, config, logfile):
     adict = locals()
     # 0 initialize latitude and longitudes
     f = Dataset(varlist["coord_ref"], "r")
-    nav_lat = f["nav_lat"][:]
-    nav_lon = f["nav_lon"][:]
-    latlon = np.vstack((nav_lat.flatten(), nav_lon.flatten()))
-    auxil.latlon = latlon
-    auxil.nlat = nav_lat.shape[0]
-    auxil.nlon = nav_lon.shape[1]
-    auxil.lat_reso = varlist["lat_reso"]
-    auxil.lon_reso = varlist["lon_reso"]
+    nlat = len(f.dimensions["y"])
+    nlon = len(f.dimensions["x"])
+    packdata = PackData()
+    packdata.lat = f["nav_lat"][:, 0]
+    packdata.lon = f["nav_lon"][0, :]
 
     # 0.1 read climate variables
     climvar = varlist["climate"]
@@ -41,7 +44,7 @@ def readvar(packdata, auxil, varlist, config, logfile):
     days = np.array(calendar.mdays[1:])
     nyear = climvar["year_end"] - climvar["year_start"] + 1
     for index in range(len(varname_clim)):
-        var_month_year = np.full((nyear, 12, auxil.nlat, auxil.nlon), np.nan)
+        var_month_year = np.full((nyear, 12, nlat, nlon), np.nan)
         for year in range(climvar["year_start"], climvar["year_end"] + 1):
             check.display(
                 "reading %s from year %i" % (varname_clim[index], year), logfile
@@ -58,8 +61,6 @@ def readvar(packdata, auxil, varlist, config, logfile):
             if "land" in f[varname_clim[index]].dimensions:
                 land = f["land"][:] - 1
                 ntime = len(da)
-                nlat = len(f.dimensions["y"])
-                nlon = len(f.dimensions["x"])
                 uncomp = np.ma.masked_all((ntime, nlat * nlon))
                 uncomp[:, land] = da
                 da = uncomp.reshape((ntime, nlat, nlon))
@@ -67,16 +68,16 @@ def readvar(packdata, auxil, varlist, config, logfile):
 
             # calculate the monthly value from 6h data
             zstart = 1
-            var_month = np.full((12, auxil.nlat, auxil.nlon), np.nan)
+            var_month = np.full((12, nlat, nlon), np.nan)
             count = 0
             for month in range(1, 13):
                 count = np.nansum(days[:month])
-                mkk = np.mean(da[4 * (zstart - 1) : 4 * count][:][:], axis=0)
-                # mkk[da[0][:][:]==mask]=np.nan
-                var_month[month - 1][:][:] = mkk.filled(np.nan)
+                mkk = np.mean(da[4 * (zstart - 1) : 4 * count], axis=0)
+                # mkk[da[0]==mask]=np.nan
+                var_month[month - 1] = mkk.filled(np.nan)
                 zstart = count + 1
 
-            var_month_year[year - climvar["year_start"]][:][:][:] = var_month
+            var_month_year[year - climvar["year_start"]] = var_month
             # eval('MY'+varname_clim[index]+'=var_month_year')
         adict["MY%s" % varname_clim[index]] = var_month_year[:]
 
@@ -100,27 +101,27 @@ def readvar(packdata, auxil, varlist, config, logfile):
         else:
             meanv = np.mean(np.mean(trav, axis=0), axis=0)
             stdv = np.std(np.mean(trav, axis=0), axis=0)
-        packdata.__dict__[varname_clim[index] + "_std"] = stdv
-        packdata.__dict__[varname_clim[index] + "_mean"] = meanv
+        packdata[varname_clim[index] + "_std"] = stdv
+        packdata[varname_clim[index] + "_mean"] = meanv
 
     # 0.1.3 P and T for growing season (Pre_GS, Temp_GS, GS_length)
     pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
     temp = np.mean(Tair, axis=0)
-    Pre_GS_v = np.full((12, auxil.nlat, auxil.nlon), np.nan)
-    Temp_GS_v = np.full((12, auxil.nlat, auxil.nlon), np.nan)
-    GS_length_v = np.full((12, auxil.nlat, auxil.nlon), np.nan)
-    land = adict["MYTair"][0][0][:][:]
+    Pre_GS_v = np.full((12, nlat, nlon), np.nan)
+    Temp_GS_v = np.full((12, nlat, nlon), np.nan)
+    GS_length_v = np.full((12, nlat, nlon), np.nan)
+    land = adict["MYTair"][0][0]
     land[land > 1] = 1
     for month in range(1, 13):
-        GS_mask = np.zeros(shape=(auxil.nlat, auxil.nlon))
-        maskx = temp[month - 1][:][:]
+        GS_mask = np.zeros(shape=(nlat, nlon))
+        maskx = temp[month - 1]
         # temperature > 4 degree is growing season
         GS_mask[maskx > -4] = 1
-        Pre_GS_v[month - 1][:][:] = GS_mask * pre[month - 1][:][:]
-        Temp_GS_v[month - 1][:][:] = GS_mask * temp[month - 1][:][:]
-        GS_length_v[month - 1][:][:] = GS_mask * land
+        Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
+        Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
+        GS_length_v[month - 1] = GS_mask * land
     packdata.GS_length = np.sum(GS_length_v, axis=0)
-    # np.where(np.isnan(Tair[0][:][:]),GS_length,np.nan)
+    # np.where(np.isnan(Tair[0]),GS_length,np.nan)
     packdata.Pre_GS = np.sum(Pre_GS_v, axis=0)
     packdata.Temp_GS = np.sum(Temp_GS_v, axis=0)
 
@@ -168,12 +169,16 @@ def readvar(packdata, auxil, varlist, config, logfile):
                 if "missing_value" in predvar[ipred].keys():
                     da[da == predvar[ipred]["missing_value"]] = np.nan
                 if isinstance(da, np.ma.masked_array):
-                    packdata.__dict__[rename[ivar]] = da.filled(np.nan)
+                    packdata[rename[ivar]] = da.filled(np.nan)
                 else:
-                    packdata.__dict__[rename[ivar]] = da
+                    packdata[rename[ivar]] = da
 
     # 0.3 Interactions between variables
     packdata.interx1 = packdata.Tmean * packdata.Rainf_mean
     packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
 
-    return
+    for k, v in packdata.items():
+        if k not in ["lat", "lon"]:
+            packdata[k] = (["veget", "lat", "lon"][-v.ndim :], v)
+
+    return xarray.Dataset(packdata)

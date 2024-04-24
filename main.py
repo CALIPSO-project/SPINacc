@@ -15,12 +15,12 @@ This software is governed by the XXX license
 XXXX <License content>
 """
 
-import subprocess
+from Tools import *
 
 # added line
 import numpy as np
-
-from Tools import *
+import xarray
+import subprocess
 
 # print Python version
 print(sys.version)
@@ -59,21 +59,17 @@ with open(dir_def + "varlist.json", "r") as f:
 iprec = int(config[7].strip())
 if iprec:
     check.display("read from previous results...", logfile)
-    packdata = np.load(resultpath + "packdata.npy", allow_pickle=True).item()
-    auxil = np.load(resultpath + "auxil.npy", allow_pickle=True).item()
+    packdata = xarray.load_dataset(resultpath + "packdata.nc")
 else:
     check.display("MLacc start from scratch...", logfile)
     # initialize packaged data and auxiliary data
-    packdata = pack()
-    auxil = auxiliary()
-    readvar(packdata, auxil, varlist, config, logfile)
-    np.save(resultpath + "packdata.npy", packdata)
-    np.save(resultpath + "auxil.npy", auxil)
+    packdata = readvar(varlist, config, logfile)
+    packdata.to_netcdf(resultpath + "packdata.nc")
 
 # range of Ks to be tested, and the final K
 maxK = int(config[11].strip())
-auxil.Ks = range(2, maxK + 1)
-auxil.K = int(config[9].strip())
+packdata.Ks = range(2, maxK + 1)
+packdata.K = int(config[9].strip())
 
 # Define random seed
 iseed = int(config[13].strip())
@@ -109,7 +105,7 @@ if "1" in itask:
     fig, ax = plt.subplots()
     lns = []
     for ipft in range(dis_all.shape[1]):
-        lns += ax.plot(auxil.Ks, dis_all[:, ipft])
+        lns += ax.plot(packdata.Ks, dis_all[:, ipft])
     plt.legend(lns, varlist["clustering"]["pfts"], title="PFT")
     ax.set_ylabel(
         "Sum of squared distances of samples to\ntheir closest cluster center"
@@ -185,9 +181,9 @@ if "4" in itask:
     var_pred_name1 = varlist["pred"]["allname"]
     var_pred_name2 = varlist["pred"]["allname_pft"]
     var_pred_name = var_pred_name1 + var_pred_name2
-    auxil.Nv_nopft = len(var_pred_name1)
-    auxil.Nv_total = len(var_pred_name)
-    auxil.var_pred_name = var_pred_name
+    packdata.Nv_nopft = len(var_pred_name1)
+    packdata.Nv_total = len(var_pred_name)
+    packdata.var_pred_name = var_pred_name
 
     # Response variables
     Yvar = varlist["resp"]["variables"]
@@ -200,8 +196,8 @@ if "4" in itask:
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    auxil.Nlat = np.trunc((90 - IDx[:, 0]) / auxil.lat_reso).astype(int)
-    auxil.Nlon = np.trunc((180 + IDx[:, 1]) / auxil.lon_reso).astype(int)
+    packdata.Nlat = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
+    packdata.Nlon = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
     labx = ["Y"] + var_pred_name + ["pft"]
 
     # copy the restart file to be modified

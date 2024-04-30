@@ -18,7 +18,6 @@ from Tools import *
 
 
 ##@param[in]   packdata               packaged data
-##@param[in]   auxil                  auxiliary data
 ##@param[in]   ipft                   index of PFT
 ##@param[in]   PFTmask                PFT mask
 ##@param[in]   XVarName               input variables
@@ -28,20 +27,20 @@ from Tools import *
 ##@param[in]   labx
 ##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
 ##@retval      Pred_Y                 predicted map of target variables, without masking
-def extrp_global(packdata, auxil, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
-    global_X_map = np.full((len(XVarName), auxil.nlat, auxil.nlon), np.nan)
+def extrp_global(packdata, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
+    global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
     # PFTmask[np.isnan(PFTmask)]=0
     pmask = np.squeeze(PFTmask[ipft - 1][:])
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
     for ii in range(len(XVarName)):
-        if ii < auxil.Nv_nopft:
+        if ii < packdata.Nv_nopft:
             global_X_map[ii] = packdata[XVarName[ii]][:]
         else:
             global_X_map[ii] = np.squeeze(packdata[XVarName[ii]][ipft - 1][:])
         #    global_X_map=lc['global_X_map']
         das = global_X_map.transpose(1, 2, 0)
-    for llat in range(auxil.nlat):
+    for llat in range(packdata.nlat):
         Xllat = das[llat][:][:]
         # Xllat[np.isnan(Xllat)]=-9999
         Xtr = DataFrame(Xllat, columns=[labx])

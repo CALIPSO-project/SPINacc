@@ -87,7 +87,7 @@ run_repro_test_task4 = int(config[23].strip())
 if "1" in itask:
     #
     # test clustering
-    dis_all = Cluster.Cluster_test(packdata, auxil, varlist, logfile)
+    dis_all = Cluster.Cluster_test(packdata, varlist, logfile)
     # added line
     np.random.seed(iseed)
     dis_all.dump(resultpath + "dist_all.npy")

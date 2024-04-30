@@ -23,8 +23,6 @@ class PackData(dict):
     __getattr__ = dict.__getitem__
 
 
-##@param[in]   packdata               packaged data
-##@param[in]   packdata               packdata data
 ##@param[in]   varlist                list of variables, including name of source files, variable names, etc.
 ##@param[in]   config                 configurations
 ##@param[in]   logfile                logfile
@@ -177,8 +175,18 @@ def readvar(varlist, config, logfile):
     packdata.interx1 = packdata.Tmean * packdata.Rainf_mean
     packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
 
+    # insert dimension names for each variable
     for k, v in packdata.items():
         if k not in ["lat", "lon"]:
             packdata[k] = (["veget", "lat", "lon"][-v.ndim :], v)
 
-    return xarray.Dataset(packdata)
+    ds = xarray.Dataset(packdata)
+
+    ds.attrs.update(nlat=nlat, nlon=nlon)
+
+    # range of Ks to be tested, and the final K
+    maxK = int(config[11].strip())
+    ds.attrs["Ks"] = list(range(2, maxK + 1))
+    ds.attrs["K"] = int(config[9].strip())
+
+    return ds

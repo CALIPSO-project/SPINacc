@@ -17,7 +17,6 @@ from Tools import *
 
 def MLmap(
     packdata,
-    auxil,
     ivar,
     PFT_mask,
     PFT_mask_lai,
@@ -37,26 +36,24 @@ def MLmap(
     check.display("processing %s, variable %s..." % (ipool, varname), logfile)
 
     # extract data
-    extr_var = extract_X.var(packdata, auxil, ipft)
+    extr_var = extract_X.var(packdata, ipft)
     # extract PFT map
-    pft_ny = extract_X.pft(packdata, auxil, PFT_mask_lai, ipft).reshape(
-        len(auxil.Nlat), 1
-    )
+    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft).reshape(len(packdata.Nlat), 1)
 
     # extract Y
-    pool_arr = np.full(len(auxil.Nlat), np.nan)
+    pool_arr = np.full(len(packdata.Nlat), np.nan)
     pool_map = np.squeeze(
         ivar
     )  # [tuple(ind-1)] # all indices start from 1, but python loop starts from 0
     pool_map[pool_map == 1e20] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        for cc in range(len(auxil.Nlat)):
+        for cc in range(len(packdata.Nlat)):
             pool_arr[cc] = pool_map.flatten()[cc]
     else:
-        for cc in range(len(auxil.Nlat)):
-            pool_arr[cc] = pool_map[auxil.Nlat[cc], auxil.Nlon[cc]]
+        for cc in range(len(packdata.Nlat)):
+            pool_arr[cc] = pool_map[packdata.Nlat[cc], packdata.Nlon[cc]]
     # end extract Y
-    extracted_Y = np.reshape(pool_arr, (len(auxil.Nlat), 1))
+    extracted_Y = np.reshape(pool_arr, (len(packdata.Nlat), 1))
     extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=1)
     df_data = DataFrame(extr_all, columns=[labx])  # convert the array into dataframe
     # df_data.ix[:,22]=(df_data.ix[:,22].astype(int)).astype(str)
@@ -98,7 +95,6 @@ def MLmap(
     else:
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
             packdata,
-            auxil,
             ipft,
             PFT_mask,
             var_pred_name,
@@ -178,7 +174,6 @@ def MLmap(
 
 def MLmap_multidim(
     packdata,
-    auxil,
     ivar,
     PFT_mask,
     PFT_mask_lai,
@@ -203,26 +198,24 @@ def MLmap_multidim(
     )
 
     # extract data
-    extr_var = extract_X.var(packdata, auxil, ipft)
+    extr_var = extract_X.var(packdata, ipft)
     # extract PFT map
-    pft_ny = extract_X.pft(packdata, auxil, PFT_mask_lai, ipft).reshape(
-        len(auxil.Nlat), 1
-    )
+    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft).reshape(len(packdata.Nlat), 1)
 
     # extract Y
-    pool_arr = np.full(len(auxil.Nlat), np.nan)
+    pool_arr = np.full(len(packdata.Nlat), np.nan)
     pool_map = np.squeeze(ivar)[
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
     pool_map[pool_map == 1e20] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        for cc in range(len(auxil.Nlat)):
+        for cc in range(len(packdata.Nlat)):
             pool_arr[cc] = pool_map.flatten()[cc]
     else:
-        for cc in range(len(auxil.Nlat)):
-            pool_arr[cc] = pool_map[auxil.Nlat[cc], auxil.Nlon[cc]]
+        for cc in range(len(packdata.Nlat)):
+            pool_arr[cc] = pool_map[packdata.Nlat[cc], packdata.Nlon[cc]]
     # end extract Y
-    extracted_Y = np.reshape(pool_arr, (len(auxil.Nlat), 1))
+    extracted_Y = np.reshape(pool_arr, (len(packdata.Nlat), 1))
     extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=1)
     df_data = DataFrame(extr_all, columns=[labx])  # convert the array into dataframe
     # df_data.ix[:,22]=(df_data.ix[:,22].astype(int)).astype(str)
@@ -268,7 +261,6 @@ def MLmap_multidim(
     else:
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
             packdata,
-            auxil,
             ipft,
             PFT_mask,
             var_pred_name,
@@ -362,14 +354,12 @@ def MLmap_multidim(
 
 
 ##@param[in]   packdata               packaged data
-##@param[in]   auxil                  auxiliary data
 ##@param[in]   ipool                  'som','biomass' or 'litter'
 ##@param[in]   logfile                logfile
 ##@
 ##@param[in]
 def MLloop(
     packdata,
-    auxil,
     ipool,
     logfile,
     varlist,
@@ -415,7 +405,6 @@ def MLloop(
                         continue
                     res = MLmap(
                         packdata,
-                        auxil,
                         ivar,
                         PFT_mask,
                         PFT_mask_lai,
@@ -447,7 +436,6 @@ def MLloop(
                             continue
                         res = MLmap_multidim(
                             packdata,
-                            auxil,
                             ivar,
                             PFT_mask,
                             PFT_mask_lai,

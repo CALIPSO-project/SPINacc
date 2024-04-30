@@ -62,7 +62,7 @@ if iprec:
     packdata = xarray.load_dataset(resultpath + "packdata.nc")
 else:
     check.display("MLacc start from scratch...", logfile)
-    # initialize packaged data and auxiliary data
+    # initialize packaged data
     packdata = readvar(varlist, config, logfile)
     packdata.to_netcdf(resultpath + "packdata.nc")
 
@@ -125,7 +125,7 @@ if "2" in itask:
     # clustering
     KK = int(config[9].strip())
     check.display("Kmean algorithm, K=%i" % KK, logfile)
-    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, auxil, varlist, KK, logfile)
+    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, varlist, KK, logfile)
     np.savetxt(resultpath + "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath + "IDx.npy")
     IDloc.dump(resultpath + "IDloc.npy")
@@ -176,9 +176,9 @@ if "4" in itask:
     var_pred_name1 = varlist["pred"]["allname"]
     var_pred_name2 = varlist["pred"]["allname_pft"]
     var_pred_name = var_pred_name1 + var_pred_name2
-    packdata.Nv_nopft = len(var_pred_name1)
-    packdata.Nv_total = len(var_pred_name)
-    packdata.var_pred_name = var_pred_name
+    # packdata.Nv_nopft = len(var_pred_name1)
+    # packdata.Nv_total = len(var_pred_name)
+    # packdata.var_pred_name = var_pred_name
 
     # Response variables
     Yvar = varlist["resp"]["variables"]
@@ -191,8 +191,15 @@ if "4" in itask:
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    packdata.Nlat = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
-    packdata.Nlon = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
+    # packdata.attrs['Nlat'] = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
+    # packdata.attrs['Nlon'] = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
+    packdata.attrs.update(
+        Nv_nopft=len(var_pred_name1),
+        Nv_total=len(var_pred_name),
+        var_pred_name=var_pred_name,
+        Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),
+        Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
+    )
     labx = ["Y"] + var_pred_name + ["pft"]
 
     # copy the restart file to be modified
@@ -211,7 +218,6 @@ if "4" in itask:
         check.display("processing %s..." % ipool, logfile)
         res_df = ML.MLloop(
             packdata,
-            auxil,
             ipool,
             logfile,
             varlist,

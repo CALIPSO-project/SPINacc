@@ -125,9 +125,8 @@ def Cluster_all(packdata, varlist, KK, logfile):
     # 4. Check if the selected sites are representative? (not sure)
 
     # 5. Output the ID
-    IDx = pd.concat([adict["PFT%itrainingID" % ii] for ii in kpfts])
-    IDx.drop_duplicates(subset=["lat", "lon"])
-    IDx = IDx.values
+    IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
+    IDx = np.unique(IDx, axis=0)
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

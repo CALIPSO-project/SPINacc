@@ -182,7 +182,9 @@ def readvar(varlist, config, logfile):
 
     ds = xarray.Dataset(packdata)
 
-    ds.attrs.update(nlat=nlat, nlon=nlon)
+    ds.attrs.update(
+        nlat=nlat, nlon=nlon, lat_reso=varlist["lat_reso"], lon_reso=varlist["lon_reso"]
+    )
 
     # range of Ks to be tested, and the final K
     maxK = int(config[11].strip())

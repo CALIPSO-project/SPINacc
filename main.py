@@ -66,11 +66,6 @@ else:
     packdata = readvar(varlist, config, logfile)
     packdata.to_netcdf(resultpath + "packdata.nc")
 
-# range of Ks to be tested, and the final K
-maxK = int(config[11].strip())
-packdata.Ks = range(2, maxK + 1)
-packdata.K = int(config[9].strip())
-
 # Define random seed
 iseed = int(config[13].strip())
 random.seed(iseed)

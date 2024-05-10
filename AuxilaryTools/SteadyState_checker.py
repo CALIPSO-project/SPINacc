@@ -7,13 +7,13 @@
 
 
 import math
+import os
+
 import numpy as np
 import numpy.ma as ma
-from netCDF4 import Dataset
-import os
-from scipy.stats import linregress
-
 from mysimulations_specs import *
+from netCDF4 import Dataset
+from scipy.stats import linregress
 
 # text file which stores information on the analysis
 logfile=expid+which_run+'_info_pixles_at_steadystate'

@@ -1,7 +1,6 @@
 import netCDF4 as nc
-
 # -------------------------------variables----------------------------------------------------
-from config import reference_path, test_path, output_file
+from config import output_file, reference_path, test_path
 
 # Define the base file path
 # reference_path='/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR_2/'
@@ -12,9 +11,6 @@ base_file_path_2 = test_path + "forcing_aligned_"
 years_to_compare = range(1901, 1911)
 
 # Open a file for writing
-
-from config import reference_path, test_path, output_file
-
 # output_file_path = '/home/surface10/mrasolon/tests/tests_results.txt'
 output_file_path = output_file
 # -----------------------end of variables------------------------------------------------------

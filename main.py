@@ -15,11 +15,12 @@
  XXXX <License content>
 """
 
-from Tools import *
+import subprocess
 
 # added line
 import numpy as np
-import subprocess
+
+from Tools import *
 
 # print Python version
 print(sys.version)

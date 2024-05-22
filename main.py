@@ -47,7 +47,7 @@ check.display('DEF directory: '+dir_def,logfile)
 check.display('running task: %s'%str(itask),logfile)
 
 # Define task 
-resultpath=config[5].strip()+'/'
+resultpath=config[5].strip()
 check.display('results are stored at: '+resultpath,logfile)
 
 # Read list of variables
@@ -163,7 +163,6 @@ if '4' in itask:
   #
   # ML extrapolation
 
-  adict=locals()
   var_pred_name1=varlist['pred']['allname']
   var_pred_name2=varlist['pred']['allname_pft']
   var_pred_name=var_pred_name1+var_pred_name2

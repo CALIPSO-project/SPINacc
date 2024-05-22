@@ -1,17 +1,20 @@
 import netCDF4 as nc
+
 # -------------------------------variables----------------------------------------------------
-from config import reference_path, test_path, output_file
-#reference_path = '/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR_2/'
-#test_path = '/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR/'  # Enter the path from your EXE_DIR
+from config import output_file, reference_path, test_path
 
-#output_file = '/home/surface10/mrasolon/tests/tests_results.txt'  # Define the output file
+# reference_path = '/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR_2/'
+# test_path = '/home/surface10/mrasolon/SPINacc_12_7/EXE_DIR/'  # Enter the path from your EXE_DIR
 
+# output_file = '/home/surface10/mrasolon/tests/tests_results.txt'  # Define the output file
 # ------------------------end of variables----------------------------------------------------
+
+
 def compare_nc_files(file1_path, file2_path, output_file, print_diff_flag=False):
     # Open the netCDF files
-    with open(output_file, 'a') as output:
+    with open(output_file, "a") as output:
         output.write(" \n")
-        output.write('For ' + file1_path + ' and ' + file2_path + '\n')
+        output.write("For " + file1_path + " and " + file2_path + "\n")
         output.write(" \n")
         nc1 = nc.Dataset(file1_path)
         nc2 = nc.Dataset(file2_path)
@@ -52,11 +55,11 @@ def compare_nc_files(file1_path, file2_path, output_file, print_diff_flag=False)
         nc1.close()
         nc2.close()
 
+
 # Example usage
 output_file_path = output_file
 
-file1_path = test_path+'SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc'
-file2_path = reference_path+'SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc'
+file1_path = test_path + "SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc"
+file2_path = reference_path + "SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc"
 
 compare_nc_files(file1_path, file2_path, output_file_path, print_diff_flag=True)
-

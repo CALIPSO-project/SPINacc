@@ -2,7 +2,6 @@ from Tools import *
 
 
 def write(varlist, resultpath, IDx):
-
     # select mode to build forcing and restart files
     # possible modes: compressed, regular, aligned
     mode = "compressed"
@@ -20,16 +19,18 @@ def write(varlist, resultpath, IDx):
         (
             "lat"
             if "lat" in nc.variables
-            else "latitude" if "latitude" in nc.variables else "nav_lat"
+            else "latitude"
+            if "latitude" in nc.variables
+            else "nav_lat"
         )
-    ][
-        :
-    ]  #
+    ][:]  #
     lon = nc.variables[
         (
             "lon"
             if "lon" in nc.variables
-            else "longitude" if "longitude" in nc.variables else "nav_lon"
+            else "longitude"
+            if "longitude" in nc.variables
+            else "nav_lon"
         )
     ][:]
     if len(lat.shape) > 1:
@@ -77,7 +78,9 @@ def write(varlist, resultpath, IDx):
                 newdim = (
                     "x"
                     if dim in ["lon", "longitude"]
-                    else "y" if dim in ["lat", "latitude"] else dim
+                    else "y"
+                    if dim in ["lat", "latitude"]
+                    else dim
                 )
                 newsize = (
                     len(xlands)
@@ -159,7 +162,9 @@ def write(varlist, resultpath, IDx):
                 newdim = (
                     "lon"
                     if dim in ["lon", "longitude", "x"]
-                    else "lat" if dim in ["lat", "latitude", "y"] else dim
+                    else "lat"
+                    if dim in ["lat", "latitude", "y"]
+                    else dim
                 )
                 newsize = (
                     len(lat)
@@ -293,7 +298,9 @@ def write(varlist, resultpath, IDx):
                 newdim = (
                     "lon"
                     if dim in ["lon", "longitude", "x"]
-                    else "lat" if dim in ["lat", "latitude", "y"] else dim
+                    else "lat"
+                    if dim in ["lat", "latitude", "y"]
+                    else dim
                 )
                 newsize = (
                     len(plat)

@@ -1,7 +1,7 @@
 # SPINacc
 A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
 
-Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML. 
+Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML.
 
 Documentation of aims, concepts, workflows are described in Sun et al.202 [open-source]: https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623
 
@@ -19,29 +19,27 @@ The SPINacc package includes:
 * requirements.txt - listing necessary dependencies to use SPINacc
 * ORCHIDEE_cecill.txt - the same license used by ORCHIDEE
 * docs/ - more detailed documentation about ORCHIDEE simulations
- 
+
 ## INFORMATION FOR USERS:
 ### HOW TO RUN THE CODE:
-
-
 Here are the steps to launch the different tasks of this repository (and the reproducibility tests associated):
 
 * Download the code: `git clone git@github.com:CALIPSO-project/SPINacc.git`
 * Find the associated ZENODO repository online (for reproducibility test including the corresponding ORCHIDEE forcing data) here: [https://doi.org/10.5281/zenodo.10514124]
 * From ZENODO: DOWNLOAD __ORCHIDEE_forcing_data.zip__, unzip and store it in a directory **'/your/path/to/SPINacc_ref/'**
-* From ZENODO: DOWNLOAD __Reproducibility_tests_reference.zip__, unzip and store it in a directory __'/your/path/to/reference/'__ 
+* From ZENODO: DOWNLOAD __Reproducibility_tests_reference.zip__, unzip and store it in a directory __'/your/path/to/reference/'__
 * In your local machine:  __cd SPINacc__
 * If you want to stay on the main code skip this point, otherwise do : __git checkout your_branch__
 * Create an execution directory: __mkdir EXE_DIR__
 * In __DEF_Trunk/varlist.json__ file : replace all the __'/home/surface5/vbastri/'__ occurences with **'/your/path/to/SPINacc_ref/vlad_files/vlad_files/'**
-* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). 
+* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results).
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
 * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__
 * Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__
 * Then launch your first job using  **qsub -q short job**, for task 1
-* For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** 
+* For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def**
 * For tasks 3 and 4, it is better to use **qsub -q medium job**
-* Launching tasks in chain (e.g. "1, 2" or "3, 4, 5") will be a possibility soon 
+* Launching tasks in chain (e.g. "1, 2" or "3, 4, 5") will be a possibility soon
 * The results of the tasks are located in your **EXE_DIR**
 * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt**
 
@@ -64,7 +62,7 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 ![Eval_all_loocv_biomassCpool_trim](https://user-images.githubusercontent.com/79981678/197768665-c868f95b-d7f4-4a2f-a942-d37c9e509596.png)
 
 
-### REPRODUCIBILITY TESTS : 
+### REPRODUCIBILITY TESTS :
 The configuration file has been updated to include new parameters that control the execution of reproducibility tests for each task. These parameters are:
 
 config[17]: Controls the reproducibility test for Task 1.
@@ -73,7 +71,3 @@ config[21]: Controls the reproducibility test for Task 3.
 config[23]: Controls the reproducibility test for Task 4.
 
 For each parameter, setting the value to 1 enables the reproducibility test for the corresponding task, while setting it to 0 disables it.
-
-
-
-

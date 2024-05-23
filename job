@@ -4,7 +4,7 @@
 # Set the dirpython environment variable to the directory in which this script is located
 setenv dirpython `pwd`
 
-# Set the dirdef environment variable to the string 'DEF_CNP2/' 
+# Set the dirdef environment variable to the string 'DEF_CNP2/'
 setenv dirdef 'DEF_CNP2/'
 
 # Increase the maximum number of file descriptors that the process can open

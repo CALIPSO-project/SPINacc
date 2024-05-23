@@ -1,13 +1,57 @@
-HOW TO UPDATE THE CODE ON GITHUB: you need to do multiple steps:
+# Contributing to the `SPINacc` package
 
-* First, "git add <file_or_dir_you_changed>" to add the files you changed and " git add ." to add all of your changes. It is recommended to only add files you have changed and make sure you updated with any changes updated to github since you downloaded your copies.
-* Second, "git commit -m 'Quick commit message that described the changes you are commiting'" to commit them to your local copy (a difference between svn and git and is that git has a local copy that you commit to).
-* Third, "git push origin main" to push them to the master repository (here) and "git push origin <branch_name>" to push them to a branch.
-It is also recommended to push all changes on a personal branch and then ask for a pull request to the administrator of the tool. Then comment your changes for an easy review.
-This might help: https://git-scm.com/docs/gittutorial
+### Reporting bugs
+
+If you find a bug in SPINacc, please report it on the [GitHub issue
+tracker](https://github.com/CALIPSO-project/SPINacc/labels/bug).
 
 
-### Other USEFUL COMMANDS:
-* "git diff" will show you all the changes you have made.
-* "git pull" will update all your local files with what exists in the master code (here).
-* "git status" will show you what files have been modified.
+### Suggesting enhancements
+
+If you want to suggest a new feature or an improvement of a current
+feature, you can submit this on the [issue
+tracker](https://github.com/CALIPSO-project/SPINacc/issues).
+
+
+### Submitting a pull request
+
+To contribute code to SPINacc, create a pull request. If you want to
+contribute, but are unsure where to start, have a look at the [issues
+labelled "good first
+issue"](https://github.com/CALIPSO-project/SPINacc/labels/good%20first%20issue).
+For substantial changes/contributions, please start with an issue.
+
+> On opening a pull request, unit tests will run on GitHub CI. You can
+> click on these in the pull request to see where (if anywhere) the tests
+> are failing.
+
+## Quick Start
+
+ Getting a simple development environment should involve:
+
+* `SPINacc` has been tested on `python==3.9.*`. 
+
+```sh
+# Create a virtual environment
+python3 -m venv ./venv3
+source venv/bin/activate
+# Download the repository
+git clone git@github.com:CALIPSO-project/SPINacc.git
+# Move into the repository root
+cd SPINacc
+# Install the package requirements
+pip install -r requirements.txt 
+```
+
+### Code quality checks
+
+The package includes configuration for a set of `pre-commit` hooks to ensure code
+commits meet common community quality standards. The `pre-commit` tool blocks `git`
+commits until all hooks pass. You should install these to ensure that your commited code
+meets these standards. To install, add the following to your virtual environment: 
+
+```sh
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```

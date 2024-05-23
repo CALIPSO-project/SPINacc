@@ -3,10 +3,9 @@ message: If you use this software, please cite it as below.
 title: SPINacc
 doi: TBD
 authors:
-  - name: Daniel Goll, Yan Sun 
+  - name: Daniel Goll, Yan Sun
     orcid: https://orcid.org/0000-0001-9246-9671
 version: 1.0.0
 license: ORCHIDEE_cecill.txt
 repository-code: git@github.com:dsgoll123/SPINacc.git
 date-released: 2023-01-08
-

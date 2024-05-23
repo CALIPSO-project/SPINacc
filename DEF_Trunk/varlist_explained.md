@@ -1,4 +1,4 @@
-# Input Files details 
+# Input Files details
 ## Coord Reference File
 - **File Name:** SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest.nc
 - **Usage:** Used as a reference file for coordinates, likely for geographic data alignment/validation in simulations or processing steps.
@@ -24,7 +24,7 @@
 - **File Name:** SRF_FGSPIN.10Y.ORC22v8034_19101231_sechiba_rest.nc
 - **Variables:** clay_frac (soil clay fraction)
 - **Tools Usage:** The soil clay fraction variable is crucial for predicting soil-related properties and is used across various Tools scripts for training models simulating soil dynamics.
- 
+
 
 # Output Variables
 
@@ -51,5 +51,3 @@
   - `pft` (Plant Functional Type)
   - `pool` (Structural Above Ground (StructuralAB), Structural Below Ground (StructuralBE), Woody Above Ground (WoodyAB), Woody Below Ground (WoodyBE))
 - **Details**: Predictions for litter content, detailing the amount of organic material available on the forest floor, differentiated by type and location (above/below ground).
-
-

@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+
 # -------------------------------variables----------------------------------------------------
 from config import output_file, reference_path, test_path
 

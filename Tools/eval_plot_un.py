@@ -120,7 +120,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
 
         my_x_ticks = np.arange(subps)
         axs[0].set_xticks(my_x_ticks)
-        axs[0].set_xticklabels([""])
+        # axs[0].set_xticklabels([""])
         my_y_ticks = np.arange(npfts)
         axs[0].set_yticks(my_y_ticks)
         axs[0].set_yticklabels(yTickLabel)
@@ -148,7 +148,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
                 )
         my_x_ticks = np.arange(subps)
         axs[1].set_xticks(my_x_ticks)
-        axs[1].set_xticklabels([""])
+        # axs[1].set_xticklabels([""])
         my_y_ticks = np.arange(npfts)
         axs[1].set_yticks(my_y_ticks)
         axs[1].set_yticklabels(yTickLabel)

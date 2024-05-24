@@ -14,51 +14,51 @@
 #
 # =============================================================================================
 
-import calendar
-# Ready-made
-import os
+# import calendar
+# # Ready-made
+# import os
 
-import matplotlib
-import numpy as np
-import pandas as pd
-from netCDF4 import Dataset
+# import matplotlib
+# import numpy as np
+# import pandas as pd
+# from netCDF4 import Dataset
 
-matplotlib.use("Agg")
-import itertools
-import json
-import random
-import sys
-import warnings
-from collections import Counter
+# matplotlib.use("Agg")
+# import itertools
+# import json
+# import random
+# import sys
+# import warnings
+# from collections import Counter
 
-import matplotlib.colors as mcolors
-import matplotlib.pyplot as plt
-from imblearn.over_sampling import SMOTE
-from mpl_toolkits.basemap import Basemap
-from pandas import DataFrame, Series
-from scipy import stats
-from sklearn.cluster import Birch, KMeans
-from sklearn.datasets import make_regression
-from sklearn.ensemble import BaggingRegressor
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import LeaveOneOut
-from sklearn.tree import DecisionTreeRegressor
+# import matplotlib.colors as mcolors
+# import matplotlib.pyplot as plt
+# from imblearn.over_sampling import SMOTE
+# from mpl_toolkits.basemap import Basemap
+# from pandas import DataFrame, Series
+# from scipy import stats
+# from sklearn.cluster import Birch, KMeans
+# from sklearn.datasets import make_regression
+# from sklearn.ensemble import BaggingRegressor
+# from sklearn.metrics import mean_squared_error, r2_score
+# from sklearn.model_selection import LeaveOneOut
+# from sklearn.tree import DecisionTreeRegressor
 
-warnings.simplefilter(action="ignore")
-sys.path.append(os.path.dirname(__file__))
+# warnings.simplefilter(action="ignore")
+# sys.path.append(os.path.dirname(__file__))
 
-import check
-import Cluster
-import encode
-import eval_plot_loocv_un
-import eval_plot_un
-import extract_X
-import forcing
-import genMask
-import mapGlobe
-import ML
-import MLeval
-import train
-# Home-made
-from classes import auxiliary, pack
-from readvar import readvar
+# import check
+# import Cluster
+# import encode
+# import eval_plot_loocv_un
+# import eval_plot_un
+# import extract_X
+# import forcing
+# import genMask
+# import mapGlobe
+# import ML
+# import MLeval
+# import train
+# # Home-made
+# from classes import auxiliary, pack
+# from readvar import readvar

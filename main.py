@@ -15,12 +15,30 @@
  XXXX <License content>
 """
 
-import subprocess
-
-# added line
+import os
 import numpy as np
+import sys
+import subprocess
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import json
+import random
+from netCDF4 import Dataset
 
-from Tools import *
+import Tools.check as check
+from Tools.classes import pack
+from Tools.classes import auxiliary
+from Tools.readvar import readvar
+
+import Tools.Cluster as Cluster
+import Tools.forcing as forcing
+
+import Tools.ML as ML
+import Tools.genMask as genMask
+
+import Tools.eval_plot_un as eval_plot_un
+import Tools.eval_plot_loocv_un as eval_plot_loocv_un
+
 
 # print Python version
 print(sys.version)

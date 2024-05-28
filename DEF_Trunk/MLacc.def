@@ -22,3 +22,5 @@ log.MLacc_Trunk
 1
 # config[23] : Run reproducibility test for task 4 (1=yes/0=no)
 1
+# config[25] : reference directory
+/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/

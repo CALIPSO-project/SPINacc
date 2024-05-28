@@ -2,9 +2,13 @@ import numpy as np
 import pytest
 
 
+config_path = "DEF_Trunk/MLacc.def"
+
+
 @pytest.fixture
 def reference_path():  # reference EXE_DIR in zenodo
-    return "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
+    with open(config_path) as f:
+        return f.readlines[25].strip()
 
 
 @pytest.fixture

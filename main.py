@@ -16,6 +16,7 @@ XXXX <License content>
 """
 
 from Tools import *
+from DEF_Trunk import config
 
 # added line
 import numpy as np
@@ -34,21 +35,15 @@ if len(sys.argv) < 2:
 else:
     dir_def = sys.argv[1]
 
-with open(dir_def + "MLacc.def", "r") as f:
-    config = f.readlines()
-
-# Define standard output file
-thefile = config[1].strip()
-
 # Define task
-itask = config[3].strip().split(",")
+itask = config.tasks
 
-logfile = open(thefile, "w", 1)
+logfile = open(config.logfile, "w", buffering=1)
 check.display("DEF directory: " + dir_def, logfile)
 check.display("running task: %s" % str(itask), logfile)
 
 # Define task
-resultpath = config[5].strip()
+resultpath = config.results_dir
 check.display("results are stored at: " + resultpath, logfile)
 
 # Read list of variables
@@ -56,8 +51,7 @@ with open(dir_def + "varlist.json", "r") as f:
     varlist = json.loads(f.read())
 
 # load stored results or start from scratch
-iprec = int(config[7].strip())
-if iprec:
+if config.start_from_scratch:
     check.display("read from previous results...", logfile)
     packdata = xarray.load_dataset(resultpath + "packdata.nc")
 else:
@@ -67,21 +61,15 @@ else:
     packdata.to_netcdf(resultpath + "packdata.nc")
 
 # Define random seed
-iseed = int(config[13].strip())
-random.seed(iseed)
+iseed = config.random_seed
+random.seed(config.random_seed)
 
 # added line, randomize with np also because Cluster_all
 np.random.seed(iseed)
 
 check.display("random seed = %i" % iseed, logfile)
 # Define do leave-one-out crosee validation (loocv=1) or not (loocv=0)
-loocv = int(config[15].strip())
-
-# Read whether to run reproducibility tests for each task
-run_repro_test_task1 = int(config[17].strip())
-run_repro_test_task2 = int(config[19].strip())
-run_repro_test_task3 = int(config[21].strip())
-run_repro_test_task4 = int(config[23].strip())
+loocv = config.leave_one_out_cv
 
 
 if "1" in itask:
@@ -113,7 +101,7 @@ if "1" in itask:
         logfile,
     )
     # Run test of reproducibility for the task if yes
-    if run_repro_test_task1:
+    if config.repro_test_task_1:
         subprocess.run(["python", "tests/task1_log.py"])
         check.display(
             "Task 1 reproducibility test results have been stored in tests_results.txt",
@@ -123,9 +111,9 @@ if "1" in itask:
 if "2" in itask:
     #
     # clustering
-    KK = int(config[9].strip())
-    check.display("Kmean algorithm, K=%i" % KK, logfile)
-    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, varlist, KK, logfile)
+    K = config.kmeans_clusters
+    check.display("Kmean algorithm, K=%i" % K, logfile)
+    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, varlist, K, logfile)
     np.savetxt(resultpath + "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath + "IDx.npy")
     IDloc.dump(resultpath + "IDloc.npy")
@@ -148,7 +136,7 @@ if "2" in itask:
         logfile,
     )
     # Run test of reproducibility for the task if yes
-    if run_repro_test_task2:
+    if config.repro_test_task_2:
         subprocess.run(["python", "tests/task2_log.py"])
         check.display(
             "Task 2 reproducibility test results have been stored in tests_results.txt",
@@ -162,7 +150,7 @@ if "3" in itask:
     IDx = np.load(resultpath + "IDx.npy", allow_pickle=True)
     forcing.write(varlist, resultpath, IDx)
     # Run test of reproducibility for the task if yes
-    if run_repro_test_task3:
+    if config.repro_test_task_3:
         subprocess.run(["python", "tests/task3_log.py"])
         subprocess.run(["python", "tests/task3_2_log.py"])
         check.display(
@@ -253,7 +241,7 @@ if "4" in itask:
             restvar1[:] = tmpvar
             restnc.close()
         # Run test of reproducibility for the task if yes
-    if run_repro_test_task4:
+    if config.repro_test_task_4:
         subprocess.run(["python", "tests/task4_log.py"])
         subprocess.run(["python", "tests/task4_2_log.py"])
         check.display(
@@ -278,7 +266,7 @@ if "5" in itask:
         eval_plot_un.plot_metric(
             resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
         )
-        if loocv == 1:
+        if loocv:
             eval_plot_loocv_un.plot_metric(
                 resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
             )

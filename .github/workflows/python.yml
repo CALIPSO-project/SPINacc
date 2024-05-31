@@ -36,3 +36,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Get sample of reference data
+        run: |
+          git clone https://github.com/ma595/SPINacc-data.git
+      - name: Run first test
+        run: |
+          mkdir EXE_DIR
+          mv SPINacc-data/reference/auxil.npy EXE_DIR/
+          mv SPINacc-data/reference/packdata.npy EXE_DIR/
+          sed -i '/# config\[3\] : task/{n;s/.*/1/}' ./DEF_Trunk/MLacc.def
+          # read previous results
+          sed -i '/# config\[7\] : task/{n;s/.*/1/}' ./DEF_Trunk/MLacc.def
+          # change the reference directory in MLacc.def
+          reference=$(readlink -f ./reference)
+          sed -i "s@/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/@$reference/@g" ./DEF_Trunk/MLacc.def
+          cat ./DEF_Trunk/MLacc.def
+          python main.py DEF_Trunk/
+          pytest -v --capture=sys ./tests/test_task1.py

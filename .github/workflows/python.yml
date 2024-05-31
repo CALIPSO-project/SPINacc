@@ -47,9 +47,21 @@ jobs:
           sed -i '/# config\[3\] : task/{n;s/.*/1/}' ./DEF_Trunk/MLacc.def
           # read previous results
           sed -i '/# config\[7\] : task/{n;s/.*/1/}' ./DEF_Trunk/MLacc.def
+
           # change the reference directory in MLacc.def
-          reference=$(readlink -f ./reference)
-          sed -i "s@/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/@$reference/@g" ./DEF_Trunk/MLacc.def
-          cat ./DEF_Trunk/MLacc.def
+          ls
+          reference=$(readlink -f ./SPINacc-data/reference/)
+          echo $reference
+          sed -i "s@/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/@${reference}/\n/@g" ./DEF_Trunk/MLacc.def
+
+          # change execution directory in MLacc.def
+          EXE_DIR=$(readlink -f ./EXE_DIR)
+          sed -i "s@/home/surface10/mrasolon/SPINacc_24_01_05/EXE_DIR/@$EXE_DIR/@g" ./DEF_Trunk/MLacc.def
+
+          # stomate files in varlist.json
+          varlist_json="$(readlink -f DEF_Trunk)/varlist.json"
+          VLAD_DATA="$(readlink -f ./SPINacc-data)/vlad_files/vlad_files/"
+          sed -i "s@/home/surface5/vbastri/SPINacc_ref@$VLAD_DATA@g" $varlist_json
+
           python main.py DEF_Trunk/
           pytest -v --capture=sys ./tests/test_task1.py

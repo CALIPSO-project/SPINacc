@@ -8,7 +8,7 @@ config_path = "DEF_Trunk/MLacc.def"
 @pytest.fixture
 def reference_path():  # reference EXE_DIR in zenodo
     with open(config_path) as f:
-        return f.readlines[25].strip()
+        return f.readlines()[25].strip()
 
 
 @pytest.fixture

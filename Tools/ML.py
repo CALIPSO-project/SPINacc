@@ -115,7 +115,7 @@ def MLmap(
 
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         return None
-    
+
     if (PFT_mask[ipft - 1] > 0).any():
         return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         # evaluation
@@ -383,7 +383,7 @@ def MLloop(
     #  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
     #  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
     missVal = varlist["resp"]["missing_value"]
-    
+
     result = []
 
     Yvar = varlist["resp"]["variables"][ipool]
@@ -422,7 +422,7 @@ def MLloop(
                         missVal,
                     )
                     if res:
-                        res['var'] = varname
+                        res["var"] = varname
                         result.append(res)
                 else:
                     index = itertools.product(
@@ -454,12 +454,12 @@ def MLloop(
                             missVal,
                         )
                         if res:
-                            res['var'] = varname
+                            res["var"] = varname
                             for i, (k, v) in enumerate(dim_ind):
-                                res[f'dim_{i+1}'] = k
-                                res[f'ind_{i+1}'] = v
+                                res[f"dim_{i+1}"] = k
+                                res[f"ind_{i+1}"] = v
                             result.append(res)
                 # close&save netCDF file
                 restnc.close()
 
-    return pd.DataFrame(result).set_index('var')
+    return pd.DataFrame(result).set_index("var")

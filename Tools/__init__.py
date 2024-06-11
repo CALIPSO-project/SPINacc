@@ -14,8 +14,6 @@
 #
 # =============================================================================================
 
-import calendar
-
 # Ready-made
 import os
 
@@ -23,16 +21,14 @@ import matplotlib
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset
+import calendar
 
 matplotlib.use("Agg")
 import itertools
 import json
-import random
 import sys
 from collections import Counter
 
-import matplotlib.colors as mcolors
-import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
 from mpl_toolkits.basemap import Basemap
 from pandas import DataFrame, Series

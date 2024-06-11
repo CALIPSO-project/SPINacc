@@ -13,6 +13,7 @@
 # =============================================================================================
 
 from Tools import *
+import itertools
 
 
 def MLmap_multidim(
@@ -33,6 +34,7 @@ def MLmap_multidim(
     loocv,
     restvar,
     missVal,
+    dataset = []
 ):
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
@@ -60,7 +62,8 @@ def MLmap_multidim(
     # end extract Y
     extracted_Y = np.reshape(pool_arr, (len(packdata.Nlat), 1))
     extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=1)
-    df_data = DataFrame(extr_all, columns=[labx])  # convert the array into dataframe
+    df_data = DataFrame(extr_all, columns=labx)  # convert the array into dataframe
+    dataset.append(df_data)
     # df_data.ix[:,22]=(df_data.ix[:,22].astype(int)).astype(str)
     combine_XY = df_data.dropna()  # delete pft=nan
     combine_XY = combine_XY.drop(["pft"], axis=1)
@@ -86,15 +89,15 @@ def MLmap_multidim(
     (
         Tree_Ens,
         predY_train,
-        loocv_R2,
-        loocv_reMSE,
-        loocv_slope,
-        loocv_dNRMSE,
-        loocv_sNRMSE,
-        loocv_iNRMSE,
-        loocv_f_SB,
-        loocv_f_SDSD,
-        loocv_f_LSC,
+        # loocv_R2,
+        # loocv_reMSE,
+        # loocv_slope,
+        # loocv_dNRMSE,
+        # loocv_sNRMSE,
+        # loocv_iNRMSE,
+        # loocv_f_SB,
+        # loocv_f_SDSD,
+        # loocv_f_LSC,
     ) = train.training_BAT(combineXY, logfile, loocv)
 
     if not Tree_Ens:
@@ -129,6 +132,7 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+
         # evaluation
         R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
             MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
@@ -186,14 +190,9 @@ def MLmap_multidim(
             )
         )
         plt.close("all")
-    else:
-        check.display(
-            "%s, variable %s, index %s (dim: %s) : NO DATA!"
-            % (ipool, varname, ind, ii["dim_loop"]),
-            logfile,
-        )
-    if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
-        print(varname, ind)
+
+    raise ValueError("%s, variable %s, index %s (dim: %s) : NO DATA!"
+                     % (ipool, varname, ind, ii["dim_loop"]))
 
 
 ##@param[in]   packdata               packaged data
@@ -223,7 +222,8 @@ def MLloop(
     #  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
     missVal = varlist["resp"]["missing_value"]
     Yvar = varlist["resp"]["variables"]
-    result = []
+
+    comb_ds = {}
     frames = []
 
     for ipool, iis in Yvar.items():
@@ -269,6 +269,7 @@ def MLloop(
                             loocv,
                             restvar,
                             missVal,
+                            comb_ds.setdefault(ipool, [])
                         )
                         if res:
                             res["var"] = varname
@@ -276,10 +277,17 @@ def MLloop(
                                 res[f"dim_{i+1}"] = k
                                 res[f"ind_{i+1}"] = v
                             result.append(res)
+                            if len(result) > 1:
+                                break
 
                     # close&save netCDF file
                     restnc.close()
+                    if len(result) > 2:
+                        break
 
         frames.append(pd.DataFrame(result).set_index("var"))
 
+    comb_ds = {k: pd.concat(v) for k, v in comb_ds.items()}
+    breakpoint()
+    
     return pd.concat(frames, keys=Yvar.keys(), names=["comp"])

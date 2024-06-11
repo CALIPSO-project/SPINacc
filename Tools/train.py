@@ -44,15 +44,15 @@ def training_BAT(XY_train, logfile, loocv):
         return (
             TreeEns,
             predY,
-            loocv_R2,
-            loocv_reMSE,
-            loocv_slope,
-            loocv_dNRMSE,
-            loocv_sNRMSE,
-            loocv_iNRMSE,
-            loocv_f_SB,
-            loocv_f_SDSD,
-            loocv_f_LSC,
+            # loocv_R2,
+            # loocv_reMSE,
+            # loocv_slope,
+            # loocv_dNRMSE,
+            # loocv_sNRMSE,
+            # loocv_iNRMSE,
+            # loocv_f_SB,
+            # loocv_f_SDSD,
+            # loocv_f_LSC,
         )
 
     # If the length of unique target variable is not 1,
@@ -116,11 +116,13 @@ def training_BAT(XY_train, logfile, loocv):
     #                               max_depth=14, min_samples_split=5)
 
     bag = BaggingRegressor(
-        base_estimator=tree, max_samples=0.8, n_estimators=300, random_state=1000
+        base_estimator=tree, max_samples=0.8, n_estimators=1, random_state=1000
     )
     TreeEns = bag.fit(Xtrain, Ytrain, sample_weight=SW)  # sample_weight=SW
     # predict
     predY = bag.predict(XX)
+    
+    return TreeEns, predY
 
     # leave one out cross validations
     loo = LeaveOneOut()

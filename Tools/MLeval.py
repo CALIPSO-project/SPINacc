@@ -66,7 +66,14 @@ def evaluation_map(Global_Predicted_Y_map, Y_map, ipft, PFTmask):
         )
 
     return dict(
-        R2=R2, RMSE=RMSE, slope=slope, reMSE=reMSE, 
-        dNRMSE=dNRMSE, sNRMSE=sNRMSE, iNRMSE=iNRMSE, 
-        f_SB=f_SB, f_SDSD=f_SDSD, f_LSC=f_LSC
+        R2=R2,
+        RMSE=RMSE,
+        slope=slope,
+        reMSE=reMSE,
+        dNRMSE=dNRMSE,
+        sNRMSE=sNRMSE,
+        iNRMSE=iNRMSE,
+        f_SB=f_SB,
+        f_SDSD=f_SDSD,
+        f_LSC=f_LSC,
     )

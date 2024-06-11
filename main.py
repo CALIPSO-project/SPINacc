@@ -206,22 +206,16 @@ if "4" in itask:
     # add rights to manipulate file:
     os.chmod(restfile, 0o644)
 
-    result = []
-    for ipool in Yvar.keys():
-        check.display("processing %s..." % ipool, logfile)
-        res_df = ML.MLloop(
-            packdata,
-            ipool,
-            logfile,
-            varlist,
-            labx,
-            resultpath,
-            loocv,
-            restfile,
-        )
-        result.append(res_df)
-    result_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
-    result_df.to_csv(resultpath + "MLacc_results.csv")
+    res_df = ML.MLloop(
+        packdata,
+        logfile,
+        varlist,
+        labx,
+        resultpath,
+        loocv,
+        restfile,
+    )
+    res_df.to_csv(resultpath + "MLacc_results.csv")
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 

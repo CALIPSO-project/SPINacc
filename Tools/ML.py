@@ -93,7 +93,7 @@ def MLmap_multidim(
 
     # combine_XY=pd.get_dummies(combine_XY) # one-hot encoded
     (
-        Tree_Ens,
+        model,
         predY_train,
         # loocv_R2,
         # loocv_reMSE,
@@ -111,7 +111,7 @@ def MLmap_multidim(
     ]  # all indices start from 1, but python loop starts from 0
     pool_map[pool_map >= 1e15] = np.nan
 
-    if not Tree_Ens:
+    if not model:
         # only one value
         predY = np.where(pool_map == pool_map, predY_train[0], np.nan)
         Global_Predicted_Y_map = predY
@@ -121,7 +121,7 @@ def MLmap_multidim(
             ipft,
             PFT_mask,
             var_pred_name,
-            Tree_Ens,
+            model,
             col_type,
             type_val,
             var_pred_name,
@@ -142,7 +142,12 @@ def MLmap_multidim(
         return None
 
     if (PFT_mask[ipft - 1] > 0).any():
-        return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        res["var"] = varname
+        for i, (k, v) in enumerate(dim_ind):
+            res[f"dim_{i+1}"] = k
+            res[f"ind_{i+1}"] = v
+        return res
 
     raise ValueError("%s, variable %s, index %s (dim: %s) : NO DATA!"
                      % (ipool, varname, ind, ii["dim_loop"]))
@@ -238,7 +243,6 @@ def MLloop(
     Yvar = varlist["resp"]["variables"]
 
     comb_ds = defaultdict(list)
-    frames = []
 
     for ipool, iis in Yvar.items():
         check.display("processing %s..." % ipool, logfile)
@@ -280,40 +284,33 @@ def MLloop(
                                 logfile,
                             )
                         )
-                        break
 
                     # close&save netCDF file
                     restnc.close()
-                    break
 
-    comb_ds = {k: pd.concat(v) for k, v in comb_ds.items()}
+    comb_ds = {k: pd.concat(v, axis=1) for k, v in comb_ds.items()}
+    for k, df in comb_ds.items():
+        df.to_csv(f"{resultpath}/{k}.csv")
     
-    # res = MLmap_multidim(
-    #     packdata,
-    #     ivar,
-    #     PFT_mask,
-    #     PFT_mask_lai,
-    #     var_pred_name,
-    #     ipool,
-    #     ipft,
-    #     logfile,
-    #     varname,
-    #     varlist,
-    #     labx,
-    #     ind,
-    #     ii,
-    #     resultpath,
-    #     loocv,
-    #     restvar,
-    #     missVal,
-    #     comb_ds.setdefault(ipool, [])
-    # )
-    # if res:
-    #     res["var"] = varname
-    #     for i, (k, v) in enumerate(dim_ind):
-    #         res[f"dim_{i+1}"] = k
-    #         res[f"ind_{i+1}"] = v
-    #     result.append(res)
-    # frames.append(pd.DataFrame(result).set_index("var"))
+    res = MLmap_multidim(
+        packdata,
+        ivar,
+        PFT_mask,
+        PFT_mask_lai,
+        var_pred_name,
+        ipool,
+        ipft,
+        logfile,
+        varname,
+        varlist,
+        labx,
+        ind,
+        ii,
+        resultpath,
+        loocv,
+        restvar,
+        missVal,
+        comb_ds.setdefault(ipool, [])
+    )
     
-    return pd.concat(frames, keys=Yvar.keys(), names=["comp"])
+    # return pd.concat(frames, keys=Yvar.keys(), names=["comp"])

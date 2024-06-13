@@ -53,33 +53,17 @@ def collect_data(
 def MLmap_multidim(
     packdata,
     df_data,
-    ivar,
     ipool,
     PFT_mask,
     var_pred_name,
-    varname,
     varlist,
     labx,
-    ipft,
-    ind,
-    ii,
     logfile,
     loocv,
-    restvar,
     missVal,
 ):
     combine_XY = df_data.dropna()  # delete pft=nan
     combine_XY = combine_XY.drop(["pft"], axis=1)
-    
-    if len(combine_XY) == 0:
-        check.display(
-            "%s, variable %s, index %s (dim: %s) : NO DATA in training set!"
-            % (ipool, varname, ind, ii["dim_loop"]),
-            logfile,
-        )
-        if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
-            print(varname, ind)
-        return None
 
     # need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
@@ -106,15 +90,15 @@ def MLmap_multidim(
         # loocv_f_LSC,
     ) = train.training_BAT(combineXY, logfile, loocv)
 
-    pool_map = np.squeeze(ivar)[
-        tuple(i - 1 for i in ind)
-    ]  # all indices start from 1, but python loop starts from 0
-    pool_map[pool_map >= 1e15] = np.nan
+    # pool_map = np.squeeze(ivar)[
+    #     tuple(i - 1 for i in ind)
+    # ]  # all indices start from 1, but python loop starts from 0
+    # pool_map[pool_map >= 1e15] = np.nan
 
     if not model:
         # only one value
-        predY = np.where(pool_map == pool_map, predY_train[0], np.nan)
-        Global_Predicted_Y_map = predY
+        # predY = np.where(pool_map == pool_map, predY_train[0], np.nan)
+        Global_Predicted_Y_map = predY_train
     else:
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
             packdata,
@@ -133,8 +117,8 @@ def MLmap_multidim(
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
         # some pixel with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
-        idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
-        restvar[idx] = Pred_Y_out
+        # idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
+        # restvar[idx] = Pred_Y_out
         # command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
         # exec(command % tuple(ind - 1))
 
@@ -257,7 +241,7 @@ def MLloop(
 
                     # open restart file and select variable (memory is exceeded if open outside this loop)
                     restnc = Dataset(restfile, "a")
-                    restvar = restnc[varname]
+                    # restvar = restnc[varname]
 
                     index = itertools.product(
                         *[ii["loops"][ll] for ll in ii["dim_loop"]]
@@ -287,30 +271,25 @@ def MLloop(
 
                     # close&save netCDF file
                     restnc.close()
+                    
+    results = []
 
-    comb_ds = {k: pd.concat(v, axis=1) for k, v in comb_ds.items()}
-    for k, df in comb_ds.items():
-        df.to_csv(f"{resultpath}/{k}.csv")
+    for ipool, ds in comb_ds.items():
+        df = pd.concat(ds, axis=1)
+        df.to_csv(f"{resultpath}/{ipool}.csv")
     
-    res = MLmap_multidim(
-        packdata,
-        ivar,
-        PFT_mask,
-        PFT_mask_lai,
-        var_pred_name,
-        ipool,
-        ipft,
-        logfile,
-        varname,
-        varlist,
-        labx,
-        ind,
-        ii,
-        resultpath,
-        loocv,
-        restvar,
-        missVal,
-        comb_ds.setdefault(ipool, [])
-    )
+        res = MLmap_multidim(
+            packdata,
+            df,
+            ipool,
+            PFT_mask,
+            var_pred_name,
+            varlist,
+            labx,
+            logfile,
+            loocv,
+            missVal,
+        )
+        results.append(res)
     
-    # return pd.concat(frames, keys=Yvar.keys(), names=["comp"])
+    return pd.concat(results, keys=comb_ds.keys(), names=["component"])

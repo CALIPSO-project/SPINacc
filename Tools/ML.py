@@ -50,6 +50,18 @@ def collect_data(
     return DataFrame(extr_all, columns=labx)  # convert the array into dataframe
 
 
+def combine_data(frames, keys):
+    columns = frames[0].columns
+    for frame in frames[1:]:
+        if not columns.equals(frame.columns):
+            raise ValueError("DataFrames have different columns")
+    check_same = {}
+    for col in columns:
+        check_same[col] = all((frame[col] == frames[0][col]).all() for frame in frames)
+    print(check_same)
+    breakpoint()
+    
+
 def MLmap_multidim(
     packdata,
     df_data,
@@ -127,75 +139,71 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        res["var"] = varname
-        for i, (k, v) in enumerate(dim_ind):
-            res[f"dim_{i+1}"] = k
-            res[f"ind_{i+1}"] = v
         return res
 
     raise ValueError("%s, variable %s, index %s (dim: %s) : NO DATA!"
                      % (ipool, varname, ind, ii["dim_loop"]))
 
 
-# def plot_eval_results(Global_Predicted_Y_map, ipool, pool_map, combineXY, predY_train, varname, ind, ii, ipft, PFT_mask, resultpath, logfile):
+def plot_eval_results(Global_Predicted_Y_map, ipool, pool_map, combineXY, predY_train, varname, ind, ii, ipft, PFT_mask, resultpath, logfile):
     
-#     # evaluation
-#     R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
-#         MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-#     )
-#     check.display(
-#         "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
-#         % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
-#         logfile,
-#     )
-#     # save R2, RMSE, slope to txt files
-#     # fx.write('%.2f' % R2+',')
-#     # plot the results
-#     fig = plt.figure(figsize=[12, 12])
-#     # training dat
-#     ax1 = plt.subplot(221)
-#     ax1.scatter(combineXY.iloc[:, 0].values, predY_train)
-#     # global dta
-#     ax2 = plt.subplot(222)
-#     #    predY=Global_Predicted_Y_map.flatten()
-#     #    simuY=pool_map.flatten()
-#     ax2.scatter(
-#         pool_map[PFT_mask[ipft - 1] > 0],
-#         Global_Predicted_Y_map[PFT_mask[ipft - 1] > 0],
-#     )
-#     xx = np.linspace(0, np.nanmax(pool_map), 10)
-#     yy = np.linspace(0, np.nanmax(pool_map), 10)
-#     ax2.text(
-#         0.1 * np.nanmax(pool_map),
-#         0.7 * np.nanmax(Global_Predicted_Y_map),
-#         "R2=%.2f" % R2,
-#     )
-#     ax2.text(
-#         0.1 * np.nanmax(pool_map),
-#         0.8 * np.nanmax(Global_Predicted_Y_map),
-#         "RMSE=%i" % RMSE,
-#     )
-#     ax2.plot(xx, yy, "k--")
-#     ax2.set_xlabel("ORCHIDEE simulated")
-#     ax2.set_ylabel("Machine-learning predicted")
-#     ax3 = plt.subplot(223)
-#     im = ax3.imshow(pool_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-#     ax3.set_title("ORCHIDEE simulated")
-#     plt.colorbar(im, orientation="horizontal")
-#     ax4 = plt.subplot(224)
-#     im = ax4.imshow(Global_Predicted_Y_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-#     ax4.set_title("Machine-learning predicted")
-#     plt.colorbar(im, orientation="horizontal")
+    # evaluation
+    R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
+        MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+    )
+    check.display(
+        "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
+        % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
+        logfile,
+    )
+    # save R2, RMSE, slope to txt files
+    # fx.write('%.2f' % R2+',')
+    # plot the results
+    fig = plt.figure(figsize=[12, 12])
+    # training dat
+    ax1 = plt.subplot(221)
+    ax1.scatter(combineXY.iloc[:, 0].values, predY_train)
+    # global dta
+    ax2 = plt.subplot(222)
+    #    predY=Global_Predicted_Y_map.flatten()
+    #    simuY=pool_map.flatten()
+    ax2.scatter(
+        pool_map[PFT_mask[ipft - 1] > 0],
+        Global_Predicted_Y_map[PFT_mask[ipft - 1] > 0],
+    )
+    xx = np.linspace(0, np.nanmax(pool_map), 10)
+    yy = np.linspace(0, np.nanmax(pool_map), 10)
+    ax2.text(
+        0.1 * np.nanmax(pool_map),
+        0.7 * np.nanmax(Global_Predicted_Y_map),
+        "R2=%.2f" % R2,
+    )
+    ax2.text(
+        0.1 * np.nanmax(pool_map),
+        0.8 * np.nanmax(Global_Predicted_Y_map),
+        "RMSE=%i" % RMSE,
+    )
+    ax2.plot(xx, yy, "k--")
+    ax2.set_xlabel("ORCHIDEE simulated")
+    ax2.set_ylabel("Machine-learning predicted")
+    ax3 = plt.subplot(223)
+    im = ax3.imshow(pool_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
+    ax3.set_title("ORCHIDEE simulated")
+    plt.colorbar(im, orientation="horizontal")
+    ax4 = plt.subplot(224)
+    im = ax4.imshow(Global_Predicted_Y_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
+    ax4.set_title("Machine-learning predicted")
+    plt.colorbar(im, orientation="horizontal")
 
-#     fig.savefig(
-#         resultpath
-#         + "Eval_%s" % varname
-#         + "".join(
-#             ["_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll] for ll in range(len(ind))]
-#             + [".png"]
-#         )
-#     )
-#     plt.close("all")
+    fig.savefig(
+        resultpath
+        + "Eval_%s" % varname
+        + "".join(
+            ["_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll] for ll in range(len(ind))]
+            + [".png"]
+        )
+    )
+    plt.close("all")
 
 
 ##@param[in]   packdata               packaged data
@@ -247,13 +255,14 @@ def MLloop(
                         *[ii["loops"][ll] for ll in ii["dim_loop"]]
                     )
                     for ind in index:
-                        dim_ind = tuple(zip(ii["dim_loop"], ind))
                         if "pft" in ii["dim_loop"]:
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
+
+                        dim_ind, = zip(ii["dim_loop"], ind)
                         
-                        comb_ds[ipool].append(
+                        comb_ds[ipool].append((
                             collect_data(
                                 packdata,
                                 ivar,
@@ -266,16 +275,17 @@ def MLloop(
                                 labx,
                                 varlist,
                                 logfile,
-                            )
-                        )
+                            ),
+                            f"{varname}_{dim_ind[0]}_{dim_ind[1]}"
+                        ))
 
                     # close&save netCDF file
                     restnc.close()
-                    
+
     results = []
 
-    for ipool, ds in comb_ds.items():
-        df = pd.concat(ds, axis=1)
+    for ipool, vals in comb_ds.items():
+        df = combine_data(*zip(*vals))
         df.to_csv(f"{resultpath}/{ipool}.csv")
     
         res = MLmap_multidim(

@@ -57,14 +57,18 @@ def combine_data(frames, keys):
             raise ValueError("DataFrames have different columns")
     check_same = {}
     for col in columns:
-        check_same[col] = all((frame[col] == frames[0][col]).all() for frame in frames)
-    print(check_same)
-    breakpoint()
-    
+        check_same[col] = all((frame[col] == frames[0][col]).dropna().all() for frame in frames)
+    same_cols = [col for col, same in check_same.items() if same or col == 'pft']
+    df = pd.concat([df.drop(columns=same_cols) for df in frames], keys=keys, axis=1)
+    df.columns = [f"{c}_{k}" for k, c in df.columns]
+    df = pd.concat([df, frames[0][same_cols]], axis=1)
+    df = df.dropna().drop(columns=['pft'])  # delete pft=nan
+    return df
+
 
 def MLmap_multidim(
     packdata,
-    df_data,
+    combine_XY,
     ipool,
     PFT_mask,
     var_pred_name,
@@ -74,9 +78,6 @@ def MLmap_multidim(
     loocv,
     missVal,
 ):
-    combine_XY = df_data.dropna()  # delete pft=nan
-    combine_XY = combine_XY.drop(["pft"], axis=1)
-
     # need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
@@ -86,6 +87,9 @@ def MLmap_multidim(
         col_type = "None"
         type_val = "None"
         combineXY = combine_XY
+        
+    Y = combineXY.filter(regex='^Y_')
+    X = combineXY.drop(columns=Y.columns)
 
     # combine_XY=pd.get_dummies(combine_XY) # one-hot encoded
     (
@@ -100,7 +104,7 @@ def MLmap_multidim(
         # loocv_f_SB,
         # loocv_f_SDSD,
         # loocv_f_LSC,
-    ) = train.training_BAT(combineXY, logfile, loocv)
+    ) = train.training_BAT(X, Y, logfile, loocv)
 
     # pool_map = np.squeeze(ivar)[
     #     tuple(i - 1 for i in ind)
@@ -114,7 +118,6 @@ def MLmap_multidim(
     else:
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
             packdata,
-            ipft,
             PFT_mask,
             var_pred_name,
             model,
@@ -137,12 +140,7 @@ def MLmap_multidim(
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         return None
 
-    if (PFT_mask[ipft - 1] > 0).any():
-        res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        return res
-
-    raise ValueError("%s, variable %s, index %s (dim: %s) : NO DATA!"
-                     % (ipool, varname, ind, ii["dim_loop"]))
+    return MLeval.evaluation_map(Global_Predicted_Y_map, PFT_mask)
 
 
 def plot_eval_results(Global_Predicted_Y_map, ipool, pool_map, combineXY, predY_train, varname, ind, ii, ipft, PFT_mask, resultpath, logfile):
@@ -278,6 +276,9 @@ def MLloop(
                             ),
                             f"{varname}_{dim_ind[0]}_{dim_ind[1]}"
                         ))
+                        break
+                    if len(comb_ds[ipool]) > 1:
+                        break
 
                     # close&save netCDF file
                     restnc.close()

@@ -29,6 +29,7 @@ def en_code(comXY, colum, Nm):
     for ii in range(0, len(jum)):
         append_array.loc[comXY.index[ii], int(jum[comXY.index[ii]]) - 1] = 1
     append_array = (append_array.astype(int)).astype(bool)
+    breakpoint()
     comXY = comXY.drop(["soil_orders"], axis=1)
     combine_XY_encode = pd.concat([comXY, append_array], axis=1)
     return combine_XY_encode

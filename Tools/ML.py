@@ -140,7 +140,7 @@ def MLmap_multidim(
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         return None
 
-    return MLeval.evaluation_map(Global_Predicted_Y_map, PFT_mask)
+    return MLeval.evaluation_map(Global_Predicted_Y_map, Y, PFT_mask)
 
 
 def plot_eval_results(Global_Predicted_Y_map, ipool, pool_map, combineXY, predY_train, varname, ind, ii, ipft, PFT_mask, resultpath, logfile):
@@ -276,9 +276,6 @@ def MLloop(
                             ),
                             f"{varname}_{dim_ind[0]}_{dim_ind[1]}"
                         ))
-                        break
-                    if len(comb_ds[ipool]) > 1:
-                        break
 
                     # close&save netCDF file
                     restnc.close()

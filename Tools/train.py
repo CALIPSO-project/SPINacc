@@ -97,7 +97,8 @@ def training_BAT(X, Y, logfile, loocv):
     #     optimizer=optim.Adam,
     #     # device="cuda",
     # )
-    model = MLPRegressor(hidden_layer_sizes=(100, 100), max_iter=1000, verbose=True)
+    model = MLPRegressor(hidden_layer_sizes=(100, 100), max_iter=1000, 
+                         learning_rate='invscaling', learning_rate_init=0.1, verbose=True)
        
     model.fit(X, Y)
     predY = model.predict(X)

@@ -1,7 +1,10 @@
 """Configuration file for the MLacc tasks."""
 
 logfile = "log.MLacc_Trunk"
-tasks = [2, 4]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
+tasks = [
+    2,
+    4,
+]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
 results_dir = "/home/surface10/mrasolon/SPINacc_24_01_05/EXE_DIR/"
 reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
 start_from_scratch = True

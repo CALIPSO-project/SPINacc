@@ -188,7 +188,7 @@ def readvar(varlist, config, logfile):
 
     # range of Ks to be tested, and the final K
     maxK = config.max_kmeans_clusters
-    ds.attrs['Ks'] = list(range(2, maxK + 1))
-    ds.attrs['K'] = config.kmeans_clusters
+    ds.attrs["Ks"] = list(range(2, maxK + 1))
+    ds.attrs["K"] = config.kmeans_clusters
 
     return ds

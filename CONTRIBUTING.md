@@ -29,7 +29,7 @@ For substantial changes/contributions, please start with an issue.
 
  Getting a simple development environment should involve:
 
-* `SPINacc` has been tested on `python==3.9.*`. 
+* `SPINacc` has been tested on `python==3.9.*`.
 
 ```sh
 # Create a virtual environment
@@ -40,7 +40,7 @@ git clone git@github.com:CALIPSO-project/SPINacc.git
 # Move into the repository root
 cd SPINacc
 # Install the package requirements
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
 
 ### Code quality checks
@@ -48,7 +48,7 @@ pip install -r requirements.txt
 The package includes configuration for a set of `pre-commit` hooks to ensure code
 commits meet common community quality standards. The `pre-commit` tool blocks `git`
 commits until all hooks pass. You should install these to ensure that your commited code
-meets these standards. To install, add the following to your virtual environment: 
+meets these standards. To install, add the following to your virtual environment:
 
 ```sh
 pip install pre-commit

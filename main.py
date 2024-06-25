@@ -215,7 +215,7 @@ if "4" in itask:
             restfile,
         )
         result.append(res_df)
-    result_df = pd.concat(result, keys=Yvar.keys(), names=['comp'])
+    result_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
     result_df.to_csv(resultpath + "MLacc_results.csv")
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE

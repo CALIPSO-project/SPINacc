@@ -49,7 +49,6 @@ def readvar(varlist, config, logfile):
             )
             # DSG bugfix_start: remove hardcode
             # filename='crujra_twodeg_v2_'+str(year)+'.nc'
-            # f=Dataset(climvar['sourcepath']+filename,'r')
             f = Dataset(
                 climvar["sourcepath"] + climvar["filename"] + str(year) + ".nc", "r"
             )
@@ -76,52 +75,52 @@ def readvar(varlist, config, logfile):
                 zstart = count + 1
 
             var_month_year[year - climvar["year_start"]] = var_month
-            # eval('MY'+varname_clim[index]+'=var_month_year')
         adict["MY%s" % varname_clim[index]] = var_month_year[:]
 
+    # TODO: replace the stats with full data for NN training
     # 0.1.1 Tair (Tmax, Tmin, Tmean,Tstd,AMT)
-    Tair = adict["MYTair"] - 273.15
-    packdata.Tmean = np.mean(Tair, axis=(0, 1))
-    #  pyplot.imshow(Tmean)
-    packdata.Tstd = np.std(np.mean(Tair, axis=0), axis=0)
-    packdata.Tmin = np.min(np.mean(Tair, axis=0), axis=0)
-    packdata.Tmax = np.max(np.mean(Tair, axis=0), axis=0)
-    packdata.Tamp = packdata.Tmax - packdata.Tmin
+    packdata.Tair = (["year", "month", "lat", "lon"], adict["MYTair"] - 273.15)
+    # packdata.Tmean = np.mean(Tair, axis=(0, 1))
+    # #  pyplot.imshow(Tmean)
+    # packdata.Tstd = np.std(np.mean(Tair, axis=0), axis=0)
+    # packdata.Tmin = np.min(np.mean(Tair, axis=0), axis=0)
+    # packdata.Tmax = np.max(np.mean(Tair, axis=0), axis=0)
+    # packdata.Tamp = packdata.Tmax - packdata.Tmin
 
     # 0.1.2 Other climatic variables (Rainf,Snowf,Qair,Psurf,SWdown,LWdown)
-    for index in range(len(varname_clim)):
-        if varname_clim[index] == "Tair":
-            continue
-        trav = adict["MY" + varname_clim[index]]
-        if varname_clim[index] in ["Rainf", "Snowf"]:
-            meanv = 365 * 24 * 3600 * np.mean(np.mean(trav, axis=0), axis=0)
-            stdv = np.std(30 * 24 * 3600 * np.mean(trav, axis=0), axis=0)
-        else:
-            meanv = np.mean(np.mean(trav, axis=0), axis=0)
-            stdv = np.std(np.mean(trav, axis=0), axis=0)
-        packdata[varname_clim[index] + "_std"] = stdv
-        packdata[varname_clim[index] + "_mean"] = meanv
+    packdata.update((k, (["year", "month", "lat", "lon"], adict[f"MY{k}"])) for k in varname_clim)
+    # for index in range(len(varname_clim)):
+    #     if varname_clim[index] == "Tair":
+    #         continue
+    #     trav = adict["MY" + varname_clim[index]]
+    #     if varname_clim[index] in ["Rainf", "Snowf"]:
+    #         meanv = 365 * 24 * 3600 * np.mean(np.mean(trav, axis=0), axis=0)
+    #         stdv = np.std(30 * 24 * 3600 * np.mean(trav, axis=0), axis=0)
+    #     else:
+    #         meanv = np.mean(np.mean(trav, axis=0), axis=0)
+    #         stdv = np.std(np.mean(trav, axis=0), axis=0)
+    #     packdata[varname_clim[index] + "_std"] = stdv
+    #     packdata[varname_clim[index] + "_mean"] = meanv
 
     # 0.1.3 P and T for growing season (Pre_GS, Temp_GS, GS_length)
-    pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
-    temp = np.mean(Tair, axis=0)
-    Pre_GS_v = np.full((12, nlat, nlon), np.nan)
-    Temp_GS_v = np.full((12, nlat, nlon), np.nan)
-    GS_length_v = np.full((12, nlat, nlon), np.nan)
-    land = adict["MYTair"][0][0]
-    land[land > 1] = 1
-    for month in range(1, 13):
-        GS_mask = np.zeros(shape=(nlat, nlon))
-        maskx = temp[month - 1]
-        # temperature > 4 degree is growing season
-        GS_mask[maskx > -4] = 1
-        Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
-        Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
-        GS_length_v[month - 1] = GS_mask * land
-    packdata.GS_length = np.sum(GS_length_v, axis=0)
-    # np.where(np.isnan(Tair[0]),GS_length,np.nan)
-    packdata.Pre_GS = np.sum(Pre_GS_v, axis=0)
-    packdata.Temp_GS = np.sum(Temp_GS_v, axis=0)
+    # pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
+    # temp = np.mean(Tair, axis=0)
+    # Pre_GS_v = np.full((12, nlat, nlon), np.nan)
+    # Temp_GS_v = np.full((12, nlat, nlon), np.nan)
+    # GS_length_v = np.full((12, nlat, nlon), np.nan)
+    # land = adict["MYTair"][0][0]
+    # land[land > 1] = 1
+    # for month in range(1, 13):
+    #     GS_mask = np.zeros(shape=(nlat, nlon))
+    #     maskx = temp[month - 1]
+    #     # temperature > 4 degree is growing season
+    #     GS_mask[maskx > -4] = 1
+    #     Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
+    #     Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
+    #     GS_length_v[month - 1] = GS_mask * land
+    # packdata.GS_length = np.sum(GS_length_v, axis=0)
+    # packdata.Pre_GS = np.sum(Pre_GS_v, axis=0)
+    # packdata.Temp_GS = np.sum(Temp_GS_v, axis=0)
 
     # 0.2 read other variables, including Edaphic variables, N and P deposition variables
     predvar = varlist["pred"]
@@ -167,20 +166,14 @@ def readvar(varlist, config, logfile):
                 if "missing_value" in predvar[ipred].keys():
                     da[da == predvar[ipred]["missing_value"]] = np.nan
                 if isinstance(da, np.ma.masked_array):
-                    packdata[rename[ivar]] = da.filled(np.nan)
-                else:
-                    packdata[rename[ivar]] = da
-
-    # 0.3 Interactions between variables
-    packdata.interx1 = packdata.Tmean * packdata.Rainf_mean
-    packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
-
-    # insert dimension names for each variable
-    for k, v in packdata.items():
-        if k not in ["lat", "lon"]:
-            packdata[k] = (["veget", "lat", "lon"][-v.ndim :], v)
+                    da = da.filled(np.nan)
+                packdata[rename[ivar]] = (["veget", "lat", "lon"][-da.ndim:], da)
 
     ds = xarray.Dataset(packdata)
+
+    # 0.3 Interactions between variables
+    ds['interx'] = ds.Tair * ds.Rainf
+    # packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
 
     ds.attrs.update(
         nlat=nlat, nlon=nlon, lat_reso=varlist["lat_reso"], lon_reso=varlist["lon_reso"]

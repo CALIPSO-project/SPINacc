@@ -5,7 +5,7 @@ log.MLacc_Trunk
 # config[5] : execution directory
 ./EXE_DIR/  
 # config[7] : start from scratch (0) or read previous results (1)
-1
+0
 # config[9] : number of K for final Kmean algorithm
 4
 # config[11] : maximum number of Ks to test for Kmean algorithm

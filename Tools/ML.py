@@ -30,23 +30,22 @@ def collect_data(
     extr_var = extract_X.var(packdata, ipft)
     
     # extract PFT map
-    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft).reshape(len(packdata.Nlat), 1)
+    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
+    pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
 
     # extract Y
-    pool_arr = np.full(len(packdata.Nlat), np.nan)
     pool_map = np.squeeze(ivar)[
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
     pool_map[pool_map >= 1e18] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        for cc in range(len(packdata.Nlat)):
-            pool_arr[cc] = pool_map.flatten()[cc]
+        pool_arr = pool_map.flatten()
     else:
-        for cc in range(len(packdata.Nlat)):
-            pool_arr[cc] = pool_map[packdata.Nlat[cc], packdata.Nlon[cc]]
+        pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
+    extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
 
-    extracted_Y = np.reshape(pool_arr, (len(packdata.Nlat), 1))
-    extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=1)
+    extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=-1)
+    extr_all = extr_all.reshape(-1, extr_all.shape[-1])
     return DataFrame(extr_all, columns=labx)  # convert the array into dataframe
 
 

@@ -18,33 +18,20 @@ from Tools import *
 
 
 ##@param[in]   packdata               packaged data
-##@param[in]   var_ind                index of variable
-##@param[in]   VarName                list of variables' names
+##@param[in]   var_name               name of variable
 ##@retval      VarN                   variable values of selected pixels
-def extract_X(packdata, var_ind, VarName):
-    Nlat = packdata.Nlat
-    Nlon = packdata.Nlon
-    varN = np.full(len(Nlat), np.nan)
-    var_data = packdata[VarName[var_ind]]
-    for cc in range(0, len(Nlat)):
-        varN[cc] = var_data[Nlat[cc], Nlon[cc]]
-    return varN
+def extract_X(packdata, var_name):
+    var = packdata[var_name].values
+    return var[..., packdata.Nlat, packdata.Nlon]
 
 
 ##@param[in]   packdata               packaged data
-##@param[in]   var_ind                index of variable
-##@param[in]   VarName                list of variables' names
+##@param[in]   var_name               name of variable
 ##@param[in]   px                     index of PFT
 ##@retval      VarN                   variable values of selected pixels
-def extract_XN(packdata, var_ind, VarName, px):
-    Nlat = packdata.Nlat
-    Nlon = packdata.Nlon
-    varN = np.full(len(Nlat), np.nan)
-    var_data = packdata[VarName[var_ind]]
-    var_pft_map = var_data[px - 1]
-    for cc in range(0, len(Nlat)):
-        varN[cc] = var_pft_map[Nlat[cc], Nlon[cc]]
-    return varN
+def extract_XN(packdata, var_name, px):
+    var = packdata[var_name].values
+    return var[px - 1, packdata.Nlat, packdata.Nlon]
 
 
 ##@param[in]   packdata               packaged data
@@ -52,12 +39,7 @@ def extract_XN(packdata, var_ind, VarName, px):
 ##@param[in]   px                     index of PFT
 ##@retval      VarN                   variable values of selected pixels
 def pft(packdata, PFT_mask, px):
-    Nlat = packdata.Nlat
-    Nlon = packdata.Nlon
-    varN = np.full(len(Nlat), np.nan)
-    for cc in range(0, len(Nlat)):
-        varN[cc] = PFT_mask[px - 1, Nlat[cc], Nlon[cc]]
-    return varN
+    return PFT_mask[px - 1, packdata.Nlat, packdata.Nlon]
 
 
 ##@param[in]   packdata               packaged data
@@ -65,17 +47,12 @@ def pft(packdata, PFT_mask, px):
 ##@retval      extr_var               extracked data
 def var(packdata, ipft):
     extr_var = []
-    for indx in range(packdata.Nv_total):
-        if indx < packdata.Nv_nopft:
-            extracted_var = np.reshape(
-                extract_X(packdata, indx, packdata.var_pred_name),
-                (len(packdata.Nlat), 1),
-            )
-            extr_var.append(extracted_var)
+    for var_name in packdata.data_vars:
+        if "veget" not in packdata[var_name].dims:
+            extracted_var = extract_X(packdata, var_name)
         else:
-            extracted_var = np.reshape(
-                extract_XN(packdata, indx, packdata.var_pred_name, ipft),
-                (len(packdata.Nlat), 1),
-            )
-            extr_var.append(extracted_var)
-    return np.hstack(extr_var)
+            extracted_var = extract_XN(packdata, var_name, ipft)
+        extr_var.append(extracted_var.reshape(-1, len(packdata.Nlat), 1))
+    com_shape = max(map(np.shape, extr_var))
+    extr_var = [np.resize(a, com_shape) for a in extr_var]
+    return np.concatenate(extr_var, axis=-1)

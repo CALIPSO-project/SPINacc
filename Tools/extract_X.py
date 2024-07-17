@@ -41,7 +41,7 @@ def extract_XN(packdata, var_ind, VarName, px):
     Nlon = packdata.Nlon
     varN = np.full(len(Nlat), np.nan)
     var_data = packdata[VarName[var_ind]]
-    var_pft_map = np.squeeze(var_data[px - 1][:][:])
+    var_pft_map = var_data[px - 1]
     for cc in range(0, len(Nlat)):
         varN[cc] = var_pft_map[Nlat[cc], Nlon[cc]]
     return varN
@@ -64,18 +64,18 @@ def pft(packdata, PFT_mask, px):
 ##@param[in]   ipft                   ith pft
 ##@retval      extr_var               extracked data
 def var(packdata, ipft):
-    extr_var = np.zeros(shape=(len(packdata.Nlat), 0))
+    extr_var = []
     for indx in range(packdata.Nv_total):
         if indx < packdata.Nv_nopft:
             extracted_var = np.reshape(
                 extract_X(packdata, indx, packdata.var_pred_name),
                 (len(packdata.Nlat), 1),
             )
-            extr_var = np.concatenate((extr_var, extracted_var), axis=1)
+            extr_var.append(extracted_var)
         else:
             extracted_var = np.reshape(
                 extract_XN(packdata, indx, packdata.var_pred_name, ipft),
                 (len(packdata.Nlat), 1),
             )
-            extr_var = np.concatenate((extr_var, extracted_var), axis=1)
-    return extr_var
+            extr_var.append(extracted_var)
+    return np.hstack(extr_var)

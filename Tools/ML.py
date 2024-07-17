@@ -62,7 +62,7 @@ def combine_data(frames, keys):
     df = pd.concat([df.drop(columns=same_cols) for df in frames], keys=keys, axis=1)
     df.columns = [f"{c}_{k}" for k, c in df.columns]
     df = pd.concat([df, frames[0][same_cols]], axis=1)
-    df = df.dropna().drop(columns=['pft'])  # delete pft=nan
+    df = df.drop(columns=['pft']).dropna()
     return df
 
 
@@ -276,9 +276,13 @@ def MLloop(
                             ),
                             f"{varname}_{dim_ind[0]}_{dim_ind[1]}"
                         ))
+                        break
 
                     # close&save netCDF file
                     restnc.close()
+                    
+                    if len(comb_ds[ipool]) > 3:
+                        break
 
     results = []
 

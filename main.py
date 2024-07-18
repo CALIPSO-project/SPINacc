@@ -51,7 +51,7 @@ with open(dir_def + "varlist.json", "r") as f:
     varlist = json.loads(f.read())
 
 # load stored results or start from scratch
-if config.start_from_scratch:
+if not config.start_from_scratch:
     check.display("read from previous results...", logfile)
     packdata = xarray.load_dataset(resultpath + "packdata.nc")
 else:

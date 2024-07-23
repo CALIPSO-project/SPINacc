@@ -16,7 +16,6 @@ XXXX <License content>
 """
 
 from Tools import *
-from DEF_Trunk import config
 
 # added line
 import numpy as np
@@ -34,17 +33,23 @@ if len(sys.argv) < 2:
     dir_def = "DEF_Trunk/"
 else:
     dir_def = sys.argv[1]
+    sys.path.append(dir_def)
+    import config
 
 # Define task
-itask = config.tasks
+itask = str(config.tasks)
 
 logfile = open(config.logfile, "w", buffering=1)
 check.display("DEF directory: " + dir_def, logfile)
-check.display("running task: %s" % str(itask), logfile)
+check.display("running task: %s" % itask, logfile)
 
 # Define task
 resultpath = config.results_dir
 check.display("results are stored at: " + resultpath, logfile)
+
+# Create results directory if it does not exist
+if not os.path.exists(resultpath):
+    os.makedirs(resultpath)
 
 # Read list of variables
 with open(dir_def + "varlist.json", "r") as f:

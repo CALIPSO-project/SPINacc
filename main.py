@@ -76,8 +76,6 @@ check.display("random seed = %i" % iseed, logfile)
 # Define do leave-one-out crosee validation (loocv=1) or not (loocv=0)
 loocv = config.leave_one_out_cv
 
-print(itask)
-
 
 if "1" in itask:
     #

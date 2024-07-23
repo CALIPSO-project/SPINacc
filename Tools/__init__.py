@@ -27,9 +27,12 @@ import calendar
 matplotlib.use("Agg")
 import itertools
 import json
+import random
 import sys
 from collections import Counter
 
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from imblearn.over_sampling import SMOTE
 from mpl_toolkits.basemap import Basemap
 from pandas import DataFrame, Series

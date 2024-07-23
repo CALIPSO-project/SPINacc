@@ -39,17 +39,17 @@ from sklearn.neural_network import MLPRegressor
 ##@retval      predY                  predicted Y
 def training_BAT(X, Y, logfile, loocv):
     print("Data shapes: ", X.shape, Y.shape)
-    
+
     # run the KMeans algorithm to find the cluster centers, and resample the data
     mod = KMeans(n_clusters=3)
     lab = mod.fit_predict(Y)
     count = Counter(lab)
     check.display("Counter(lab):" + str(count), logfile)
     over_samples = SMOTE()
-    over_samples_X, over_samples_y = over_samples.fit_resample(pd.concat([X, Y], axis=1), lab)
-    check.display(
-        "Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile
+    over_samples_X, over_samples_y = over_samples.fit_resample(
+        pd.concat([X, Y], axis=1), lab
     )
+    check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
     X = over_samples_X[X.columns]
     Y = over_samples_X[Y.columns]
     print("Data shapes after resampling: ", X.shape, Y.shape)
@@ -62,10 +62,15 @@ def training_BAT(X, Y, logfile, loocv):
     #     optimizer=optim.Adam,
     #     # device="cuda",
     # )
-    model = MLPRegressor(hidden_layer_sizes=(64, 64), max_iter=100, 
-                         learning_rate='invscaling', learning_rate_init=0.1, verbose=True)
+    model = MLPRegressor(
+        hidden_layer_sizes=(64, 64),
+        max_iter=100,
+        learning_rate="invscaling",
+        learning_rate_init=0.1,
+        verbose=True,
+    )
 
     model.fit(X, Y)
     predY = model.predict(X)
-    
+
     return model, predY

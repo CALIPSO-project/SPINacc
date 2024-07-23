@@ -88,7 +88,9 @@ def readvar(varlist, config, logfile):
     # packdata.Tamp = packdata.Tmax - packdata.Tmin
 
     # 0.1.2 Other climatic variables (Rainf,Snowf,Qair,Psurf,SWdown,LWdown)
-    packdata.update((k, (["year", "month", "lat", "lon"], adict[f"MY{k}"])) for k in varname_clim)
+    packdata.update(
+        (k, (["year", "month", "lat", "lon"], adict[f"MY{k}"])) for k in varname_clim
+    )
     # for index in range(len(varname_clim)):
     #     if varname_clim[index] == "Tair":
     #         continue
@@ -167,12 +169,12 @@ def readvar(varlist, config, logfile):
                     da[da == predvar[ipred]["missing_value"]] = np.nan
                 if isinstance(da, np.ma.masked_array):
                     da = da.filled(np.nan)
-                packdata[rename[ivar]] = (["veget", "lat", "lon"][-da.ndim:], da)
+                packdata[rename[ivar]] = (["veget", "lat", "lon"][-da.ndim :], da)
 
     ds = xarray.Dataset(packdata)
 
     # 0.3 Interactions between variables
-    ds['interx'] = ds.Tair * ds.Rainf
+    ds["interx"] = ds.Tair * ds.Rainf
     # packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
 
     ds.attrs.update(

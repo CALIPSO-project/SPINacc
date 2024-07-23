@@ -28,7 +28,7 @@ def collect_data(
 
     # extract data
     extr_var = extract_X.var(packdata, ipft)
-    
+
     # extract PFT map
     pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
     pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
@@ -56,12 +56,14 @@ def combine_data(frames, keys):
             raise ValueError("DataFrames have different columns")
     check_same = {}
     for col in columns:
-        check_same[col] = all((frame[col] == frames[0][col]).dropna().all() for frame in frames)
-    same_cols = [col for col, same in check_same.items() if same or col == 'pft']
+        check_same[col] = all(
+            (frame[col] == frames[0][col]).dropna().all() for frame in frames
+        )
+    same_cols = [col for col, same in check_same.items() if same or col == "pft"]
     df = pd.concat([df.drop(columns=same_cols) for df in frames], keys=keys, axis=1)
     df.columns = [f"{c}_{k}" for k, c in df.columns]
     df = pd.concat([df, frames[0][same_cols]], axis=1)
-    df = df.drop(columns=['pft']).dropna()
+    df = df.drop(columns=["pft"]).dropna()
     return df
 
 
@@ -86,8 +88,8 @@ def MLmap_multidim(
         col_type = "None"
         type_val = "None"
         combineXY = combine_XY
-        
-    Y = combineXY.filter(regex='^Y_')
+
+    Y = combineXY.filter(regex="^Y_")
     X = combineXY.drop(columns=Y.columns)
 
     # combine_XY=pd.get_dummies(combine_XY) # one-hot encoded
@@ -142,8 +144,20 @@ def MLmap_multidim(
     return MLeval.evaluation_map(Global_Predicted_Y_map, Y, PFT_mask)
 
 
-def plot_eval_results(Global_Predicted_Y_map, ipool, pool_map, combineXY, predY_train, varname, ind, ii, ipft, PFT_mask, resultpath, logfile):
-    
+def plot_eval_results(
+    Global_Predicted_Y_map,
+    ipool,
+    pool_map,
+    combineXY,
+    predY_train,
+    varname,
+    ind,
+    ii,
+    ipft,
+    PFT_mask,
+    resultpath,
+    logfile,
+):
     # evaluation
     R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
         MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
@@ -257,29 +271,31 @@ def MLloop(
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
 
-                        dim_ind, = zip(ii["dim_loop"], ind)
-                        
-                        comb_ds[ipool].append((
-                            collect_data(
-                                packdata,
-                                ivar,
-                                ipool,
-                                PFT_mask_lai,
-                                ipft,
-                                varname,
-                                ind,
-                                ii,
-                                labx,
-                                varlist,
-                                logfile,
-                            ),
-                            f"{varname}_{dim_ind[0]}_{dim_ind[1]}"
-                        ))
+                        (dim_ind,) = zip(ii["dim_loop"], ind)
+
+                        comb_ds[ipool].append(
+                            (
+                                collect_data(
+                                    packdata,
+                                    ivar,
+                                    ipool,
+                                    PFT_mask_lai,
+                                    ipft,
+                                    varname,
+                                    ind,
+                                    ii,
+                                    labx,
+                                    varlist,
+                                    logfile,
+                                ),
+                                f"{varname}_{dim_ind[0]}_{dim_ind[1]}",
+                            )
+                        )
                         break
 
                     # close&save netCDF file
                     restnc.close()
-                    
+
                     if len(comb_ds[ipool]) > 3:
                         break
 
@@ -288,7 +304,7 @@ def MLloop(
     for ipool, vals in comb_ds.items():
         df = combine_data(*zip(*vals))
         df.to_csv(f"{resultpath}/{ipool}.csv")
-    
+
         res = MLmap_multidim(
             packdata,
             df,
@@ -302,5 +318,5 @@ def MLloop(
             missVal,
         )
         results.append(res)
-    
+
     return pd.concat(results, keys=comb_ds.keys(), names=["component"])

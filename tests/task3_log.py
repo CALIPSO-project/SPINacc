@@ -19,7 +19,7 @@ output_file_path = output_file
 with open(output_file_path, "a") as output_file:
     output_file.write(" \n")
     output_file.write(
-        f"################################### REPRODUCIBILITY TEST FOR TASK 3 ################################### \n"
+        "################################### REPRODUCIBILITY TEST FOR TASK 3 ################################### \n"
     )
     output_file.write(" \n")
     # Loop through each year

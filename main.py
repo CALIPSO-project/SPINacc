@@ -166,9 +166,9 @@ if "3" in itask:
 if "4" in itask:
     # ML extrapolation
 
-    var_pred_name1 = varlist["pred"]["allname"]
-    var_pred_name2 = varlist["pred"]["allname_pft"]
-    var_pred_name = var_pred_name1 + var_pred_name2
+    # var_pred_name1 = varlist["pred"]["allname"]
+    # var_pred_name2 = varlist["pred"]["allname_pft"]
+    # var_pred_name = var_pred_name1 + var_pred_name2
     # packdata.Nv_nopft = len(var_pred_name1)
     # packdata.Nv_total = len(var_pred_name)
     # packdata.var_pred_name = var_pred_name
@@ -187,13 +187,13 @@ if "4" in itask:
     # packdata.attrs['Nlat'] = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
     # packdata.attrs['Nlon'] = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
     packdata.attrs.update(
-        Nv_nopft=len(var_pred_name1),
-        Nv_total=len(var_pred_name),
-        var_pred_name=var_pred_name,
+        # Nv_nopft=len(var_pred_name1),
+        # Nv_total=len(var_pred_name),
+        # var_pred_name=var_pred_name,
         Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),
         Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
     )
-    labx = ["Y"] + var_pred_name + ["pft"]
+    labx = ["Y"] + list(packdata.data_vars) + ["pft"]
 
     # copy the restart file to be modified
     targetfile = (
@@ -206,22 +206,16 @@ if "4" in itask:
     # add rights to manipulate file:
     os.chmod(restfile, 0o644)
 
-    result = []
-    for ipool in Yvar.keys():
-        check.display("processing %s..." % ipool, logfile)
-        res_df = ML.MLloop(
-            packdata,
-            ipool,
-            logfile,
-            varlist,
-            labx,
-            resultpath,
-            loocv,
-            restfile,
-        )
-        result.append(res_df)
-    result_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
-    result_df.to_csv(resultpath + "MLacc_results.csv")
+    res_df = ML.MLloop(
+        packdata,
+        logfile,
+        varlist,
+        labx,
+        resultpath,
+        loocv,
+        restfile,
+    )
+    res_df.to_csv(resultpath + "MLacc_results.csv")
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 

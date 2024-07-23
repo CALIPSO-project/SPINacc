@@ -27,10 +27,9 @@ from Tools import *
 ##@retval      R2                     R2 between predicted Y and target Y
 ##@retval      RMSE                   RMSE of prediceted Y
 ##@retval      slope                  regression slope of target Y and predicted Y
-def evaluation_map(Global_Predicted_Y_map, Y_map, ipft, PFTmask):
-    pmask = np.squeeze(PFTmask[ipft - 1][:])
+def evaluation_map(Global_Predicted_Y_map, Y_map, PFTmask):
     all_predY = np.reshape(Global_Predicted_Y_map, (-1, 1))
-    all_Y = np.reshape(Y_map * pmask, (-1, 1))
+    all_Y = np.reshape(Y_map, (-1, 1))
     # all_Y[all_Y<0.000000001]=np.nan
     allyy = DataFrame(np.concatenate((all_Y, all_predY), axis=1))
     allyy = allyy.dropna()

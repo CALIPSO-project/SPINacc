@@ -55,7 +55,7 @@ with open(output_file, "a") as out_file:
     # WRITE TASK
     out_file.write(" \n")
     out_file.write(
-        f"################################### REPRODUCIBILITY TEST FOR TASK 1 ################################### \n"
+        "################################### REPRODUCIBILITY TEST FOR TASK 1 ################################### \n"
     )
     out_file.write(" \n")
     out_file.write("Element-wise absolute error array for dist_all.npy:\n")

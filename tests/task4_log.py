@@ -19,7 +19,7 @@ def compare_files(dir1, dir2, output_file):
     with open(output_file, "a") as output:
         output.write(" \n")
         output.write(
-            f"################################### REPRODUCIBILITY TEST FOR TASK 4 ################################### \n"
+            "################################### REPRODUCIBILITY TEST FOR TASK 4 ################################### \n"
         )
         output.write(" \n")
         for file in common_files:

@@ -27,21 +27,20 @@ from Tools import *
 ##@param[in]   labx
 ##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
 ##@retval      Pred_Y                 predicted map of target variables, without masking
-def extrp_global(packdata, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
+def extrp_global(packdata, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
     global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
     # PFTmask[np.isnan(PFTmask)]=0
-    pmask = np.squeeze(PFTmask[ipft - 1][:])
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
     for ii in range(len(XVarName)):
         if ii < packdata.Nv_nopft:
             global_X_map[ii] = packdata[XVarName[ii]][:]
         else:
-            global_X_map[ii] = np.squeeze(packdata[XVarName[ii]][ipft - 1][:])
+            global_X_map[ii] = np.squeeze(packdata[XVarName[ii]])
         #    global_X_map=lc['global_X_map']
         das = global_X_map.transpose(1, 2, 0)
     for llat in range(packdata.nlat):
-        Xllat = das[llat][:][:]
+        Xllat = das[llat]
         # Xllat[np.isnan(Xllat)]=-9999
         Xtr = DataFrame(Xllat, columns=[labx])
         ind = Xtr.index
@@ -59,7 +58,9 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
             Pred_Y[llat][:] = np.squeeze(Ymm)
 
     # laix=np.squeeze(packdata.LAI0[ipft-1][:][:])
-    pmask[np.isnan(pmask)] = 0
+    # pmask = np.squeeze(PFTmask[ipft - 1][:])
+    # pmask[np.isnan(pmask)] = 0
+    pmask = 1
     # pmask[laix<0.001]=0
     Pred_Y_map = Pred_Y * pmask
     # Pred_Y_map[land==1]=0

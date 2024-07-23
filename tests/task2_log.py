@@ -38,7 +38,7 @@ file_paths = [
 with open(output_file, "a") as out_file:
     out_file.write(" \n")
     out_file.write(
-        f"################################### REPRODUCIBILITY TEST FOR TASK 2: ################################### \n"
+        "################################### REPRODUCIBILITY TEST FOR TASK 2: ################################### \n"
     )
     out_file.write(" \n")
 for file1, file2 in file_paths:

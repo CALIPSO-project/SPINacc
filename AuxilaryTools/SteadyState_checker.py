@@ -6,11 +6,8 @@
 # The script saves the C cycle information analyzed in netCDF files.
 
 
-import math
-import os
 
 import numpy as np
-import numpy.ma as ma
 from mysimulations_specs import *
 from netCDF4 import Dataset
 from scipy.stats import linregress

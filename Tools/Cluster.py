@@ -16,19 +16,7 @@
 
 from Tools import *
 
-# change the following lines from doxygen to docstring
 
-
-##@param[in]   packdata               packaged data
-##@param[in]   PFT_mask               PFT mask where PFT fraction >0.01
-##@param[in]   ipft                   ith PFT to deal with
-##@param[in]   var_pred               predicting variables
-##@param[in]   var_pred_name          names of predicting variables
-##@param[in]   K                      K
-##@param[in]   Nc                     number of sites of select
-##@retval      cluster_dic            # to be complete by Yan
-##@retval      distance               # to be complete by Yan
-##@retval      All_selectedID         # to be complete by Yan
 def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     """
     Cluster analysis
@@ -79,7 +67,7 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     Cluster_output = Series(CC, index=df.index)
 
     cluster_dic = {}
-    All_selectedID = np.empty((0, 2))
+    All_selectedID = np.empty((0, 4))
     for clus in range(K):
         A = Cluster_output[Cluster_output == clus]
         locations = np.array(A.index.to_list())
@@ -91,7 +79,6 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
         else:
             SelectedID = locations
         cluster_dic["clus_%.2i_loc_select" % clus] = SelectedID
-        breakpoint()
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 
     return cluster_dic, distance, All_selectedID
@@ -162,6 +149,7 @@ def Cluster_all(packdata, varlist, KK, logfile):
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
     IDx = np.unique(IDx, axis=0)
+    breakpoint()
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

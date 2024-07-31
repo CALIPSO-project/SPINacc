@@ -19,37 +19,44 @@ from Tools import *
 
 def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     """
-    Cluster analysis
+    Perform cluster analysis on the provided data.
+
+    This function performs cluster analysis on the provided `packdata` using the specified
+    PFT (Plant Functional Type) mask and predicting variables. The analysis is done for
+    the ith PFT specified by `ipft`. The function clusters the data into `K` clusters and
+    returns the results.
 
     Parameters
     ----------
     packdata : xarray.Dataset
-        PackData object
+        The dataset containing the data to be clustered. This should be an xarray Dataset
+        object containing the relevant variables.
     PFT_mask : numpy.ndarray
-        PFT mask where PFT fraction >0.01
+        A mask array where the PFT fraction is greater than 0.01. This mask is used to
+        filter the data for the specified PFT.
     ipft : int
-        ith PFT to deal with
-    var_pred : numpy.ndarray
-        predicting variables
+        The index of the PFT to be analyzed. This specifies which PFT to focus on in the
+        clustering analysis.
     var_pred_name : str
-        names of predicting variables
+        The name of the variable(s) to be used as predictors in the clustering analysis.
+        This should be a string representing the variable names in the dataset.
     K : int
-        K
+        The number of clusters to form. This specifies how many clusters the data should
+        be divided into.
     Nc : int
-        number of sites of selectA
-
+        The number of components to use in the clustering algorithm. This parameter
+        controls the complexity of the clustering model.
 
     Returns
     -------
-    cluster_dic : dict
-        dictionary of cluster
-    distance : float
-        distance
-    All_selectedID : numpy.ndarray
-        selected IDs
-
-
+    clusters : numpy.ndarray
+        An array containing the cluster labels for each data point. The length of this
+        array matches the number of data points in the filtered dataset.
+    cluster_centers : numpy.ndarray
+        An array containing the coordinates of the cluster centers. The shape of this
+        array is (K, number of features).
     """
+
     if "Ndep_nhx_pft" in var_pred_name:
         packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:

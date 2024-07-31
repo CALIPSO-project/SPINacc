@@ -16,6 +16,8 @@
 
 from Tools import *
 
+# change the following lines from doxygen to docstring
+
 
 ##@param[in]   packdata               packaged data
 ##@param[in]   PFT_mask               PFT mask where PFT fraction >0.01
@@ -28,6 +30,38 @@ from Tools import *
 ##@retval      distance               # to be complete by Yan
 ##@retval      All_selectedID         # to be complete by Yan
 def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
+    """
+    Cluster analysis
+
+    Parameters
+    ----------
+    packdata : xarray.Dataset
+        PackData object
+    PFT_mask : numpy.ndarray
+        PFT mask where PFT fraction >0.01
+    ipft : int
+        ith PFT to deal with
+    var_pred : numpy.ndarray
+        predicting variables
+    var_pred_name : str
+        names of predicting variables
+    K : int
+        K
+    Nc : int
+        number of sites of selectA
+
+
+    Returns
+    -------
+    cluster_dic : dict
+        dictionary of cluster
+    distance : float
+        distance
+    All_selectedID : numpy.ndarray
+        selected IDs
+
+
+    """
     if "Ndep_nhx_pft" in var_pred_name:
         packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:
@@ -57,6 +91,7 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
         else:
             SelectedID = locations
         cluster_dic["clus_%.2i_loc_select" % clus] = SelectedID
+        breakpoint()
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 
     return cluster_dic, distance, All_selectedID

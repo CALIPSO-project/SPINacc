@@ -6,7 +6,7 @@ log*
 job.o*
 
 # Execution directories
-EXE_DIR
+EXE_DIR*
 
 # Config files
 DEF_Trunk*
@@ -15,3 +15,4 @@ tests/config.py
 # Others
 *.pyc
 .vscode/
+venv*

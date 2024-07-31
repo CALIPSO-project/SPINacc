@@ -20,6 +20,40 @@ from collections import defaultdict
 def collect_data(
     packdata, ivar, ipool, PFT_mask_lai, ipft, varname, ind, ii, labx, varlist, logfile
 ):
+    """
+    Collect data for a given variable and index
+
+    Parameters
+    ----------
+    packdata : xarray.Dataset
+        PackData object
+    ivar : Dataset
+        ResponseY Dataset object containing variable (e.g. named 'Carbon_02')
+    ipool : str
+        Pool name (e.g. 'som')
+    PFT_mask_lai : np.ndarray
+        PFT mask
+    ipft : int
+        PFT index
+    varname : str
+        Variable name (e.g. "Carbon_02")
+    ind : tuple
+        Index tuple
+    ii : dict
+        Dictionary containing contents of varlist for the given ipool.
+    labx : list
+        List of string column names (e.g. ['Y, 'Tmean', 'Tstd', 'Tmin',...])
+    varlist : dict
+        Dictionary object containing varlist.json data
+    logfile : str
+        Logfile name
+
+    Returns
+    -------
+    DataFrame
+        DataFrame containing the extracted data
+    """
+
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
         % (ipool, varname, ind, ii["dim_loop"]),
@@ -232,26 +266,34 @@ def MLloop(
     var_pred_name2 = varlist["pred"]["allname_pft"]
     var_pred_name = var_pred_name1 + var_pred_name2
 
+    # Extract Y response from stomate restart file.
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
+
+    #
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    # We can't do it here: we would overwrite the file repeatidly loosing the information we wrote before
-    # it's done now in main.py
-    # Copy restart file template (might have to be changed)
-    #  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
-    #  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
+    # Not sure what this comment refers to:
+    #   We can't do it here: we would overwrite the file repeatedly losing
+    #   the information we wrote before. It's done now in main.py.
+    #   Copy restart file template (might have to be changed)
+    #   restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
+    #   os.system('cp -f %s %s' % (varlist['resp']['sourcefile'], restfile))
     missVal = varlist["resp"]["missing_value"]
     Yvar = varlist["resp"]["variables"]
 
     comb_ds = defaultdict(list)
 
+    # loop over pools "som", "biomass", "litter"
     for ipool, iis in Yvar.items():
         check.display("processing %s..." % ipool, logfile)
 
+        # loop over an individual pool (for litter > 1)
         for ii in iis:
+            # usually only one iteration
             for jj in ii["name_prefix"]:
+                # loop over a subset of variables specified by "name_loop": For carbon this is "pft"
                 for kk in ii["loops"][ii["name_loop"]]:
                     varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                     if ii["name_loop"] == "pft":
@@ -262,9 +304,15 @@ def MLloop(
                     restnc = Dataset(restfile, "a")
                     # restvar = restnc[varname]
 
+                    # cartesian product of inputs
+                    # i.e. itertools.product([1, 2], ["a", "b"]) -> [(1, "a"), (1, "b"), (2, "a"), (2, "b")]
+                    # for som (carbon), dim_loop = "asp", ll is "asp", "asp" = [1,2,3].
+                    # index = [(1,), (2,), (3,)]
+                    # '*' unpacks the list of iterables so each iterable is passed as a separate argument.
                     index = itertools.product(
                         *[ii["loops"][ll] for ll in ii["dim_loop"]]
                     )
+                    # loops over the "dim_loop" index. "asp" : [1,2,3] for som / carbon.
                     for ind in index:
                         if "pft" in ii["dim_loop"]:
                             ipft = ind[ii["dim_loop"].index("pft")]
@@ -273,6 +321,7 @@ def MLloop(
 
                         (dim_ind,) = zip(ii["dim_loop"], ind)
 
+                        breakpoint()
                         comb_ds[ipool].append(
                             (
                                 collect_data(

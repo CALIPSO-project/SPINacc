@@ -33,6 +33,7 @@ def extrp_global(packdata, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
     for ii in range(len(XVarName)):
+        breakpoint()
         if ii < packdata.Nv_nopft:
             global_X_map[ii] = packdata[XVarName[ii]][:]
         else:

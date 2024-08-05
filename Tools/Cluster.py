@@ -74,7 +74,8 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     Cluster_output = Series(CC, index=df.index)
 
     cluster_dic = {}
-    All_selectedID = np.empty((0, 4))
+    All_selectedID = np.empty((0, 3))
+    print(ipft, var_pred_name)
     for clus in range(K):
         A = Cluster_output[Cluster_output == clus]
         locations = np.array(A.index.to_list())
@@ -154,9 +155,10 @@ def Cluster_all(packdata, varlist, KK, logfile):
     # 4. Check if the selected sites are representative? (not sure)
 
     # 5. Output the ID
+    # breakpoint()
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
     IDx = np.unique(IDx, axis=0)
-    breakpoint()
+    # breakpoint()
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

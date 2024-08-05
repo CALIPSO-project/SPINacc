@@ -92,6 +92,7 @@ def var(packdata, ipft):
     """
     extr_var = []
     for var_name in packdata.data_vars:
+        print(var_name)
         if "veget" not in packdata[var_name].dims:
             extracted_var = extract_X(packdata, var_name)
         else:

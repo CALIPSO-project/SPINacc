@@ -166,7 +166,7 @@ if "3" in itask:
 if "4" in itask:
     # ML extrapolation
 
-    # var_pred_name1 = varlist["pred"]["allname"]
+    var_pred_name1 = varlist["pred"]["allname"]
     # var_pred_name2 = varlist["pred"]["allname_pft"]
     # var_pred_name = var_pred_name1 + var_pred_name2
     # packdata.Nv_nopft = len(var_pred_name1)
@@ -187,7 +187,7 @@ if "4" in itask:
     # packdata.attrs['Nlat'] = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
     # packdata.attrs['Nlon'] = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
     packdata.attrs.update(
-        # Nv_nopft=len(var_pred_name1),
+        Nv_nopft=len(var_pred_name1),
         # Nv_total=len(var_pred_name),
         # var_pred_name=var_pred_name,
         Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),

@@ -27,15 +27,14 @@ from Tools import *
 ##@param[in]   labx
 ##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
 ##@retval      Pred_Y                 predicted map of target variables, without masking
-def extrp_global(packdata, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
+def extrp_global(packdata, PFTmask, XVarName, model, colum, Nm, labx):
     global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
     # PFTmask[np.isnan(PFTmask)]=0
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
     for ii in range(len(XVarName)):
-        breakpoint()
         if ii < packdata.Nv_nopft:
-            global_X_map[ii] = packdata[XVarName[ii]][:]
+            global_X_map[ii] = packdata[XVarName[ii]][:].mean(axis=0).mean(axis=0)
         else:
             global_X_map[ii] = np.squeeze(packdata[XVarName[ii]])
         #    global_X_map=lc['global_X_map']
@@ -53,7 +52,7 @@ def extrp_global(packdata, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
                 Xtr_encode = Xtr
             # Xtr.ix[:,colum]=(Xtr.ix[:,colum].astype(int)).astype(str)
             # Xtrr=pd.get_dummies(Xtr)
-            Ym = DataFrame(Tree_Ens.predict(Xtr_encode))
+            Ym = DataFrame(model.predict(Xtr_encode))
             Ym.index = Xtr_encode.index
             Ymm = Ym.reindex(index=range(max(ind) + 1))
             Pred_Y[llat][:] = np.squeeze(Ymm)

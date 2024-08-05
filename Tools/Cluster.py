@@ -149,7 +149,7 @@ def Cluster_all(packdata, varlist, KK, logfile):
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
     IDx = np.unique(IDx, axis=0)
-    breakpoint()
+    # breakpoint()
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

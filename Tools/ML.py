@@ -18,7 +18,7 @@ from collections import defaultdict
 
 
 def collect_data(
-    packdata, ivar, ipool, PFT_mask_lai, ipft, varname, ind, ii, labx, varlist, logfile
+    packdata, ivar, ipool, PFT_mask_lai, ipft, varname, ind, ii, labx, varlist, Y_map, logfile
 ):
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
@@ -37,6 +37,9 @@ def collect_data(
     pool_map = np.squeeze(ivar)[
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
+    
+    Y_map.append(pool_map)
+    
     pool_map[pool_map >= 1e18] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         pool_arr = pool_map.flatten()
@@ -58,7 +61,6 @@ def combine_data(dics):
 def MLmap_multidim(
     packdata,
     combine_XY,
-    ipool,
     PFT_mask,
     varlist,
     labx,
@@ -127,7 +129,7 @@ def MLmap_multidim(
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         return None
 
-    return MLeval.evaluation_map(Global_Predicted_Y_map, Y, PFT_mask)
+    return Global_Predicted_Y_map, model
 
 
 def plot_eval_results(
@@ -228,6 +230,7 @@ def MLloop(
     Yvar = varlist["resp"]["variables"]
 
     comb_ds = defaultdict(dict)
+    Y_maps = defaultdict(list)
     dup_cols = [k for k, v in packdata.items() if "veget" not in v.dims] + ["pft"]
 
     for ipool, iis in Yvar.items():
@@ -240,7 +243,7 @@ def MLloop(
                     if ii["name_loop"] == "pft":
                         ipft = kk
                     ivar = responseY[varname]
-
+                    
                     # open restart file and select variable (memory is exceeded if open outside this loop)
                     restnc = Dataset(restfile, "a")
                     # restvar = restnc[varname]
@@ -267,30 +270,30 @@ def MLloop(
                             ii,
                             labx,
                             varlist,
+                            Y_maps[ipool],
                             logfile,
                         )
                         
                         for k, s in df.items():
                             if k not in dup_cols:
-                                if k in packdata.data_vars:
-                                    k = f"{k}_{varname}"
-                                else:
+                                if k == "Y":
                                     k = f"{k}_{varname}_{dim_ind[0]}_{dim_ind[1]}"
+                                else:
+                                    k = f"{k}_{varname}"
                             comb_ds[ipool][k] = s
 
                     # close&save netCDF file
                     restnc.close()
-
-    results = []
+                    
+    results = {}
 
     for ipool, dics in comb_ds.items():
         df = combine_data(dics)
         df.to_csv(f"{resultpath}/{ipool}.csv")
-
-        res = MLmap_multidim(
+    
+        pred_Y_map, model = MLmap_multidim(
             packdata,
             df,
-            ipool,
             PFT_mask,
             varlist,
             labx,
@@ -298,6 +301,8 @@ def MLloop(
             loocv,
             missVal,
         )
-        results.append(res)
-
-    return pd.concat(results, keys=comb_ds.keys(), names=["component"])
+        Y_map = np.stack(Y_maps[ipool])
+        res = MLeval.evaluation_map(pred_Y_map, Y_map)
+        results[ipool] = res
+    
+    return pd.DataFrame(results)

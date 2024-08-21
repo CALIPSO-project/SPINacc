@@ -33,8 +33,9 @@ if len(sys.argv) < 2:
     dir_def = "DEF_Trunk/"
 else:
     dir_def = sys.argv[1]
-    sys.path.append(dir_def)
-    import config
+
+sys.path.append(dir_def)
+import config
 
 # Define task
 itask = str(config.tasks)

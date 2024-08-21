@@ -66,6 +66,8 @@ else:
     packdata = readvar(varlist, config, logfile)
     packdata.to_netcdf(resultpath + "packdata.nc")
 
+# packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
+
 # Define random seed
 iseed = config.random_seed
 random.seed(config.random_seed)
@@ -185,7 +187,6 @@ if "4" in itask:
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
     packdata.attrs.update(
         # Nv_nopft=len(var_pred_name1),
         # Nv_total=len(var_pred_name),
@@ -215,6 +216,7 @@ if "4" in itask:
         loocv,
         restfile,
     )
+    print(res_df)
     res_df.to_csv(resultpath + "MLacc_results.csv")
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE

@@ -107,7 +107,8 @@ def Cluster_all(packdata, varlist, KK, logfile):
         packdata, varlist, varlist["PFTmask"]["cluster_thres"]
     )
 
-    var_pred_name = varlist["pred"]["clustering"]
+    # var_pred_name = varlist["pred"]["clustering"]
+    var_pred_name = [k for k, v in packdata.items() if 'veget' not in v.dims]
     for veg in kpfts:
         ClusD, disx, training_ID = Cluster_Ana(
             packdata,

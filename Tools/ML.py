@@ -49,21 +49,9 @@ def collect_data(
     return DataFrame(extr_all, columns=labx)  # convert the array into dataframe
 
 
-def combine_data(frames, keys):
-    columns = frames[0].columns
-    for frame in frames[1:]:
-        if not columns.equals(frame.columns):
-            raise ValueError("DataFrames have different columns")
-    check_same = {}
-    for col in columns:
-        check_same[col] = all(
-            (frame[col] == frames[0][col]).dropna().all() for frame in frames
-        )
-    same_cols = [col for col, same in check_same.items() if same or col == "pft"]
-    df = pd.concat([df.drop(columns=same_cols) for df in frames], keys=keys, axis=1)
-    df.columns = [f"{c}_{k}" for k, c in df.columns]
-    df = pd.concat([df, frames[0][same_cols]], axis=1)
-    df = df.drop(columns=["pft"]).dropna()
+def combine_data(dics):
+    df = pd.DataFrame(dics)
+    df = df.dropna().drop(columns=['pft'])  # drop data according to the PFT mask
     return df
 
 
@@ -72,7 +60,6 @@ def MLmap_multidim(
     combine_XY,
     ipool,
     PFT_mask,
-    var_pred_name,
     varlist,
     labx,
     logfile,
@@ -120,11 +107,10 @@ def MLmap_multidim(
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
             packdata,
             PFT_mask,
-            var_pred_name,
+            X.columns,
             model,
             col_type,
             type_val,
-            var_pred_name,
         )
         # write to restart file
         pmask = np.nansum(PFT_mask, axis=0)
@@ -228,10 +214,6 @@ def MLloop(
     loocv,
     restfile,
 ):
-    var_pred_name1 = varlist["pred"]["allname"]
-    var_pred_name2 = varlist["pred"]["allname_pft"]
-    var_pred_name = var_pred_name1 + var_pred_name2
-
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -245,7 +227,8 @@ def MLloop(
     missVal = varlist["resp"]["missing_value"]
     Yvar = varlist["resp"]["variables"]
 
-    comb_ds = defaultdict(list)
+    comb_ds = defaultdict(dict)
+    dup_cols = [k for k, v in packdata.items() if "veget" not in v.dims] + ["pft"]
 
     for ipool, iis in Yvar.items():
         check.display("processing %s..." % ipool, logfile)
@@ -271,38 +254,37 @@ def MLloop(
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
 
-                        (dim_ind,) = zip(ii["dim_loop"], ind)
-
-                        comb_ds[ipool].append(
-                            (
-                                collect_data(
-                                    packdata,
-                                    ivar,
-                                    ipool,
-                                    PFT_mask_lai,
-                                    ipft,
-                                    varname,
-                                    ind,
-                                    ii,
-                                    labx,
-                                    varlist,
-                                    logfile,
-                                ),
-                                f"{varname}_{dim_ind[0]}_{dim_ind[1]}",
-                            )
+                        dim_ind, = zip(ii["dim_loop"], ind)
+                        
+                        df = collect_data(
+                            packdata,
+                            ivar,
+                            ipool,
+                            PFT_mask_lai,
+                            ipft,
+                            varname,
+                            ind,
+                            ii,
+                            labx,
+                            varlist,
+                            logfile,
                         )
-                        break
+                        
+                        for k, s in df.items():
+                            if k not in dup_cols:
+                                if k in packdata.data_vars:
+                                    k = f"{k}_{varname}"
+                                else:
+                                    k = f"{k}_{varname}_{dim_ind[0]}_{dim_ind[1]}"
+                            comb_ds[ipool][k] = s
 
                     # close&save netCDF file
                     restnc.close()
 
-                    if len(comb_ds[ipool]) > 3:
-                        break
-
     results = []
 
-    for ipool, vals in comb_ds.items():
-        df = combine_data(*zip(*vals))
+    for ipool, dics in comb_ds.items():
+        df = combine_data(dics)
         df.to_csv(f"{resultpath}/{ipool}.csv")
 
         res = MLmap_multidim(
@@ -310,7 +292,6 @@ def MLloop(
             df,
             ipool,
             PFT_mask,
-            var_pred_name,
             varlist,
             labx,
             logfile,

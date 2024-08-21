@@ -27,36 +27,29 @@ from Tools import *
 ##@param[in]   labx
 ##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
 ##@retval      Pred_Y                 predicted map of target variables, without masking
-def extrp_global(packdata, PFTmask, XVarName, Tree_Ens, colum, Nm, labx):
-    global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
+def extrp_global(packdata, PFTmask, XVarName, model, colum, Nm):
+    global_X_map = []
     # PFTmask[np.isnan(PFTmask)]=0
-    Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
-    for ii in range(len(XVarName)):
-        if ii < packdata.Nv_nopft:
-            global_X_map[ii] = packdata[XVarName[ii]][:]
+    for varname in XVarName:
+        if varname in packdata.data_vars:
+            x = packdata[varname].values
         else:
-            global_X_map[ii] = np.squeeze(packdata[XVarName[ii]])
-        #    global_X_map=lc['global_X_map']
-        das = global_X_map.transpose(1, 2, 0)
-    for llat in range(packdata.nlat):
-        Xllat = das[llat]
-        # Xllat[np.isnan(Xllat)]=-9999
-        Xtr = DataFrame(Xllat, columns=[labx])
-        ind = Xtr.index
-        Xtr = Xtr.dropna()
-        if len(Xtr) > 0:
-            if colum != "None":
-                Xtr_encode = encode.en_code(Xtr, colum - 1, Nm)
-            else:
-                Xtr_encode = Xtr
-            # Xtr.ix[:,colum]=(Xtr.ix[:,colum].astype(int)).astype(str)
-            # Xtrr=pd.get_dummies(Xtr)
-            Ym = DataFrame(Tree_Ens.predict(Xtr_encode))
-            Ym.index = Xtr_encode.index
-            Ymm = Ym.reindex(index=range(max(ind) + 1))
-            Pred_Y[llat][:] = np.squeeze(Ymm)
-
+            varname, ipft = re.match(r"(\w+)?_\w+?_(\d+)", varname).groups()
+            ipft = int(ipft) - 1
+            x = packdata[varname].sel(veget=ipft).values
+        global_X_map.append(x)
+    das = np.stack(global_X_map, axis=2)
+    Xtr = DataFrame(das.reshape(-1, das.shape[-1]), columns=XVarName)
+    if colum != "None":
+        Xtr_encode = encode.en_code(Xtr, colum - 1, Nm)
+    else:
+        Xtr_encode = Xtr
+    Xtr_encode = Xtr_encode.dropna()
+    Ym = DataFrame(model.predict(Xtr_encode), index=Xtr_encode.index)
+    Ymm = Ym.reindex(index=Xtr.index)
+    Pred_Y = Ymm.values.reshape(*das.shape[:-1], -1).transpose(2, 0, 1)
+    
     # laix=np.squeeze(packdata.LAI0[ipft-1][:][:])
     # pmask = np.squeeze(PFTmask[ipft - 1][:])
     # pmask[np.isnan(pmask)] = 0

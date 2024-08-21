@@ -31,4 +31,6 @@ def PFT(packdata, varlist, thres):
     #    PFT_fraction[PFT_fraction==PFT_fraction[0][0][0]]=np.nan
     PFT_mask[PFT_fraction > thres] = 1
     PFT_mask_lai = np.where(packdata.LAI0 < 0, np.nan, PFT_mask)
+    print("PFT mask ratio:", np.isnan(PFT_mask).mean())
+    print("PFT mask LAI ratio:", np.isnan(PFT_mask_lai).mean())
     return PFT_mask, PFT_mask_lai

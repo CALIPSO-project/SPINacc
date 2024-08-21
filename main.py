@@ -184,8 +184,7 @@ if "4" in itask:
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    # packdata.attrs['Nlat'] = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
-    # packdata.attrs['Nlon'] = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
+    packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
     packdata.attrs.update(
         # Nv_nopft=len(var_pred_name1),
         # Nv_total=len(var_pred_name),

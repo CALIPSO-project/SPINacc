@@ -28,6 +28,7 @@ from Tools import *
 ##@retval      RMSE                   RMSE of prediceted Y
 ##@retval      slope                  regression slope of target Y and predicted Y
 def evaluation_map(Global_Predicted_Y_map, Y_map, PFTmask):
+    print(Global_Predicted_Y_map.shape, Y_map.shape)
     all_predY = np.reshape(Global_Predicted_Y_map, (-1, 1))
     all_Y = np.reshape(Y_map, (-1, 1))
     # all_Y[all_Y<0.000000001]=np.nan

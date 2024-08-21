@@ -5,7 +5,7 @@ tasks = [
     2,
     4,
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
-results_dir = "/home/surface10/mrasolon/SPINacc_24_01_05/EXE_DIR/"
+results_dir = "./EXE_DIR/"
 reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
 start_from_scratch = True
 kmeans_clusters = 4

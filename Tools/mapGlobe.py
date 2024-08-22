@@ -31,7 +31,10 @@ def extrp_global(packdata, PFTmask, XVarName, model, colum, Nm):
     global_X_map = []
     # PFTmask[np.isnan(PFTmask)]=0
     # global metrics -> dataframe
-    packdata = packdata.mean(dim=('year', 'month'))
+    try:
+        packdata = packdata.mean(dim=('year', 'month'))
+    except ValueError:
+        pass
     for varname in XVarName:
         if varname in packdata.data_vars:
             x = packdata[varname].values

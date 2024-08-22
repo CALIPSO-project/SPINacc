@@ -106,6 +106,10 @@ def Cluster_all(packdata, varlist, KK, logfile):
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["cluster_thres"]
     )
+    try:
+        packdata = packdata.mean(dim=('year', 'month'))
+    except ValueError:
+        pass
 
     # var_pred_name = varlist["pred"]["clustering"]
     var_pred_name = [k for k, v in packdata.items() if 'veget' not in v.dims]

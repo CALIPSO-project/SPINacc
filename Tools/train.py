@@ -32,12 +32,21 @@ from sklearn.neural_network import MLPRegressor
 #         )
 
 
-##@param[in]   XY_train               latitudes of selected pixels
-##@param[in]   logfile                logfile
-##@param[in]   loocv                  do leave-one-out-cross-validation(1) or not (0)
-##@retval      TreeEns                Tree ensemble
-##@retval      predY                  predicted Y
 def training_BAT(X, Y, logfile, loocv):
+    """
+    Train a machine learning model using Balanced Augmentation Technique (BAT).
+
+    Args:
+        X (pandas.DataFrame): Input features.
+        Y (pandas.DataFrame): Target variables.
+        logfile (file): File object for logging.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+
+    Returns:
+        tuple:
+            - model: Trained machine learning model.
+            - predY (numpy.ndarray): Predicted Y values.
+    """
     print("Data shapes: ", X.shape, Y.shape)
 
     # run the KMeans algorithm to find the cluster centers, and resample the data

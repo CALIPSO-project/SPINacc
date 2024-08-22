@@ -3,6 +3,14 @@
 """
 MLacc - Machine-Learning-based acceleration of spin-up
 
+This script orchestrates the entire MLacc workflow, including:
+- Data preparation and clustering
+- Machine learning model training and prediction
+- Result evaluation and visualization
+
+The workflow is controlled by configuration settings and can be run in different modes
+depending on the specified tasks.
+
 Copyright Laboratoire des Sciences du Climat et de l'Environnement (LSCE)
           Unite mixte CEA-CNRS-UVSQ
 

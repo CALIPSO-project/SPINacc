@@ -17,17 +17,23 @@
 from Tools import *
 
 
-##@param[in]   packdata               packaged data
-##@param[in]   ipft                   index of PFT
-##@param[in]   PFTmask                PFT mask
-##@param[in]   XVarName               input variables
-##@param[in]   Tree_Ens               tree ensemble
-##@param[in]   colum
-##@param[in]   Nm
-##@param[in]   labx
-##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
-##@retval      Pred_Y                 predicted map of target variables, without masking
 def extrp_global(packdata, PFTmask, XVarName, model, colum, Nm):
+    """
+    Extrapolate predictions globally using a trained model.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        PFTmask (numpy.ndarray): Mask for Plant Functional Types.
+        XVarName (list): List of input variable names.
+        model: Trained machine learning model.
+        colum (str): Column name for encoding, or "None".
+        Nm (int): Number of categories for encoding.
+
+    Returns:
+        tuple: 
+            - Pred_Y_map (numpy.ndarray): Predicted map of target variables, masking nan pixels.
+            - Pred_Y (numpy.ndarray): Predicted map of target variables, without masking.
+    """
     global_X_map = []
     # PFTmask[np.isnan(PFTmask)]=0
     # global metrics -> dataframe

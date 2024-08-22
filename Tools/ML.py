@@ -20,6 +20,26 @@ from collections import defaultdict
 def collect_data(
     packdata, ivar, ipool, PFT_mask_lai, ipft, varname, ind, ii, labx, varlist, Y_map, logfile
 ):
+    """
+    Collect and preprocess data for machine learning.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        ivar (numpy.ndarray): Array of response variable.
+        ipool (str): Name of the current pool.
+        PFT_mask_lai (numpy.ndarray): Mask for Plant Functional Types based on LAI.
+        ipft (int): Index of current Plant Functional Type.
+        varname (str): Name of the current variable.
+        ind (tuple): Index tuple for multi-dimensional variables.
+        ii (dict): Dictionary containing dimension information.
+        labx (list): List of column labels.
+        varlist (dict): Dictionary of variable information.
+        Y_map (list): List to store Y maps.
+        logfile (file): File object for logging.
+
+    Returns:
+        pandas.DataFrame: Collected and preprocessed data.
+    """
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
         % (ipool, varname, ind, ii["dim_loop"]),
@@ -53,6 +73,15 @@ def collect_data(
 
 
 def combine_data(dics):
+    """
+    Combine data from multiple dictionaries into a single DataFrame.
+
+    Args:
+        dics (dict): Dictionary of data to combine.
+
+    Returns:
+        pandas.DataFrame: Combined data with NaN values and 'pft' column dropped.
+    """
     df = pd.DataFrame(dics)
     df = df.dropna().drop(columns=['pft'])  # drop data according to the PFT mask
     return df
@@ -68,6 +97,24 @@ def MLmap_multidim(
     loocv,
     missVal,
 ):
+    """
+    Perform multi-dimensional machine learning mapping.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        combine_XY (pandas.DataFrame): Combined X and Y data.
+        PFT_mask (numpy.ndarray): Mask for Plant Functional Types.
+        varlist (dict): Dictionary of variable information.
+        labx (list): List of column labels.
+        logfile (file): File object for logging.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+        missVal (float): Missing value to use.
+
+    Returns:
+        tuple: 
+            - Global_Predicted_Y_map (numpy.ndarray): Globally predicted Y map.
+            - model: Trained machine learning model.
+    """
     # need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
@@ -216,6 +263,21 @@ def MLloop(
     loocv,
     restfile,
 ):
+    """
+    Main loop for machine learning processing.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        logfile (file): File object for logging.
+        varlist (dict): Dictionary of variable information.
+        labx (list): List of column labels.
+        resultpath (str): Path to store results.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+        restfile (str): Path to restart file.
+
+    Returns:
+        pandas.DataFrame: Results of machine learning evaluations.
+    """
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]

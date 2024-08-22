@@ -23,10 +23,18 @@ class PackData(dict):
     __getattr__ = dict.__getitem__
 
 
-##@param[in]   varlist                list of variables, including name of source files, variable names, etc.
-##@param[in]   config                 configurations
-##@param[in]   logfile                logfile
 def readvar(varlist, config, logfile):
+    """
+    Read and process variables from input files.
+
+    Args:
+        varlist (dict): Dictionary of variable information.
+        config (object): Configuration object.
+        logfile (file): File object for logging.
+
+    Returns:
+        xarray.Dataset: Dataset containing processed variables.
+    """
     adict = locals()
     # 0 initialize latitude and longitudes
     f = Dataset(varlist["coord_ref"], "r")

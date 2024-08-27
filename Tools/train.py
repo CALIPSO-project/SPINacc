@@ -18,6 +18,8 @@ from Tools import *
 
 # import skorch
 # from torch import nn, optim
+from xgboost import XGBRegressor
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neural_network import MLPRegressor
 
 
@@ -32,7 +34,7 @@ from sklearn.neural_network import MLPRegressor
 #         )
 
 
-def training_BAT(X, Y, logfile, loocv):
+def training_BAT(X, Y, logfile, loocv, alg):
     """
     Train a machine learning model using Balanced Augmentation Technique (BAT).
 
@@ -41,6 +43,7 @@ def training_BAT(X, Y, logfile, loocv):
         Y (pandas.DataFrame): Target variables.
         logfile (file): File object for logging.
         loocv (bool): Whether to perform leave-one-out cross-validation.
+        alg (str): ML algorithm to use ("mlp" or "gbm").
 
     Returns:
         tuple:
@@ -63,21 +66,25 @@ def training_BAT(X, Y, logfile, loocv):
     Y = over_samples_X[Y.columns]
     print("Data shapes after resampling: ", X.shape, Y.shape)
 
-    # model = skorch.NeuralNetRegressor(
-    #     module=MLPRegressor,
-    #     max_epochs=1000,
-    #     lr=0.01,
-    #     criterion=nn.MSELoss,
-    #     optimizer=optim.Adam,
-    #     # device="cuda",
-    # )
-    model = MLPRegressor(
-        hidden_layer_sizes=(64, 64),
-        max_iter=100,
-        learning_rate="invscaling",
-        learning_rate_init=0.1,
-        verbose=True,
-    )
+    if alg == "mlp":
+        model = MLPRegressor(
+            hidden_layer_sizes=(64, 64),
+            max_iter=100,
+            learning_rate="invscaling",
+            learning_rate_init=0.1,
+            verbose=True,
+        )
+    elif alg == "gbm":
+        model = MultiOutputRegressor(
+            XGBRegressor(
+                n_estimators=300,
+                num_leaves=32,
+                max_depth=10,
+                verbose=2,
+            )
+        )
+    else:
+        raise ValueError("invalid ML algorithm name")
 
     model.fit(X, Y)
     predY = model.predict(X)

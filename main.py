@@ -224,6 +224,7 @@ if "4" in itask:
         resultpath,
         loocv,
         restfile,
+        config.algorithm
     )
     print(res_df)
     res_df.to_csv(resultpath + "MLacc_results.csv")

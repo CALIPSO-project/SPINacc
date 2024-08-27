@@ -96,6 +96,7 @@ def MLmap_multidim(
     logfile,
     loocv,
     missVal,
+    alg,
 ):
     """
     Perform multi-dimensional machine learning mapping.
@@ -141,7 +142,7 @@ def MLmap_multidim(
         # loocv_f_SB,
         # loocv_f_SDSD,
         # loocv_f_LSC,
-    ) = train.training_BAT(X, Y, logfile, loocv)
+    ) = train.training_BAT(X, Y, logfile, loocv, alg)
 
     # pool_map = np.squeeze(ivar)[
     #     tuple(i - 1 for i in ind)
@@ -262,6 +263,7 @@ def MLloop(
     resultpath,
     loocv,
     restfile,
+    alg
 ):
     """
     Main loop for machine learning processing.
@@ -362,6 +364,7 @@ def MLloop(
             logfile,
             loocv,
             missVal,
+            alg
         )
         Y_map = np.stack(Y_maps[ipool])
         res = MLeval.evaluation_map(pred_Y_map, Y_map)

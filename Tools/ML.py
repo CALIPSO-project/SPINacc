@@ -295,7 +295,7 @@ def MLloop(
 
     comb_ds = defaultdict(dict)
     Y_maps = defaultdict(list)
-    dup_cols = [k for k, v in packdata.items() if "veget" not in v.dims] + ["pft"]
+    # dup_cols = [k for k, v in packdata.items() if "veget" not in v.dims] + ["pft"]
 
     for ipool, iis in Yvar.items():
         check.display("processing %s..." % ipool, logfile)
@@ -334,26 +334,29 @@ def MLloop(
                             ii,
                             labx,
                             varlist,
-                            Y_maps[ipool],
+                            Y_maps[ipool, varname],
                             logfile,
                         )
                         
                         for k, s in df.items():
-                            if k not in dup_cols:
-                                if k == "Y":
-                                    k = f"{k}_{varname}_{dim_ind[0]}_{dim_ind[1]}"
-                                else:
-                                    k = f"{k}_{varname}"
-                            comb_ds[ipool][k] = s
+                            dic = comb_ds[ipool, varname]
+                            if k == "Y":
+                                k = f"Y_{dim_ind[0]}_{dim_ind[1]}"
+                            elif k == "pft":
+                                if k in dic:
+                                    s = dic[k].combine_first(s)
+                            elif "veget" in packdata[k].dims:
+                                k = f"{k}_{varname}"
+                            dic[k] = s
 
                     # close&save netCDF file
                     restnc.close()
                     
-    results = {}
+    results = dict()
 
-    for ipool, dics in comb_ds.items():
+    for (ipool, var), dics in comb_ds.items():
         df = combine_data(dics)
-        df.to_csv(f"{resultpath}/{ipool}.csv")
+        df.to_csv(f"{resultpath}/{ipool}_{var}.csv", index=False)
     
         pred_Y_map, model = MLmap_multidim(
             packdata,
@@ -366,8 +369,8 @@ def MLloop(
             missVal,
             alg
         )
-        Y_map = np.stack(Y_maps[ipool])
+        Y_map = np.stack(Y_maps[ipool, var])
         res = MLeval.evaluation_map(pred_Y_map, Y_map)
-        results[ipool] = res
+        results[ipool, var] = res
     
-    return pd.DataFrame(results)
+    return pd.DataFrame(results).T

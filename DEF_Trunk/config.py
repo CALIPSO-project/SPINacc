@@ -2,7 +2,7 @@
 
 logfile = "log.MLacc_Trunk"
 tasks = [
-    2,
+    # 2,
     4,
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
 results_dir = "./EXE_DIR/"

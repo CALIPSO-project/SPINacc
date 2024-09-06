@@ -15,24 +15,10 @@
 # =============================================================================================
 
 from Tools import *
-
-# import skorch
-# from torch import nn, optim
 from xgboost import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neural_network import MLPRegressor
-
-
-# class MLPRegressor(nn.Sequential):
-#     def __init__(self, ndim_in, ndim_hid, ndim_out):
-#         super(MLPRegressor, self).__init__(
-#             nn.Linear(ndim_in, ndim_hid),
-#             nn.ReLU(),
-#             nn.Linear(ndim_hid, ndim_hid),
-#             nn.ReLU(),
-#             nn.Linear(ndim_hid, ndim_out),
-#         )
 
 
 def training_BAT(X, Y, logfile, loocv, alg):
@@ -80,12 +66,14 @@ def training_BAT(X, Y, logfile, loocv, alg):
         model = MultiOutputRegressor(
             BaggingRegressor(
                 DecisionTreeRegressor(),
+                max_samples=0.8,
                 n_estimators=300
             )
         )
     elif alg == "rf":
         model = MultiOutputRegressor(
             RandomForestRegressor(
+                max_samples=0.8,
                 n_estimators=300
             )
         )
@@ -93,6 +81,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
         model = MultiOutputRegressor(
             XGBRegressor(
                 n_estimators=300,
+                max_samples=0.8,
                 # num_leaves=32,
                 # max_depth=10,
                 verbose=3,

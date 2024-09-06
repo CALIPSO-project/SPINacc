@@ -66,21 +66,24 @@ def training_BAT(X, Y, logfile, loocv, alg):
             max_iter=100,
             learning_rate="invscaling",
             learning_rate_init=0.1,
+            random_state=1000,
             verbose=True,
         )
     elif alg == "bt":
         model = MultiOutputRegressor(
             BaggingRegressor(
-                DecisionTreeRegressor(),
+                DecisionTreeRegressor(random_state=1000),
                 max_samples=0.8,
-                n_estimators=300
+                n_estimators=300,
+                random_state=1000
             )
         )
     elif alg == "rf":
         model = MultiOutputRegressor(
             RandomForestRegressor(
                 max_samples=0.8,
-                n_estimators=300
+                n_estimators=300,
+                random_state=1000
             )
         )
     elif alg == "gbm":
@@ -88,8 +91,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
             XGBRegressor(
                 n_estimators=300,
                 max_samples=0.8,
-                # num_leaves=32,
-                # max_depth=10,
+                random_state=1000
                 verbose=3,
             )
         )

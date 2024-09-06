@@ -30,7 +30,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
         Y (pandas.DataFrame): Target variables.
         logfile (file): File object for logging.
         loocv (bool): Whether to perform leave-one-out cross-validation.
-        alg (str): ML algorithm to use ("mlp" or "gbm").
+        alg (str): ML algorithm to use ("nn", "bt", "rf", or "gbm").
 
     Returns:
         tuple:
@@ -48,24 +48,34 @@ def training_BAT(X, Y, logfile, loocv, alg):
         mod = KMeans(n_clusters=2)
         lab = mod.fit_predict(Y)
         count = Counter(lab)
+        
+    XY = pd.concat([X, Y], axis=1)
+
+    for label, number in count.items():
+        if number < 6:
+            k = int(np.ceil(6 / number) - 1)
+            XY = pd.concat(
+                (XY,) + (XY[lab == label],) * k
+            )
+            lab = np.hstack(
+                (lab, np.repeat(lab[lab == label], k))
+            )
 
     check.display("Counter(lab):" + str(count), logfile)
-        
+
     over_samples = SMOTE()
-    over_samples_X, over_samples_y = over_samples.fit_resample(
-        pd.concat([X, Y], axis=1), lab
-    )
+    over_samples_X, over_samples_y = over_samples.fit_resample(XY, lab)
     check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
     X = over_samples_X[X.columns]
     Y = over_samples_X[Y.columns]
     print("Data shapes after resampling: ", X.shape, Y.shape)
 
-    if alg == "mlp":
+    if alg == "nn":
         model = MLPRegressor(
-            hidden_layer_sizes=(32, 32),
+            hidden_layer_sizes=(64, 32),
             max_iter=100,
             learning_rate="invscaling",
-            learning_rate_init=0.1,
+            learning_rate_init=0.5,
             random_state=1000,
             verbose=True,
         )
@@ -75,7 +85,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
                 DecisionTreeRegressor(random_state=1000),
                 max_samples=0.8,
                 n_estimators=300,
-                random_state=1000
+                random_state=1000,
             )
         )
     elif alg == "rf":
@@ -83,7 +93,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
             RandomForestRegressor(
                 max_samples=0.8,
                 n_estimators=300,
-                random_state=1000
+                random_state=1000,
             )
         )
     elif alg == "gbm":
@@ -91,7 +101,7 @@ def training_BAT(X, Y, logfile, loocv, alg):
             XGBRegressor(
                 n_estimators=300,
                 max_samples=0.8,
-                random_state=1000
+                random_state=1000,
                 verbose=3,
             )
         )

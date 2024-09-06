@@ -52,7 +52,7 @@
     "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
-    "pool_name_litter":["StructuralAB","StructuralBE","WoodyAB","WoodyBE"],
+    "pool_name_litter": ["WoodyAB", "StructuralAB","WoodyBE","StructuralBE" ],
     "sub_item":["Cpool"],
     "cnp":1,
     "npfts":14,

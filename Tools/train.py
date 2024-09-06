@@ -43,20 +43,26 @@ def training_BAT(X, Y, logfile, loocv, alg):
     mod = KMeans(n_clusters=3)
     lab = mod.fit_predict(Y)
     count = Counter(lab)
+
+    if min(count.values()) <= 5:
+        mod = KMeans(n_clusters=2)
+        lab = mod.fit_predict(Y)
+        count = Counter(lab)
+
     check.display("Counter(lab):" + str(count), logfile)
-    if min(count.values()) > 5:
-        over_samples = SMOTE()
-        over_samples_X, over_samples_y = over_samples.fit_resample(
-            pd.concat([X, Y], axis=1), lab
-        )
-        check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
-        X = over_samples_X[X.columns]
-        Y = over_samples_X[Y.columns]
-        print("Data shapes after resampling: ", X.shape, Y.shape)
+        
+    over_samples = SMOTE()
+    over_samples_X, over_samples_y = over_samples.fit_resample(
+        pd.concat([X, Y], axis=1), lab
+    )
+    check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
+    X = over_samples_X[X.columns]
+    Y = over_samples_X[Y.columns]
+    print("Data shapes after resampling: ", X.shape, Y.shape)
 
     if alg == "mlp":
         model = MLPRegressor(
-            hidden_layer_sizes=(64, 64),
+            hidden_layer_sizes=(32, 32),
             max_iter=100,
             learning_rate="invscaling",
             learning_rate_init=0.1,

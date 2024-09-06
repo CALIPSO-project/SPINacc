@@ -19,6 +19,7 @@ from Tools import *
 # import skorch
 # from torch import nn, optim
 from xgboost import XGBRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neural_network import MLPRegressor
 
@@ -53,18 +54,19 @@ def training_BAT(X, Y, logfile, loocv, alg):
     print("Data shapes: ", X.shape, Y.shape)
 
     # run the KMeans algorithm to find the cluster centers, and resample the data
-    # mod = KMeans(n_clusters=3)
-    # lab = mod.fit_predict(Y)
-    # count = Counter(lab)
-    # check.display("Counter(lab):" + str(count), logfile)
-    # over_samples = SMOTE()
-    # over_samples_X, over_samples_y = over_samples.fit_resample(
-    #     pd.concat([X, Y], axis=1), lab
-    # )
-    # check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
-    # X = over_samples_X[X.columns]
-    # Y = over_samples_X[Y.columns]
-    # print("Data shapes after resampling: ", X.shape, Y.shape)
+    mod = KMeans(n_clusters=3)
+    lab = mod.fit_predict(Y)
+    count = Counter(lab)
+    check.display("Counter(lab):" + str(count), logfile)
+    if min(count.values()) > 5:
+        over_samples = SMOTE()
+        over_samples_X, over_samples_y = over_samples.fit_resample(
+            pd.concat([X, Y], axis=1), lab
+        )
+        check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
+        X = over_samples_X[X.columns]
+        Y = over_samples_X[Y.columns]
+        print("Data shapes after resampling: ", X.shape, Y.shape)
 
     if alg == "mlp":
         model = MLPRegressor(
@@ -74,13 +76,26 @@ def training_BAT(X, Y, logfile, loocv, alg):
             learning_rate_init=0.1,
             verbose=True,
         )
+    elif alg == "bt":
+        model = MultiOutputRegressor(
+            BaggingRegressor(
+                DecisionTreeRegressor(),
+                n_estimators=300
+            )
+        )
+    elif alg == "rf":
+        model = MultiOutputRegressor(
+            RandomForestRegressor(
+                n_estimators=300
+            )
+        )
     elif alg == "gbm":
         model = MultiOutputRegressor(
             XGBRegressor(
                 n_estimators=300,
-                num_leaves=32,
-                max_depth=10,
-                verbose=2,
+                # num_leaves=32,
+                # max_depth=10,
+                verbose=3,
             )
         )
     else:

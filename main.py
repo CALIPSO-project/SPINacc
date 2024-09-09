@@ -75,7 +75,7 @@ else:
     packdata.to_netcdf(resultpath + "packdata.nc")
 
 # NOTE: uncomment this line to reduce the dataset along the time dimension
-packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
+# packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
 
 # Define random seed
 iseed = config.random_seed

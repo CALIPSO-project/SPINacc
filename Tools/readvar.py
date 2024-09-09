@@ -113,24 +113,24 @@ def readvar(varlist, config, logfile):
     #     packdata[varname_clim[index] + "_mean"] = meanv
 
     # 0.1.3 P and T for growing season (Pre_GS, Temp_GS, GS_length)
-    # pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
-    # temp = np.mean(Tair, axis=0)
-    # Pre_GS_v = np.full((12, nlat, nlon), np.nan)
-    # Temp_GS_v = np.full((12, nlat, nlon), np.nan)
-    # GS_length_v = np.full((12, nlat, nlon), np.nan)
-    # land = adict["MYTair"][0][0]
-    # land[land > 1] = 1
-    # for month in range(1, 13):
-    #     GS_mask = np.zeros(shape=(nlat, nlon))
-    #     maskx = temp[month - 1]
-    #     # temperature > 4 degree is growing season
-    #     GS_mask[maskx > -4] = 1
-    #     Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
-    #     Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
-    #     GS_length_v[month - 1] = GS_mask * land
-    # packdata.GS_length = np.sum(GS_length_v, axis=0)
-    # packdata.Pre_GS = np.sum(Pre_GS_v, axis=0)
-    # packdata.Temp_GS = np.sum(Temp_GS_v, axis=0)
+    pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
+    temp = np.mean(packdata.Tair[1], axis=0)
+    Pre_GS_v = np.full((12, nlat, nlon), np.nan)
+    Temp_GS_v = np.full((12, nlat, nlon), np.nan)
+    GS_length_v = np.full((12, nlat, nlon), np.nan)
+    land = adict["MYTair"][0][0]
+    land[land > 1] = 1
+    for month in range(1, 13):
+        GS_mask = np.zeros(shape=(nlat, nlon))
+        maskx = temp[month - 1]
+        # temperature > 4 degree is growing season
+        GS_mask[maskx > -4] = 1
+        Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
+        Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
+        GS_length_v[month - 1] = GS_mask * land
+    packdata.GS_length = (("lat", "lon"), np.sum(GS_length_v, axis=0))
+    packdata.Pre_GS = (("lat", "lon"), np.sum(Pre_GS_v, axis=0))
+    packdata.Temp_GS = (("lat", "lon"), np.sum(Temp_GS_v, axis=0))
 
     # 0.2 read other variables, including Edaphic variables, N and P deposition variables
     predvar = varlist["pred"]
@@ -181,10 +181,26 @@ def readvar(varlist, config, logfile):
 
     ds = xarray.Dataset(packdata)
 
-    # 0.3 Interactions between variables
-    ds["interx"] = ds.Tair * ds.Rainf
-    # packdata.interx2 = packdata.Temp_GS * packdata.Pre_GS
+    for var, arr in ds.data_vars.items():
+        if "year" in arr.dims:
+            ma = arr.mean("year")
+            if var in ("Rainf", "Snowf"):
+                ma *= 365 * 24 * 3600
+            stats = {
+                f"{var}_mean": ma.mean("month"),
+                f"{var}_std": ma.std("month"),
+            }
+            # if var == "Tair":
+            #     stats.update(
+            #         (f"{var}_m{i+1}", ma.sel(month=i))
+            #         for i in range(12)
+            #     )
+            ds = ds.drop_vars(var).assign(stats)
 
+    # 0.3 Interactions between variables
+    ds["interx1"] = ds.Tair_mean * ds.Rainf_mean
+    ds["interx2"] = ds.Temp_GS * ds.Pre_GS
+    
     ds.attrs.update(
         nlat=nlat, nlon=nlon, lat_reso=varlist["lat_reso"], lon_reso=varlist["lon_reso"]
     )

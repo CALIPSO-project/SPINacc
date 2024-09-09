@@ -16,4 +16,4 @@ repro_test_task_1 = True
 repro_test_task_2 = True
 repro_test_task_3 = True
 repro_test_task_4 = True
-algorithm = "rf"
+algorithm = "gbm"

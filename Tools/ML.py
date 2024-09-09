@@ -58,7 +58,7 @@ def collect_data(
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
     
-    Y_map.append(pool_map)
+    Y_map[ind[0]] = pool_map
     
     pool_map[pool_map >= 1e18] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
@@ -294,7 +294,7 @@ def MLloop(
     Yvar = varlist["resp"]["variables"]
 
     comb_ds = defaultdict(dict)
-    Y_maps = defaultdict(list)
+    Y_maps = defaultdict(dict)
     # dup_cols = [k for k, v in packdata.items() if "veget" not in v.dims] + ["pft"]
 
     for ipool, iis in Yvar.items():
@@ -357,20 +357,25 @@ def MLloop(
     for (ipool, var), dics in comb_ds.items():
         df = combine_data(dics)
         df.to_csv(f"{resultpath}/{ipool}_{var}.csv", index=False)
-    
-        pred_Y_map, model = MLmap_multidim(
-            packdata,
-            df,
-            PFT_mask,
-            varlist,
-            labx,
-            logfile,
-            loocv,
-            missVal,
-            alg
-        )
-        Y_map = np.stack(Y_maps[ipool, var])
-        res = MLeval.evaluation_map(pred_Y_map, Y_map)
-        results[ipool, var] = res
-    
+
+        Y = df.filter(regex="^Y_")
+        X = df.drop(columns=Y.columns)
+        
+        for label in Y.columns:
+            pred_Y_map, model = MLmap_multidim(
+                packdata,
+                df[[*X.columns, label]],
+                PFT_mask,
+                varlist,
+                labx,
+                logfile,
+                loocv,
+                missVal,
+                alg
+            )
+            ind = int(label.split("_")[-1])
+            Y_map = Y_maps[ipool, var][ind]
+            res = MLeval.evaluation_map(pred_Y_map, Y_map)
+            results[ipool, var, ind] = res
+        
     return pd.DataFrame(results).T

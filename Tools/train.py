@@ -63,12 +63,12 @@ def training_BAT(X, Y, logfile, loocv, alg):
 
     check.display("Counter(lab):" + str(count), logfile)
 
-    over_samples = SMOTE()
-    over_samples_X, over_samples_y = over_samples.fit_resample(XY, lab)
-    check.display("Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile)
-    X = over_samples_X[X.columns]
-    Y = over_samples_X[Y.columns]
-    print("Data shapes after resampling: ", X.shape, Y.shape)
+    if len(count) > 1:
+        over_samples = SMOTE()
+        over_samples_X, _ = over_samples.fit_resample(XY, lab)
+        X = over_samples_X[X.columns]
+        Y = over_samples_X[Y.columns]
+        print("Data shapes after resampling: ", X.shape, Y.shape)
 
     if alg == "nn":
         model = MLPRegressor(

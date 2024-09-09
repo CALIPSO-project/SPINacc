@@ -128,7 +128,7 @@ def readvar(varlist, config, logfile):
         Pre_GS_v[month - 1] = GS_mask * pre[month - 1]
         Temp_GS_v[month - 1] = GS_mask * temp[month - 1]
         GS_length_v[month - 1] = GS_mask * land
-    packdata.GS_length = (("lat", "lon"), np.sum(GS_length_v, axis=0))
+    # packdata.GS_length = (("lat", "lon"), np.sum(GS_length_v, axis=0))
     packdata.Pre_GS = (("lat", "lon"), np.sum(Pre_GS_v, axis=0))
     packdata.Temp_GS = (("lat", "lon"), np.sum(Temp_GS_v, axis=0))
 
@@ -185,7 +185,7 @@ def readvar(varlist, config, logfile):
         if "year" in arr.dims:
             ma = arr.mean("year")
             if var in ("Rainf", "Snowf"):
-                ma *= 365 * 24 * 3600
+                ma *= 30 * 24 * 3600
             stats = {
                 f"{var}_mean": ma.mean("month"),
                 f"{var}_std": ma.std("month"),
@@ -200,7 +200,7 @@ def readvar(varlist, config, logfile):
     # 0.3 Interactions between variables
     ds["interx1"] = ds.Tair_mean * ds.Rainf_mean
     ds["interx2"] = ds.Temp_GS * ds.Pre_GS
-    
+
     ds.attrs.update(
         nlat=nlat, nlon=nlon, lat_reso=varlist["lat_reso"], lon_reso=varlist["lon_reso"]
     )

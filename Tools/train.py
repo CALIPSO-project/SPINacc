@@ -22,7 +22,7 @@ from Tools import *
 ##@param[in]   loocv                  do leave-one-out-cross-validation(1) or not (0)
 ##@retval      TreeEns                Tree ensemble
 ##@retval      predY                  predicted Y
-def training_BAT(XY_train, logfile, loocv):
+def training_BAT(XY_train, logfile, loocv, alg="bt"):
     XX = XY_train.iloc[:, 1:].values
     YY = XY_train.iloc[:, 0].values
     # labels=np.zeros(shape=(len(YY),1))
@@ -111,16 +111,42 @@ def training_BAT(XY_train, logfile, loocv):
     SW[Ytrain > sq8] = 9
     SW[Ytrain > sq9] = 10
 
-    # Bagging ensemble
-    tree = DecisionTreeRegressor(random_state=1000)
-    #                               max_depth=14, min_samples_split=5)
+    if alg == "nn":
+        model = MLPRegressor(
+            hidden_layer_sizes=(64, 64),
+            max_iter=100,
+            learning_rate="invscaling",
+            learning_rate_init=0.5,
+            random_state=1000,
+            verbose=True,
+        )
+    elif alg == "bt":
+        model = BaggingRegressor(
+            DecisionTreeRegressor(random_state=1000),
+            max_samples=0.8,
+            n_estimators=300,
+            random_state=1000,
+        )
+    elif alg == "rf":
+        model = RandomForestRegressor(
+            max_samples=0.8,
+            n_estimators=300,
+            random_state=1000,
+        )
+    elif alg == "gbm":
+        model = XGBRegressor(
+            n_estimators=300,
+            max_samples=0.8,
+            random_state=1000,
+            verbose=3,
+        )
+    else:
+        raise ValueError("invalid ML algorithm name")
 
-    bag = BaggingRegressor(
-        base_estimator=tree, max_samples=0.8, n_estimators=300, random_state=1000
-    )
-    TreeEns = bag.fit(Xtrain, Ytrain, sample_weight=SW)  # sample_weight=SW
+    model.fit(Xtrain, Ytrain, sample_weight=SW)  # sample_weight=SW
+
     # predict
-    predY = bag.predict(XX)
+    predY = model.predict(XX)
 
     # leave one out cross validations
     loo = LeaveOneOut()
@@ -146,14 +172,8 @@ def training_BAT(XY_train, logfile, loocv):
             X_train, X_test = XM[train_idx, :], XM[test_idx, :]
             y_train, y_test = YM[train_idx], YM[test_idx]
             SW_train = SW[train_idx]
-            bag = BaggingRegressor(
-                base_estimator=tree,
-                max_samples=0.8,
-                n_estimators=300,
-                random_state=1000,
-            )
-            bag.fit(X_train, y_train, sample_weight=SW_train)
-            y_pred = bag.predict(X_test)
+            model.fit(X_train, y_train, sample_weight=SW_train)
+            y_pred = model.predict(X_test)
             ytests += list(y_test)
             ypreds += list(y_pred)
         ytests = np.array(ytests)
@@ -178,7 +198,7 @@ def training_BAT(XY_train, logfile, loocv):
             ytests, ypreds
         )
     return (
-        TreeEns,
+        model,
         predY,
         loocv_R2,
         loocv_reMSE,

@@ -39,10 +39,12 @@ from pandas import DataFrame, Series
 from scipy import stats
 from sklearn.cluster import Birch, KMeans
 from sklearn.datasets import make_regression
-from sklearn.ensemble import BaggingRegressor
+from sklearn.ensemble import BaggingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import LeaveOneOut
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.neural_network import MLPRegressor
+from xgboost import XGBRegressor
 
 import warnings
 

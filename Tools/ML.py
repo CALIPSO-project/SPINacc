@@ -18,7 +18,18 @@ from collections import defaultdict
 
 
 def collect_data(
-    packdata, ivar, ipool, PFT_mask_lai, ipft, varname, ind, ii, labx, varlist, Y_map, logfile
+    packdata,
+    ivar,
+    ipool,
+    PFT_mask_lai,
+    ipft,
+    varname,
+    ind,
+    ii,
+    labx,
+    varlist,
+    Y_map,
+    logfile,
 ):
     """
     Collect and preprocess data for machine learning.
@@ -57,9 +68,9 @@ def collect_data(
     pool_map = np.squeeze(ivar)[
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0
-    
+
     Y_map[ind[0]] = pool_map
-    
+
     pool_map[pool_map >= 1e18] = np.nan
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         pool_arr = pool_map.flatten()
@@ -83,14 +94,14 @@ def combine_data(dics):
         pandas.DataFrame: Combined data with NaN values and 'pft' column dropped.
     """
     df = pd.DataFrame(dics)
-    df = df.dropna().drop(columns=['pft'])  # drop data according to the PFT mask
-    return df
+    df = df.dropna().drop(columns=["pft"])  # drop data according to the PFT mask
+    return df.sort_index(axis=1)
 
 
 def MLmap_multidim(
     packdata,
     combine_XY,
-    PFT_mask,
+    pmask,
     varlist,
     labx,
     logfile,
@@ -112,7 +123,7 @@ def MLmap_multidim(
         missVal (float): Missing value to use.
 
     Returns:
-        tuple: 
+        tuple:
             - Global_Predicted_Y_map (numpy.ndarray): Globally predicted Y map.
             - model: Trained machine learning model.
     """
@@ -154,19 +165,16 @@ def MLmap_multidim(
         # predY = np.where(pool_map == pool_map, predY_train[0], np.nan)
         Global_Predicted_Y_map = predY_train
     else:
-        Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
+        Global_Predicted_Y_map = mapGlobe.extrp_global(
             packdata,
-            PFT_mask,
             X.columns,
             model,
             col_type,
             type_val,
         )
-        # write to restart file
-        pmask = np.nansum(PFT_mask, axis=0)
-        pmask[np.isnan(pmask)] == 0
+
         # set ocean pixel to missVal
-        Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
+        Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map)
         # some pixel with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
         # idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
@@ -255,16 +263,7 @@ def plot_eval_results(
 
 ##@param[in]   packdata               packaged data
 ##@param[in]   logfile                logfile
-def MLloop(
-    packdata,
-    logfile,
-    varlist,
-    labx,
-    resultpath,
-    loocv,
-    restfile,
-    alg
-):
+def MLloop(packdata, logfile, varlist, labx, resultpath, loocv, restfile, alg):
     """
     Main loop for machine learning processing.
 
@@ -307,7 +306,7 @@ def MLloop(
                     if ii["name_loop"] == "pft":
                         ipft = kk
                     ivar = responseY[varname]
-                    
+
                     # open restart file and select variable (memory is exceeded if open outside this loop)
                     restnc = Dataset(restfile, "a")
                     # restvar = restnc[varname]
@@ -321,8 +320,8 @@ def MLloop(
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
 
-                        dim_ind, = zip(ii["dim_loop"], ind)
-                        
+                        (dim_ind,) = zip(ii["dim_loop"], ind)
+
                         df = collect_data(
                             packdata,
                             ivar,
@@ -337,7 +336,7 @@ def MLloop(
                             Y_maps[ipool, varname],
                             logfile,
                         )
-                        
+
                         for k, s in df.items():
                             dic = comb_ds[ipool, varname]
                             if k == "Y":
@@ -345,13 +344,17 @@ def MLloop(
                             elif k == "pft":
                                 if k in dic:
                                     s = dic[k].combine_first(s)
-                            elif "veget" in packdata[k].dims:
-                                k = f"{k}_{varname}"
-                            dic[k] = s
+                            # elif "veget" in packdata[k].dims:
+                            #     k = f"{k}_{varname}"
+
+                            if k not in dic:
+                                dic[k] = s
+                            else:
+                                raise KeyError("Duplicate key!")
 
                     # close&save netCDF file
                     restnc.close()
-                    
+
     results = dict()
 
     for (ipool, var), dics in comb_ds.items():
@@ -360,22 +363,27 @@ def MLloop(
 
         Y = df.filter(regex="^Y_")
         X = df.drop(columns=Y.columns)
-        
+
+        ipft = int("".join(filter(str.isdigit, var)))
+        pmask = np.squeeze(PFT_mask[ipft - 1])
+        pmask[np.isnan(pmask)] = 0
+        pmask[np.isnan(PFT_mask).all(axis=0)] == 0
+
         for label in Y.columns:
             pred_Y_map, model = MLmap_multidim(
                 packdata,
-                df[[*X.columns, label]],
-                PFT_mask,
+                df[[label, *X.columns]],
+                pmask,
                 varlist,
                 labx,
                 logfile,
                 loocv,
                 missVal,
-                alg
+                alg,
             )
             ind = int(label.split("_")[-1])
             Y_map = Y_maps[ipool, var][ind]
             res = MLeval.evaluation_map(pred_Y_map, Y_map)
             results[ipool, var, ind] = res
-        
+
     return pd.DataFrame(results).T

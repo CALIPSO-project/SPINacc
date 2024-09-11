@@ -3,6 +3,14 @@
 """
 MLacc - Machine-Learning-based acceleration of spin-up
 
+This script orchestrates the entire MLacc workflow, including:
+- Data preparation and clustering
+- Machine learning model training and prediction
+- Result evaluation and visualization
+
+The workflow is controlled by configuration settings and can be run in different modes
+depending on the specified tasks.
+
 Copyright Laboratoire des Sciences du Climat et de l'Environnement (LSCE)
           Unite mixte CEA-CNRS-UVSQ
 
@@ -66,6 +74,9 @@ else:
     packdata = readvar(varlist, config, logfile)
     packdata.to_netcdf(resultpath + "packdata.nc")
 
+# NOTE: uncomment this line to reduce the dataset along the time dimension
+# packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
+
 # Define random seed
 iseed = config.random_seed
 random.seed(config.random_seed)
@@ -108,7 +119,7 @@ if "1" in itask:
     )
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_1:
-        subprocess.run(["python", "tests/task1_log.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task1.py"])
         check.display(
             "Task 1 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -143,7 +154,7 @@ if "2" in itask:
     )
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_2:
-        subprocess.run(["python", "tests/task2_log.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task2.py"])
         check.display(
             "Task 2 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -157,8 +168,8 @@ if "3" in itask:
     forcing.write(varlist, resultpath, IDx)
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_3:
-        subprocess.run(["python", "tests/task3_log.py"])
-        subprocess.run(["python", "tests/task3_2_log.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task3.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task3_2.py"])
         check.display(
             "Task 3 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -170,9 +181,6 @@ if "4" in itask:
     var_pred_name1 = varlist["pred"]["allname"]
     var_pred_name2 = varlist["pred"]["allname_pft"]
     var_pred_name = var_pred_name1 + var_pred_name2
-    # packdata.Nv_nopft = len(var_pred_name1)
-    # packdata.Nv_total = len(var_pred_name)
-    # packdata.var_pred_name = var_pred_name
 
     # Response variables
     Yvar = varlist["resp"]["variables"]
@@ -185,8 +193,6 @@ if "4" in itask:
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    # packdata.attrs['Nlat'] = np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int)
-    # packdata.attrs['Nlon'] = np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int)
     packdata.attrs.update(
         Nv_nopft=len(var_pred_name1),
         Nv_total=len(var_pred_name),
@@ -194,7 +200,7 @@ if "4" in itask:
         Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),
         Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
     )
-    labx = ["Y"] + var_pred_name + ["pft"]
+    labx = ["Y"] + list(packdata.data_vars) + ["pft"]
 
     # copy the restart file to be modified
     targetfile = (
@@ -221,8 +227,13 @@ if "4" in itask:
             restfile,
         )
         result.append(res_df)
-    result_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
-    result_df.to_csv(resultpath + "MLacc_results.csv")
+    res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
+    print(res_df)
+    res_path = resultpath + "MLacc_results.csv"
+    if os.path.exists(res_path):
+        ref_df = pd.read_csv(res_path, index_col=[0, 1])
+        # assert np.allclose(res_df['slope'], ref_df['slope'])
+    res_df.to_csv(res_path)
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 
@@ -248,8 +259,8 @@ if "4" in itask:
             restnc.close()
         # Run test of reproducibility for the task if yes
     if config.repro_test_task_4:
-        subprocess.run(["python", "tests/task4_log.py"])
-        subprocess.run(["python", "tests/task4_2_log.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task4.py"])
+        subprocess.run(["python", "-m", "pytest", "tests/test_task4_2.py"])
         check.display(
             "Task 4 reproducibility test results have been stored in tests_results.txt",
             logfile,

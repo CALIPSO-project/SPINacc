@@ -28,6 +28,8 @@ from Tools import *
 ##@retval      distance               # to be complete by Yan
 ##@retval      All_selectedID         # to be complete by Yan
 def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
+    if "year" in packdata.dims:
+        packdata = packdata.mean("year", keep_attrs=True)
     if "Ndep_nhx_pft" in var_pred_name:
         packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:
@@ -56,6 +58,7 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
             SelectedID = locations[RandomS]
         else:
             SelectedID = locations
+        print(f"Selected {len(SelectedID)/len(locations):.2%} sites in cluster {clus}")
         cluster_dic["clus_%.2i_loc_select" % clus] = SelectedID
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 

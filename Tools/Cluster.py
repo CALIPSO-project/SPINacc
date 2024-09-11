@@ -28,6 +28,8 @@ from Tools import *
 ##@retval      distance               # to be complete by Yan
 ##@retval      All_selectedID         # to be complete by Yan
 def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
+    if "year" in packdata.dims:
+        packdata = packdata.mean("year", keep_attrs=True)
     if "Ndep_nhx_pft" in var_pred_name:
         packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:

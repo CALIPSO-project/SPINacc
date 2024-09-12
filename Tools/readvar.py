@@ -176,7 +176,7 @@ def readvar(varlist, config, logfile):
                     Tstd=arr.std("month"),
                     Tmin=arr.min("month"),
                     Tmax=arr.max("month"),
-                    Tamp=arr.max("month") - arr.min("month"),
+                    # Tamp=arr.max("month") - arr.min("month"),
                 )
             else:
                 stats = {

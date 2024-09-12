@@ -64,6 +64,7 @@ def MLmap_multidim(
     extr_all = extr_all.reshape(-1, extr_all.shape[-1])
 
     df_data = DataFrame(extr_all, columns=labx)  # convert the array into dataframe
+    print(df_data.isna().mean())  # print NaN ratios
     combine_XY = df_data.dropna().drop(["pft"], axis=1)
     if len(combine_XY) == 0:
         check.display(
@@ -100,7 +101,7 @@ def MLmap_multidim(
 
     if not Tree_Ens:
         # only one value
-        predY = np.where(pool_map == pool_map, predY_train[0], np.nan)
+        predY = np.where(pool_map == pool_map, predY_train.iloc[0], np.nan)
         Global_Predicted_Y_map = predY
     else:
         Global_Predicted_Y_map, predY = mapGlobe.extrp_global(

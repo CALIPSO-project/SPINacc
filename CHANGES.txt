@@ -1,0 +1,6 @@
+- Converted dataset format to xarray
+- Modified input features (added std of some variables like Qair, Psurf, etc.)
+- Increase Nc values (by a factor of 5)
+- Instead of averaging over the whole time span, only take monthly averages and separate data per year to increase dataset size
+- Added new ML algorithm options: XGBoost, RandomForest, MLP, (Lasso)
+- Added missing value imputation to avoid dropping samples with missing values

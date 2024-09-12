@@ -17,16 +17,24 @@
 from Tools import *
 
 
-##@param[in]   packdata               packaged data
-##@param[in]   ipft                   index of PFT
-##@param[in]   PFTmask                PFT mask
-##@param[in]   Tree_Ens               tree ensemble
-##@param[in]   colum
-##@param[in]   Nm
-##@param[in]   XVarName
-##@retval      Pred_Y_map             predicted map of target variables, masking nan pixels
-##@retval      Pred_Y                 predicted map of target variables, without masking
-def extrp_global(packdata, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm):
+def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
+    """
+    Extrapolate predictions globally using a trained model.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        ipft (int): index of PFT
+        PFTmask (numpy.ndarray): Mask for Plant Functional Types.
+        XVarName (list): List of input variable names.
+        model: Trained machine learning model.
+        colum (str): Column name for encoding, or "None".
+        Nm (int): Number of categories for encoding.
+
+    Returns:
+        tuple:
+            - Pred_Y_map (numpy.ndarray): Predicted map of target variables, masking nan pixels.
+            - Pred_Y (numpy.ndarray): Predicted map of target variables, without masking.
+    """
     if "year" in packdata.dims:
         packdata = packdata.mean("year", keep_attrs=True)
     global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
@@ -54,7 +62,7 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, Tree_Ens, colum, Nm):
                 Xtr_encode = Xtr
             # Xtr.ix[:,colum]=(Xtr.ix[:,colum].astype(int)).astype(str)
             # Xtrr=pd.get_dummies(Xtr)
-            Ym = DataFrame(Tree_Ens.predict(Xtr_encode))
+            Ym = DataFrame(model.predict(Xtr_encode))
             Ym.index = Xtr_encode.index
             Ymm = Ym.reindex(index=range(max(ind) + 1))
             Pred_Y[llat][:] = np.squeeze(Ymm)

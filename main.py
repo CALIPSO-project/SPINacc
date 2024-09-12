@@ -243,6 +243,7 @@ if "4" in itask:
             resultpath,
             loocv,
             restfile,
+            config.algorithm,
         )
         result.append(res_df)
     res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
@@ -250,7 +251,8 @@ if "4" in itask:
     res_path = resultpath + "MLacc_results.csv"
     if os.path.exists(res_path):
         ref_df = pd.read_csv(res_path, index_col=[0, 1])
-        # assert np.allclose(res_df['slope'], ref_df['slope'])
+        perf_diff = res_df["slope"] - ref_df["slope"]
+        assert perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5
     res_df.to_csv(res_path)
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE

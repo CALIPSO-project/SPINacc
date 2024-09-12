@@ -17,12 +17,20 @@
 from Tools import *
 
 
-##@param[in]   packdata               packaged data
-##@param[in]   varlist                list of variables, including name of source files, variable names, etc.
-##@param[in]   thres                  threshold for PFT fraction to be defined as valid pixel
-##@retval      PFT_mask               PFT mask where PFT fraction < thres
-##@retval      PFT_mask_lai           PFT mask where LAI <0
 def PFT(packdata, varlist, thres):
+    """
+    Generate Plant Functional Type (PFT) masks based on PFT fraction and LAI.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables, including LAI.
+        varlist (dict): Dictionary of variable information, including PFT mask source file and variable name.
+        thres (float): Threshold for PFT fraction to be defined as a valid pixel.
+
+    Returns:
+        tuple:
+            - PFT_mask (numpy.ndarray): Mask where PFT fraction > threshold (1 for valid, NaN for invalid).
+            - PFT_mask_lai (numpy.ndarray): Mask where PFT fraction > threshold and LAI >= 0 (1 for valid, NaN for invalid).
+    """
     f = Dataset(varlist["PFTmask"]["sourcefile"], "r")
     mkk = f[varlist["PFTmask"]["var"]][-1].filled(np.nan)
     PFT_fraction = np.squeeze(mkk)

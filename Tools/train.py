@@ -17,12 +17,22 @@
 from Tools import *
 
 
-##@param[in]   XY_train               latitudes of selected pixels
-##@param[in]   logfile                logfile
-##@param[in]   loocv                  do leave-one-out-cross-validation(1) or not (0)
-##@retval      TreeEns                Tree ensemble
-##@retval      predY                  predicted Y
-def training_BAT(XY_train, logfile, loocv, alg="bt"):
+def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
+    """
+    Train a machine learning model using Balanced Augmentation Technique (BAT).
+
+    Args:
+        XY_train (pandas.DataFrame): Training dataset.
+        logfile (file): File object for logging.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+        alg (str): ML algorithm to use (options: "nn", "bt", "rf", "gbm").
+        upsample (bool): Whether to upsample the dataset with SMOTE.
+
+    Returns:
+        tuple:
+            - model: Trained machine learning model.
+            - predY (numpy.ndarray): Predicted Y values.
+    """
     Xtrain = XY_train.drop(columns="Y")
     Ytrain = XY_train["Y"]
     # labels=np.zeros(shape=(len(Ytrain),1))
@@ -57,43 +67,45 @@ def training_BAT(XY_train, logfile, loocv, alg="bt"):
 
     # If the length of unique target variable is not 1,
     # run the KMeans algorithm to find the cluster centers, and resample the data
-    # try:
-    #     mod = KMeans(n_clusters=3)
-    #     lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
-    #     count = Counter(lab)
-    #     check.display("Counter(lab):" + str(count), logfile)
-    #     over_samples = SMOTE()
-    #     over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
-    #     check.display(
-    #         "Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile
-    #     )
-    #     Xtrain = over_samples_X.iloc[:, 1:]
-    #     Ytrain = over_samples_X.iloc[:, 0]
-    # #  else:
-    # except:
-    #     mod = KMeans(n_clusters=2)
-    #     lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
-    #     count = Counter(lab)
-    #     check.display("Counter(lab):" + str(Counter(lab)), logfile)
-    #     # resample requires minimum number of a cluster >=6, if not, then repeat current samples
-    #     for label, number in count.items():
-    #         if number < 6:
-    #             XY_train = pd.concat(
-    #                 (XY_train,)
-    #                 + (XY_train[lab == label],) * int(np.ceil(6 / number) - 1)
-    #             )
-    #             lab = np.hstack(
-    #                 (lab, np.repeat(lab[lab == label], int(np.ceil(6 / number) - 1)))
-    #             )
-    #     #        print(len(lab),number,int(np.ceil(6/number)))
-    #     check.display("Counter(lab):" + str(Counter(lab)), logfile)
-    #     over_samples = SMOTE()
-    #     over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
-    #     check.display(
-    #         "Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile
-    #     )
-    #     Xtrain = over_samples_X.iloc[:, 1:]
-    #     Ytrain = over_samples_X.iloc[:, 0]
+    if upsample:
+        try:
+            mod = KMeans(n_clusters=3)
+            lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
+            count = Counter(lab)
+            check.display("Counter(lab):" + str(count), logfile)
+            over_samples = SMOTE()
+            over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
+            check.display(
+                "Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile
+            )
+            Xtrain = over_samples_X.iloc[:, 1:]
+            Ytrain = over_samples_X.iloc[:, 0]
+        except:
+            mod = KMeans(n_clusters=2)
+            lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
+            count = Counter(lab)
+            check.display("Counter(lab):" + str(Counter(lab)), logfile)
+            # resample requires minimum number of a cluster >=6, if not, then repeat current samples
+            for label, number in count.items():
+                if number < 6:
+                    XY_train = pd.concat(
+                        (XY_train,)
+                        + (XY_train[lab == label],) * int(np.ceil(6 / number) - 1)
+                    )
+                    lab = np.hstack(
+                        (
+                            lab,
+                            np.repeat(lab[lab == label], int(np.ceil(6 / number) - 1)),
+                        )
+                    )
+            check.display("Counter(lab):" + str(Counter(lab)), logfile)
+            over_samples = SMOTE()
+            over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
+            check.display(
+                "Counter(over_samples_y):" + str(Counter(over_samples_y)), logfile
+            )
+            Xtrain = over_samples_X.iloc[:, 1:]
+            Ytrain = over_samples_X.iloc[:, 0]
 
     SW = np.ones(shape=(len(Ytrain),))
     sq1 = np.percentile(Ytrain, 2)
@@ -143,7 +155,7 @@ def training_BAT(XY_train, logfile, loocv, alg="bt"):
     else:
         raise ValueError("invalid ML algorithm name")
 
-    model.fit(Xtrain, Ytrain, sample_weight=SW)  # sample_weight=SW
+    model.fit(Xtrain, Ytrain, sample_weight=SW)
 
     # predict
     predY = model.predict(Xtrain)
@@ -152,16 +164,6 @@ def training_BAT(XY_train, logfile, loocv, alg="bt"):
     loo = LeaveOneOut()
     ytests = []
     ypreds = []
-    loocv_R2 = np.nan
-    loocv_reMSE = np.nan
-    loocv_slope = np.nan
-    loocv_RMSE = np.nan
-    loocv_dNRMSE = np.nan
-    loocv_sNRMSE = np.nan
-    loocv_iNRMSE = np.nan
-    loocv_f_SB = np.nan
-    loocv_f_SDSD = np.nan
-    loocv_f_LSC = np.nan
     if loocv == 1:
         XM = Xtrain.values
         YM = Ytrain.values

@@ -20,7 +20,6 @@ def MLmap_multidim(
     ivar,
     PFT_mask,
     PFT_mask_lai,
-    var_pred_name,
     ipool,
     ipft,
     logfile,
@@ -33,7 +32,35 @@ def MLmap_multidim(
     loocv,
     restvar,
     missVal,
+    alg,
 ):
+    """
+    Perform multi-dimensional machine learning mapping.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        ivar (numpy.ndarray): Array of response variable.
+        PFT_mask (numpy.ndarray): Mask for Plant Functional Types.
+        PFT_mask_lai (numpy.ndarray): Mask for Plant Functional Types based on LAI.
+        ipool (str): Name of the current pool.
+        ipft (int): Index of current Plant Functional Type.
+        logfile (file): File object for logging.
+        varname (str): Name of the current variable.
+        varlist (dict): Dictionary of variable information.
+        labx (list): List of column labels.
+        ind (tuple): Index tuple for multi-dimensional variables.
+        ii (dict): Dictionary containing dimension information.
+        resultpath (str): Path to store results.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+        restvar (numpy.ndarray): Restart variable.
+        missVal (float): Missing value to use.
+        alg (str): ML algorithm to use.
+
+    Returns:
+        tuple:
+            - Global_Predicted_Y_map (numpy.ndarray): Globally predicted Y map.
+            - model: Trained machine learning model.
+    """
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
         % (ipool, varname, ind, ii["dim_loop"]),
@@ -64,7 +91,6 @@ def MLmap_multidim(
     extr_all = extr_all.reshape(-1, extr_all.shape[-1])
 
     df_data = DataFrame(extr_all, columns=labx)  # convert the array into dataframe
-    print(df_data.isna().mean())  # print NaN ratios
     combine_XY = df_data.dropna().drop(["pft"], axis=1)
     if len(combine_XY) == 0:
         check.display(
@@ -97,7 +123,7 @@ def MLmap_multidim(
         loocv_f_SB,
         loocv_f_SDSD,
         loocv_f_LSC,
-    ) = train.training_BAT(combineXY, logfile, loocv)
+    ) = train.training_BAT(combineXY, logfile, loocv, alg)
 
     if not Tree_Ens:
         # only one value
@@ -130,63 +156,59 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        # evaluation
-        R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
-            MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        )
-        check.display(
-            "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
-            % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
-            logfile,
-        )
-        # save R2, RMSE, slope to txt files
-        # fx.write('%.2f' % R2+',')
-        # plot the results
-        fig = plt.figure(figsize=[12, 12])
-        # training dat
-        ax1 = plt.subplot(221)
-        ax1.scatter(combineXY.iloc[:, 0].values, predY_train)
-        # global dta
-        ax2 = plt.subplot(222)
-        #    predY=Global_Predicted_Y_map.flatten()
-        #    simuY=pool_map.flatten()
-        ax2.scatter(
-            pool_map[PFT_mask[ipft - 1] > 0],
-            Global_Predicted_Y_map[PFT_mask[ipft - 1] > 0],
-        )
-        xx = np.linspace(0, np.nanmax(pool_map), 10)
-        yy = np.linspace(0, np.nanmax(pool_map), 10)
-        ax2.text(
-            0.1 * np.nanmax(pool_map),
-            0.7 * np.nanmax(Global_Predicted_Y_map),
-            "R2=%.2f" % R2,
-        )
-        ax2.text(
-            0.1 * np.nanmax(pool_map),
-            0.8 * np.nanmax(Global_Predicted_Y_map),
-            "RMSE=%i" % RMSE,
-        )
-        ax2.plot(xx, yy, "k--")
-        ax2.set_xlabel("ORCHIDEE simulated")
-        ax2.set_ylabel("Machine-learning predicted")
-        ax3 = plt.subplot(223)
-        im = ax3.imshow(pool_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-        ax3.set_title("ORCHIDEE simulated")
-        plt.colorbar(im, orientation="horizontal")
-        ax4 = plt.subplot(224)
-        im = ax4.imshow(Global_Predicted_Y_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-        ax4.set_title("Machine-learning predicted")
-        plt.colorbar(im, orientation="horizontal")
+        # check.display(
+        #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
+        #     % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
+        #     logfile,
+        # )
+        # # save R2, RMSE, slope to txt files
+        # # fx.write('%.2f' % R2+',')
+        # # plot the results
+        # fig = plt.figure(figsize=[12, 12])
+        # # training dat
+        # ax1 = plt.subplot(221)
+        # ax1.scatter(combineXY.iloc[:, 0].values, predY_train)
+        # # global dta
+        # ax2 = plt.subplot(222)
+        # #    predY=Global_Predicted_Y_map.flatten()
+        # #    simuY=pool_map.flatten()
+        # ax2.scatter(
+        #     pool_map[PFT_mask[ipft - 1] > 0],
+        #     Global_Predicted_Y_map[PFT_mask[ipft - 1] > 0],
+        # )
+        # xx = np.linspace(0, np.nanmax(pool_map), 10)
+        # yy = np.linspace(0, np.nanmax(pool_map), 10)
+        # ax2.text(
+        #     0.1 * np.nanmax(pool_map),
+        #     0.7 * np.nanmax(Global_Predicted_Y_map),
+        #     "R2=%.2f" % R2,
+        # )
+        # ax2.text(
+        #     0.1 * np.nanmax(pool_map),
+        #     0.8 * np.nanmax(Global_Predicted_Y_map),
+        #     "RMSE=%i" % RMSE,
+        # )
+        # ax2.plot(xx, yy, "k--")
+        # ax2.set_xlabel("ORCHIDEE simulated")
+        # ax2.set_ylabel("Machine-learning predicted")
+        # ax3 = plt.subplot(223)
+        # im = ax3.imshow(pool_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
+        # ax3.set_title("ORCHIDEE simulated")
+        # plt.colorbar(im, orientation="horizontal")
+        # ax4 = plt.subplot(224)
+        # im = ax4.imshow(Global_Predicted_Y_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
+        # ax4.set_title("Machine-learning predicted")
+        # plt.colorbar(im, orientation="horizontal")
 
-        fig.savefig(
-            resultpath
-            + "Eval_%s" % varname
-            + "".join(
-                ["_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll] for ll in range(len(ind))]
-                + [".png"]
-            )
-        )
-        plt.close("all")
+        # fig.savefig(
+        #     resultpath
+        #     + "Eval_%s" % varname
+        #     + "".join(
+        #         ["_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll] for ll in range(len(ind))]
+        #         + [".png"]
+        #     )
+        # )
+        # plt.close("all")
     else:
         check.display(
             "%s, variable %s, index %s (dim: %s) : NO DATA!"
@@ -194,14 +216,9 @@ def MLmap_multidim(
             logfile,
         )
     if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
-        print(varname, ind)
+        raise Exception
 
 
-##@param[in]   packdata               packaged data
-##@param[in]   ipool                  'som','biomass' or 'litter'
-##@param[in]   logfile                logfile
-##@
-##@param[in]
 def MLloop(
     packdata,
     ipool,
@@ -211,12 +228,25 @@ def MLloop(
     resultpath,
     loocv,
     restfile,
+    alg,
 ):
-    # var_pred_name1 = varlist["pred"]["allname"]
-    # var_pred_name2 = varlist["pred"]["allname_pft"]
-    # var_pred_name = var_pred_name1 + var_pred_name2
-    var_pred_name = None
+    """
+    Main loop for machine learning processing.
 
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        ipool (str): Name of the current pool.
+        logfile (file): File object for logging.
+        varlist (dict): Dictionary of variable information.
+        labx (list): List of column labels.
+        resultpath (str): Path to store results.
+        loocv (bool): Whether to perform leave-one-out cross-validation.
+        restfile (str): Path to restart file.
+        alg (str): ML algorithm to use.
+
+    Returns:
+        pandas.DataFrame: Results of machine learning evaluations.
+    """
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -238,37 +268,14 @@ def MLloop(
                 varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                 if ii["name_loop"] == "pft":
                     ipft = kk
-                #        print(responseY.variables.keys())
                 ivar = responseY[varname]
 
                 # open restart file and select variable (memory is exceeded if open outside this loop)
                 restnc = Dataset(restfile, "a")
                 restvar = restnc[varname]
 
-                if ii["dim_loop"] == ["null"]:
-                    if ipft in ii["skip_loop"]["pft"]:
-                        continue
-                    res = MLmap(
-                        packdata,
-                        ivar,
-                        PFT_mask,
-                        PFT_mask_lai,
-                        var_pred_name,
-                        ipool,
-                        ipft,
-                        logfile,
-                        varname,
-                        varlist,
-                        labx,
-                        ii,
-                        resultpath,
-                        loocv,
-                        restvar,
-                        missVal,
-                    )
-                    if res:
-                        res["var"] = varname
-                        result.append(res)
+                if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
+                    continue
                 else:
                     index = itertools.product(
                         *[ii["loops"][ll] for ll in ii["dim_loop"]]
@@ -284,7 +291,6 @@ def MLloop(
                             ivar,
                             PFT_mask,
                             PFT_mask_lai,
-                            var_pred_name,
                             ipool,
                             ipft,
                             logfile,
@@ -297,6 +303,7 @@ def MLloop(
                             loocv,
                             restvar,
                             missVal,
+                            alg,
                         )
                         if res:
                             res["var"] = varname
@@ -304,6 +311,7 @@ def MLloop(
                                 res[f"dim_{i+1}"] = k
                                 res[f"ind_{i+1}"] = v
                             result.append(res)
+
                 # close&save netCDF file
                 restnc.close()
 

@@ -65,7 +65,10 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
             SelectedID = locations[RandomS]
         else:
             SelectedID = locations
-        cluster_dic["clus_%.2i_loc_select" % (clus + 1)] = SelectedID
+        print(
+            f"Selected {len(SelectedID)} ({len(SelectedID)/len(locations):.2%}) sites in cluster {clus}"
+        )
+        cluster_dic["clus_%.2i_loc_select" % clus] = SelectedID
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 
     return cluster_dic, distance, All_selectedID

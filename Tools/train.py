@@ -17,7 +17,7 @@
 from Tools import *
 
 
-def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
+def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     """
     Train a machine learning model using Balanced Augmentation Technique (BAT).
 
@@ -26,7 +26,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
         logfile (file): File object for logging.
         loocv (bool): Whether to perform leave-one-out cross-validation.
         alg (str): ML algorithm to use (options: "nn", "bt", "rf", "gbm").
-        upsample (bool): Whether to upsample the dataset with SMOTE.
+        bat (bool): Whether to augment the dataset with SMOTE.
 
     Returns:
         tuple:
@@ -37,20 +37,21 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
     Ytrain = XY_train["Y"]
     # labels=np.zeros(shape=(len(Ytrain),1))
 
+    loocv_R2 = np.nan
+    loocv_reMSE = np.nan
+    loocv_slope = np.nan
+    loocv_dNRMSE = np.nan
+    loocv_sNRMSE = np.nan
+    loocv_iNRMSE = np.nan
+    loocv_f_SB = np.nan
+    loocv_f_SDSD = np.nan
+    loocv_f_LSC = np.nan
+
     # if length of unique target is one
     if len(np.unique(Ytrain)) == 1:
         # return a set of default values and an empty TreeEnsemble
-        TreeEns = []
+        TreeEns = None
         predY = Ytrain
-        loocv_R2 = np.nan
-        loocv_reMSE = np.nan
-        loocv_slope = np.nan
-        loocv_dNRMSE = np.nan
-        loocv_sNRMSE = np.nan
-        loocv_iNRMSE = np.nan
-        loocv_f_SB = np.nan
-        loocv_f_SDSD = np.nan
-        loocv_f_LSC = np.nan
         return (
             TreeEns,
             predY,
@@ -67,10 +68,10 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
 
     # If the length of unique target variable is not 1,
     # run the KMeans algorithm to find the cluster centers, and resample the data
-    if upsample:
+    if bat:
         try:
             mod = KMeans(n_clusters=3)
-            lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
+            lab = mod.fit_predict(np.reshape(Ytrain.values, (-1, 1)))
             count = Counter(lab)
             check.display("Counter(lab):" + str(count), logfile)
             over_samples = SMOTE()
@@ -82,7 +83,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", upsample=False):
             Ytrain = over_samples_X.iloc[:, 0]
         except:
             mod = KMeans(n_clusters=2)
-            lab = mod.fit_predict(np.reshape(Ytrain, (-1, 1)))
+            lab = mod.fit_predict(np.reshape(Ytrain.values, (-1, 1)))
             count = Counter(lab)
             check.display("Counter(lab):" + str(Counter(lab)), logfile)
             # resample requires minimum number of a cluster >=6, if not, then repeat current samples

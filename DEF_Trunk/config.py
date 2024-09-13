@@ -12,7 +12,9 @@ take_unique = False
 kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000
-algorithm = "gbm"
+algorithm = (
+    "gbm"  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor
+)
 leave_one_out_cv = False
 repro_test_task_1 = False
 repro_test_task_2 = False

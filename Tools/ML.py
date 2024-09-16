@@ -306,32 +306,33 @@ def MLloop(
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
-                        res = MLmap_multidim(
-                            packdata,
-                            ivar,
-                            PFT_mask,
-                            PFT_mask_lai,
-                            ipool,
-                            ipft,
-                            logfile,
-                            varname,
-                            varlist,
-                            labx,
-                            ind,
-                            ii,
-                            resultpath,
-                            loocv,
-                            restvar,
-                            missVal,
-                            alg,
+                        result.append(
+                            (
+                                packdata,
+                                ivar[:],
+                                PFT_mask,
+                                PFT_mask_lai,
+                                ipool,
+                                ipft,
+                                None,
+                                varname,
+                                varlist,
+                                labx,
+                                ind,
+                                ii,
+                                resultpath,
+                                loocv,
+                                restvar[:],
+                                missVal,
+                                alg,
+                            )
                         )
-                        if res:
-                            res["var"] = varname
-                            for i, (k, v) in enumerate(dim_ind):
-                                res[f"dim_{i+1}"] = k
-                                res[f"ind_{i+1}"] = v
-                            result.append(res)
 
                 # close&save netCDF file
                 restnc.close()
-    return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()
+
+    with ThreadPoolExecutor() as pool:
+        print(vars(pool))
+        result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
+
+    return pd.DataFrame(result).set_index(["var", "ind"]).sort_index()

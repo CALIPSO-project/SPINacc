@@ -232,9 +232,12 @@ if "4" in itask:
     print(res_df)
     res_path = resultpath + "MLacc_results.csv"
     if os.path.exists(res_path):
-        ref_df = pd.read_csv(res_path, index_col=[0, 1])
+        ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
         perf_diff = res_df["slope"] - ref_df["slope"]
-        assert perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5
+        assert perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5, (
+            perf_diff.mean(),
+            (perf_diff > 0).mean(),
+        )
     res_df.to_csv(res_path)
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE

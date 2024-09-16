@@ -155,7 +155,10 @@ def MLmap_multidim(
         return None
 
     if (PFT_mask[ipft - 1] > 0).any():
-        return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        res["var"] = varname
+        res["ind"] = ind[0]
+        return res
         # check.display(
         #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
         #     % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
@@ -286,33 +289,33 @@ def MLloop(
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
-                        res = MLmap_multidim(
-                            packdata,
-                            ivar,
-                            PFT_mask,
-                            PFT_mask_lai,
-                            ipool,
-                            ipft,
-                            logfile,
-                            varname,
-                            varlist,
-                            labx,
-                            ind,
-                            ii,
-                            resultpath,
-                            loocv,
-                            restvar,
-                            missVal,
-                            alg,
+                        result.append(
+                            (
+                                packdata,
+                                ivar[:],
+                                PFT_mask,
+                                PFT_mask_lai,
+                                ipool,
+                                ipft,
+                                None,
+                                varname,
+                                varlist,
+                                labx,
+                                ind,
+                                ii,
+                                resultpath,
+                                loocv,
+                                restvar[:],
+                                missVal,
+                                alg,
+                            )
                         )
-                        if res:
-                            res["var"] = varname
-                            for i, (k, v) in enumerate(dim_ind):
-                                res[f"dim_{i+1}"] = k
-                                res[f"ind_{i+1}"] = v
-                            result.append(res)
 
                 # close&save netCDF file
                 restnc.close()
 
-    return pd.DataFrame(result).set_index("var")
+    with ThreadPoolExecutor() as pool:
+        print(vars(pool))
+        result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
+
+    return pd.DataFrame(result).set_index(["var", "ind"]).sort_index()

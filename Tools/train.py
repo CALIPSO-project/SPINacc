@@ -149,9 +149,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     elif alg == "gbm":
         model = XGBRegressor(
             n_estimators=300,
-            max_samples=0.8,
             random_state=1000,
-            verbose=3,
         )
     else:
         raise ValueError("invalid ML algorithm name")

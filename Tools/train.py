@@ -126,7 +126,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
 
     if alg == "nn":
         model = MLPRegressor(
-            hidden_layer_sizes=(64, 64),
+            hidden_layer_sizes=(32, 32),
             max_iter=100,
             learning_rate="invscaling",
             learning_rate_init=0.5,
@@ -150,6 +150,36 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
         model = XGBRegressor(
             n_estimators=300,
             random_state=1000,
+        )
+    elif alg == "lasso":
+        model = Lasso(
+            alpha=0.1,
+        )
+    elif alg == "stack":
+        model = StackingRegressor(
+            [
+                (
+                    "rf",
+                    RandomForestRegressor(
+                        max_samples=0.8,
+                        n_estimators=300,
+                        random_state=1000,
+                    ),
+                ),
+                (
+                    "xgb",
+                    XGBRegressor(
+                        n_estimators=300,
+                        random_state=1000,
+                    ),
+                ),
+                (
+                    "lasso",
+                    Lasso(
+                        alpha=0.1,
+                    ),
+                ),
+            ]
         )
     else:
         raise ValueError("invalid ML algorithm name")

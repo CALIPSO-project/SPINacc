@@ -40,7 +40,8 @@ from pandas import DataFrame, Series
 from scipy import stats
 from sklearn.cluster import Birch, KMeans
 from sklearn.datasets import make_regression
-from sklearn.ensemble import BaggingRegressor, RandomForestRegressor
+from sklearn.ensemble import BaggingRegressor, RandomForestRegressor, StackingRegressor
+from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import LeaveOneOut
 from sklearn.tree import DecisionTreeRegressor

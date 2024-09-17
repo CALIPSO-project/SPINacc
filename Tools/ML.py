@@ -158,9 +158,6 @@ def MLmap_multidim(
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         res["var"] = varname
         res["ind"] = ind[0]
-        log = pd.Series({"model": str(model.named_steps["estimator"]), **res})
-        path = Path(resultpath + "ML_log.csv")
-        log.to_csv(path, mode="a", header=not path.exists())
         return res
         # check.display(
         #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
@@ -317,6 +314,7 @@ def MLloop(
                 # close&save netCDF file
                 restnc.close()
 
+    # result = result[:3]
     with ThreadPoolExecutor() as pool:
         result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
 

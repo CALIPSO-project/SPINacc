@@ -129,9 +129,8 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
             hidden_layer_sizes=(32, 32),
             max_iter=100,
             learning_rate="invscaling",
-            learning_rate_init=0.5,
+            learning_rate_init=0.1,
             random_state=1000,
-            verbose=True,
         )
     elif alg == "bt":
         model = BaggingRegressor(
@@ -159,6 +158,15 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
         model = StackingRegressor(
             [
                 (
+                    "bt",
+                    BaggingRegressor(
+                        DecisionTreeRegressor(random_state=1000),
+                        max_samples=0.8,
+                        n_estimators=300,
+                        random_state=1000,
+                    ),
+                ),
+                (
                     "rf",
                     RandomForestRegressor(
                         max_samples=0.8,
@@ -166,13 +174,13 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
                         random_state=1000,
                     ),
                 ),
-                (
-                    "xgb",
-                    XGBRegressor(
-                        n_estimators=300,
-                        random_state=1000,
-                    ),
-                ),
+                # (
+                #     "xgb",
+                #     XGBRegressor(
+                #         n_estimators=300,
+                #         random_state=1000,
+                #     ),
+                # ),
                 (
                     "lasso",
                     Lasso(
@@ -184,8 +192,6 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     else:
         raise ValueError("invalid ML algorithm name")
 
-    print(model)
-
     model = Pipeline(
         [
             ("scaler", StandardScaler()),
@@ -195,7 +201,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
 
     try:
         model.fit(Xtrain, Ytrain, estimator__sample_weight=SW)
-    except ValueError:
+    except TypeError:
         model.fit(Xtrain, Ytrain)
 
     # predict

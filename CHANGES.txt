@@ -1,6 +1,16 @@
-- Converted dataset format to xarray
-- Modified input features (added std of some variables like Qair, Psurf, etc.)
+- Converted dataset format to xarray.Dataset - merged auxil into packdata, etc.
+- Reformat documentation and added more comments
+- Rewrote tests as pytest files
+- Reformated the config file as a python file
+- Used ruff for reformatting and linting
+- Added pre-commit checks and a Github workflow for CI checks
+- Added input features (std of some variables like Qair, Psurf, etc.)
 - Increase Nc values (by a factor of 2)
 - Instead of averaging over the whole time span, only take monthly averages and separate data per year to increase dataset size
+- Simplified readvar.py
 - Added new ML algorithm options: XGBoost, RandomForest, MLP, Lasso, Stacking Ensemble
+- Combined all ML evaluation results into a single CSV table
 - Implemented multithread parallelization to train a ML model per target variable in parallelization
+- Added standard scaling to preprocess the data before ML training
+- Updated README.md and CONTRIBUTING.md
+- Added explanation of the varlist.json file

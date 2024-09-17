@@ -119,13 +119,9 @@ if "1" in itask:
     )
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_1:
-<<<<<<< HEAD
         subprocess.run(
             ["python", "-m", "pytest", "tests/test_task1.py", "--trunk", dir_def]
         )
-=======
-        subprocess.run(["python", "-m", "pytest", "tests/test_task1.py"])
->>>>>>> d6ea910 (enlarge dataset by increasing Nc and expanding year dim)
         check.display(
             "Task 1 reproducibility test results have been stored in tests_results.txt",
             logfile,

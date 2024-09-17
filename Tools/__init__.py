@@ -44,7 +44,7 @@ from sklearn.ensemble import BaggingRegressor, RandomForestRegressor, StackingRe
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import LeaveOneOut
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neural_network import MLPRegressor

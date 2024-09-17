@@ -331,6 +331,7 @@ def MLloop(
                 # close&save netCDF file
                 restnc.close()
 
+    # result = result[:3]
     with ThreadPoolExecutor() as pool:
         result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
 

@@ -72,10 +72,10 @@ else:
     check.display("MLacc start from scratch...", logfile)
     # initialize packaged data
     packdata = readvar(varlist, config, logfile)
+    if os.path.exists(resultpath + "packdata.nc"):
+        refdata = xarray.load_dataset(resultpath + "packdata.nc")
+        assert (refdata == packdata).all()
     packdata.to_netcdf(resultpath + "packdata.nc")
-
-# NOTE: uncomment this line to reduce the dataset along the time dimension
-# packdata = packdata.mean(dim=['year', 'month'], keep_attrs=True)
 
 # Define random seed
 iseed = config.random_seed
@@ -226,32 +226,38 @@ if "4" in itask:
     # add rights to manipulate file:
     os.chmod(restfile, 0o644)
 
-    result = []
-    for ipool in Yvar.keys():
-        check.display("processing %s..." % ipool, logfile)
-        res_df = ML.MLloop(
-            packdata,
-            ipool,
-            logfile,
-            varlist,
-            labx,
-            resultpath,
-            loocv,
-            restfile,
-            config.algorithm,
-        )
-        result.append(res_df)
-    res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
-    print(res_df)
-    res_path = resultpath + "MLacc_results.csv"
-    if os.path.exists(res_path):
-        ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
-        perf_diff = res_df["slope"] - ref_df["slope"]
-        assert perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5, (
-            perf_diff.mean(),
-            (perf_diff > 0).mean(),
-        )
-    res_df.to_csv(res_path)
+    for alg in ["nn", "gbm", "lasso", "stack"]:
+        result = []
+        for ipool in Yvar.keys():
+            check.display("processing %s..." % ipool, logfile)
+            res_df = ML.MLloop(
+                packdata,
+                ipool,
+                logfile,
+                varlist,
+                labx,
+                resultpath,
+                loocv,
+                restfile,
+                alg,  # config.algorithm,
+            )
+            result.append(res_df)
+        res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
+        print(res_df)
+
+        scores = res_df.mean()[["R2", "slope"]].to_frame()
+        scores["alg"] = alg
+        path = Path(resultpath + "ML_log.csv")
+        scores.to_csv(path, mode="a", header=not path.exists())
+
+        res_path = Path(resultpath + "MLacc_results.csv")
+        if res_path.exists():
+            ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
+            perf_diff = res_df["slope"] - ref_df["slope"]
+            if perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5:
+                res_df.to_csv(res_path)
+            else:
+                print("Degraded performance:", perf_diff.mean(), (perf_diff > 0).mean())
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 

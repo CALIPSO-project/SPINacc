@@ -184,6 +184,11 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     else:
         raise ValueError("invalid ML algorithm name")
 
+    model = make_pipeline(
+        StandardScaler(),
+        model,
+    )
+
     model.fit(Xtrain, Ytrain, sample_weight=SW)
 
     # predict

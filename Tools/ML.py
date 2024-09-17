@@ -112,7 +112,7 @@ def MLmap_multidim(
         combineXY = combine_XY
     # combine_XY=pd.get_dummies(combine_XY) # one-hot encoded
     (
-        Tree_Ens,
+        model,
         predY_train,
         loocv_R2,
         loocv_reMSE,
@@ -125,7 +125,7 @@ def MLmap_multidim(
         loocv_f_LSC,
     ) = train.training_BAT(combineXY, logfile, loocv, alg)
 
-    if not Tree_Ens:
+    if not model:
         # only one value
         predY = np.where(pool_map == pool_map, predY_train.iloc[0], np.nan)
         Global_Predicted_Y_map = predY
@@ -135,7 +135,7 @@ def MLmap_multidim(
             ipft,
             PFT_mask,
             combine_XY.columns.drop("Y"),
-            Tree_Ens,
+            model,
             col_type,
             type_val,
         )
@@ -158,6 +158,9 @@ def MLmap_multidim(
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         res["var"] = varname
         res["ind"] = ind[0]
+        log = pd.Series({"model": str(model.named_steps["estimator"]), **res})
+        path = Path(resultpath + "ML_log.csv")
+        log.to_csv(path, mode="a", header=not path.exists())
         return res
         # check.display(
         #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
@@ -297,7 +300,7 @@ def MLloop(
                                 PFT_mask_lai,
                                 ipool,
                                 ipft,
-                                None,
+                                None,  # logfile
                                 varname,
                                 varlist,
                                 labx,
@@ -315,7 +318,6 @@ def MLloop(
                 restnc.close()
 
     with ThreadPoolExecutor() as pool:
-        print(vars(pool))
         result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
 
     return pd.DataFrame(result).set_index(["var", "ind"]).sort_index()

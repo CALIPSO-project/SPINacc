@@ -184,6 +184,8 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     else:
         raise ValueError("invalid ML algorithm name")
 
+    print(model)
+
     model = Pipeline(
         [
             ("scaler", StandardScaler()),
@@ -191,7 +193,10 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
         ]
     )
 
-    model.fit(Xtrain, Ytrain, estimator__sample_weight=SW)
+    try:
+        model.fit(Xtrain, Ytrain, estimator__sample_weight=SW)
+    except ValueError:
+        model.fit(Xtrain, Ytrain)
 
     # predict
     predY = model.predict(Xtrain)

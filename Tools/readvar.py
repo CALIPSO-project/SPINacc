@@ -164,7 +164,8 @@ def readvar(varlist, config, logfile):
 
     for var, arr in ds.data_vars.items():
         if "year" in arr.dims:
-            arr = arr.mean("year")  # uncomment to take yearly averages
+            if config.take_year_average:
+                arr = arr.mean("year")
             if var in ("Rainf", "Snowf"):
                 stats = {
                     f"{var}_mean": 365 * 24 * 3600 * arr.mean("month"),

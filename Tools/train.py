@@ -17,14 +17,14 @@
 from Tools import *
 
 
-def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
+def training_BAT(XY_train, logfile, config, alg="gbm"):
     """
     Train a machine learning model using Balanced Augmentation Technique (BAT).
 
     Args:
         XY_train (pandas.DataFrame): Training dataset.
         logfile (file): File object for logging.
-        loocv (bool): Whether to perform leave-one-out cross-validation.
+        config (module): module of config.
         alg (str): ML algorithm to use (options: "nn", "bt", "rf", "gbm").
         bat (bool): Whether to augment the dataset with SMOTE.
 
@@ -68,7 +68,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
 
     # If the length of unique target variable is not 1,
     # run the KMeans algorithm to find the cluster centers, and resample the data
-    if bat:
+    if config.smote_bat:
         try:
             mod = KMeans(n_clusters=3)
             lab = mod.fit_predict(np.reshape(Ytrain.values, (-1, 1)))
@@ -128,7 +128,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
         model = MLPRegressor(
             hidden_layer_sizes=(32, 32),
             max_iter=1000,
-            learning_rate=0.1,
+            learning_rate_init=0.05,
             random_state=1000,
         )
     elif alg == "bt":
@@ -210,7 +210,7 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     loo = LeaveOneOut()
     ytests = []
     ypreds = []
-    if loocv == 1:
+    if config.leave_one_out_cv:
         XM = Xtrain.values
         YM = Ytrain.values
         # check.display('weidu'+str(np.shape(Xtrain)),logfile)

@@ -177,6 +177,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                     "xgb",
                     XGBRegressor(
                         n_estimators=300,
+                        max_depth=8,
                         random_state=1000,
                     ),
                 ),

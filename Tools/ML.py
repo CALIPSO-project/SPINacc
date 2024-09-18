@@ -28,8 +28,7 @@ def MLmap_multidim(
     labx,
     ind,
     ii,
-    resultpath,
-    loocv,
+    config,
     restvar,
     missVal,
     alg,
@@ -50,8 +49,7 @@ def MLmap_multidim(
         labx (list): List of column labels.
         ind (tuple): Index tuple for multi-dimensional variables.
         ii (dict): Dictionary containing dimension information.
-        resultpath (str): Path to store results.
-        loocv (bool): Whether to perform leave-one-out cross-validation.
+        config (module): module of config.
         restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         alg (str): ML algorithm to use.
@@ -123,7 +121,7 @@ def MLmap_multidim(
         loocv_f_SB,
         loocv_f_SDSD,
         loocv_f_LSC,
-    ) = train.training_BAT(combineXY, logfile, loocv, alg)
+    ) = train.training_BAT(combineXY, logfile, config, alg)
 
     if not model:
         # only one value
@@ -228,8 +226,7 @@ def MLloop(
     logfile,
     varlist,
     labx,
-    resultpath,
-    loocv,
+    config,
     restfile,
     alg,
 ):
@@ -242,8 +239,7 @@ def MLloop(
         logfile (file): File object for logging.
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
-        resultpath (str): Path to store results.
-        loocv (bool): Whether to perform leave-one-out cross-validation.
+        config (module): module of config.
         restfile (str): Path to restart file.
         alg (str): ML algorithm to use.
 
@@ -303,8 +299,7 @@ def MLloop(
                                 labx,
                                 ind,
                                 ii,
-                                resultpath,
-                                loocv,
+                                config,
                                 restvar[:],
                                 missVal,
                                 alg,

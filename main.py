@@ -220,8 +220,7 @@ if "4" in itask:
                 logfile,
                 varlist,
                 labx,
-                resultpath,
-                loocv,
+                config,
                 restfile,
                 alg,
             )
@@ -229,8 +228,8 @@ if "4" in itask:
         res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
         print(res_df)
 
-        scores = res_df.mean()[["R2", "slope"]].to_frame()
-        scores["alg"] = alg
+        scores = res_df.mean()[["R2", "slope"]].to_frame().T
+        scores = scores.assign(alg=alg).set_index("alg")
         path = Path(resultpath + "ML_log.csv")
         scores.to_csv(path, mode="a", header=not path.exists())
 

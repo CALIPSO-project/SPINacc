@@ -9,13 +9,14 @@ results_dir = "./EXE_DIR/"
 reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
 start_from_scratch = False
 take_year_average = False
+smote_bat = False
 kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000
 algorithms = [
+    "nn",
     "bt",
     "rf",
-    "nn",
     "gbm",
     "lasso",
     "stack",

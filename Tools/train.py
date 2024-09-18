@@ -127,9 +127,8 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     if alg == "nn":
         model = MLPRegressor(
             hidden_layer_sizes=(32, 32),
-            max_iter=100,
-            learning_rate="invscaling",
-            learning_rate_init=0.1,
+            max_iter=1000,
+            learning_rate=0.1,
             random_state=1000,
         )
     elif alg == "bt":

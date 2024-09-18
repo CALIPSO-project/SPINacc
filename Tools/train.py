@@ -156,15 +156,15 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
     elif alg == "stack":
         model = StackingRegressor(
             [
-                (
-                    "bt",
-                    BaggingRegressor(
-                        DecisionTreeRegressor(random_state=1000),
-                        max_samples=0.8,
-                        n_estimators=300,
-                        random_state=1000,
-                    ),
-                ),
+                # (
+                #     "bt",
+                #     BaggingRegressor(
+                #         DecisionTreeRegressor(random_state=1000),
+                #         max_samples=0.8,
+                #         n_estimators=300,
+                #         random_state=1000,
+                #     ),
+                # ),
                 (
                     "rf",
                     RandomForestRegressor(
@@ -173,13 +173,13 @@ def training_BAT(XY_train, logfile, loocv=False, alg="gbm", bat=True):
                         random_state=1000,
                     ),
                 ),
-                # (
-                #     "xgb",
-                #     XGBRegressor(
-                #         n_estimators=300,
-                #         random_state=1000,
-                #     ),
-                # ),
+                (
+                    "xgb",
+                    XGBRegressor(
+                        n_estimators=300,
+                        random_state=1000,
+                    ),
+                ),
                 (
                     "lasso",
                     Lasso(

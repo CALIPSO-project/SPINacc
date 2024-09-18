@@ -210,7 +210,7 @@ if "4" in itask:
     # add rights to manipulate file:
     os.chmod(restfile, 0o644)
 
-    for alg in ["nn", "gbm", "lasso", "stack"]:
+    for alg in config.algorithms:
         result = []
         for ipool in Yvar.keys():
             check.display("processing %s..." % ipool, logfile)
@@ -223,7 +223,7 @@ if "4" in itask:
                 resultpath,
                 loocv,
                 restfile,
-                alg,  # config.algorithm,
+                alg,
             )
             result.append(res_df)
         res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])

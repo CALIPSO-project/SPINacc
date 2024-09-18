@@ -11,7 +11,14 @@ start_from_scratch = 1
 kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000
-algorithm = "rf"  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, stack: StackingRegressor
+algorithms = [
+    "bt",
+    "rf",
+    "nn",
+    "gbm",
+    "lasso",
+    "stack",
+]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, stack: StackingRegressor
 leave_one_out_cv = False
 repro_test_task_1 = False
 repro_test_task_2 = False

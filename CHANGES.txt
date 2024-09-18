@@ -14,3 +14,28 @@
 - Added standard scaling to preprocess the data before ML training
 - Updated README.md and CONTRIBUTING.md
 - Added explanation of the varlist.json file
+
+Performance benchmark:
+metric,score,alg
+----- With separate years -----
+R2,0.6528848053359372,bt
+slope,0.9542832780095561,bt
+R2,0.6530125681385772,rf
+slope,0.9540960891785613,rf
+R2,0.6512312928704228,gbm
+slope,0.950301142771462,gbm
+R2,0.3712954690899892,lasso
+slope,0.9877068027413212,lasso
+R2,0.6525452816395577,stack
+slope,0.9525996582374604,stack
+----- Aggregated all years -----
+R2,0.31926695871812644,bt
+slope,0.9591009540297856,bt
+R2,0.321636483649443,rf
+slope,0.9590895662312189,rf
+R2,0.328685618778433,gbm
+slope,0.9583401949919101,gbm
+R2,0.09302916905772492,lasso
+slope,0.9930868709808638,lasso
+R2,0.3225905817064779,stack
+slope,0.9753542956777028,stack

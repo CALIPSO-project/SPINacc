@@ -3,7 +3,8 @@
 logfile = "log.MLacc_Trunk"
 tasks = [
     # 2,
-    4,
+    # 4,
+    5
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
 results_dir = "./EXE_DIR/"
 reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"

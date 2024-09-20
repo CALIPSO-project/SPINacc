@@ -127,8 +127,12 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
     if alg == "nn":
         model = MLPRegressor(
             hidden_layer_sizes=(32, 32),
-            max_iter=1000,
-            learning_rate_init=0.05,
+            activation="tanh",
+            solver="lbfgs" if len(Ytrain) < 800 else "adam",
+            learning_rate="invscaling",
+            learning_rate_init=0.6,
+            power_t=0.99,
+            max_iter=int(1e6 / len(Ytrain)),
             random_state=1000,
         )
     elif alg == "bt":
@@ -140,18 +144,21 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
         )
     elif alg == "rf":
         model = RandomForestRegressor(
+            n_estimators=500,
             max_samples=0.8,
-            n_estimators=300,
+            max_depth=30,
             random_state=1000,
         )
     elif alg == "gbm":
         model = XGBRegressor(
-            n_estimators=300,
+            n_estimators=500,
+            # max_depth=30,
+            # learning_rate=0.001,
             random_state=1000,
         )
     elif alg == "lasso":
         model = Lasso(
-            alpha=0.1,
+            alpha=0.3,
         )
     elif alg == "stack":
         model = StackingRegressor(
@@ -166,27 +173,41 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                 #     ),
                 # ),
                 (
+                    "nn",
+                    MLPRegressor(
+                        hidden_layer_sizes=(32, 32),
+                        activation="tanh",
+                        solver="lbfgs" if len(Ytrain) < 800 else "adam",
+                        learning_rate="invscaling",
+                        learning_rate_init=0.6,
+                        power_t=0.99,
+                        max_iter=int(1e6 / len(Ytrain)),
+                        random_state=1000,
+                    ),
+                )(
                     "rf",
                     RandomForestRegressor(
+                        n_estimators=500,
                         max_samples=0.8,
-                        n_estimators=300,
+                        max_depth=30,
                         random_state=1000,
                     ),
                 ),
                 (
                     "xgb",
                     XGBRegressor(
-                        n_estimators=300,
-                        max_depth=8,
+                        n_estimators=500,
+                        # max_depth=30,
+                        # learning_rate=0.001,
                         random_state=1000,
                     ),
                 ),
-                (
-                    "lasso",
-                    Lasso(
-                        alpha=0.1,
-                    ),
-                ),
+                # (
+                #     "lasso",
+                #     Lasso(
+                #         alpha=0.1,
+                #     ),
+                # ),
             ]
         )
     else:

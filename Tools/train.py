@@ -273,7 +273,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
 def select_best_model(X, Y, estimators):
     Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.2)
     scores = []
-    for name, estimator in estimators:
+    for i, (name, estimator) in enumerate(estimators):
         model = Pipeline(
             [
                 ("scaler", StandardScaler()),
@@ -282,6 +282,6 @@ def select_best_model(X, Y, estimators):
         )
         model.fit(Xtrain, Ytrain)
         Ypred = model.predict(Xval)
-        scores.append((name, r2_score(Yval, Ypred)))
-    best = max(scores, key=lambda x: x[1])
-    return best[1]
+        scores.append((i, r2_score(Yval, Ypred)))
+    best = max(scores, key=lambda x: x[1])[0]
+    return estimators[best][1]

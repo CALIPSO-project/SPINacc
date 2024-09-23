@@ -160,18 +160,11 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
         model = Lasso(
             alpha=0.3,
         )
-    elif alg == "stack":
-        model = StackingRegressor(
+    elif alg == "best":
+        model = select_best_model(
+            Xtrain,
+            Ytrain,
             [
-                # (
-                #     "bt",
-                #     BaggingRegressor(
-                #         DecisionTreeRegressor(random_state=1000),
-                #         max_samples=0.8,
-                #         n_estimators=300,
-                #         random_state=1000,
-                #     ),
-                # ),
                 (
                     "nn",
                     MLPRegressor(
@@ -184,7 +177,8 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                         max_iter=int(1e6 / len(Ytrain)),
                         random_state=1000,
                     ),
-                )(
+                ),
+                (
                     "rf",
                     RandomForestRegressor(
                         n_estimators=500,
@@ -202,13 +196,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                         random_state=1000,
                     ),
                 ),
-                # (
-                #     "lasso",
-                #     Lasso(
-                #         alpha=0.1,
-                #     ),
-                # ),
-            ]
+            ],
         )
     else:
         raise ValueError("invalid ML algorithm name")
@@ -280,3 +268,20 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
         loocv_f_SDSD,
         loocv_f_LSC,
     )
+
+
+def select_best_model(X, Y, estimators):
+    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.2)
+    scores = []
+    for name, estimator in estimators:
+        model = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("estimator", estimator),
+            ]
+        )
+        model.fit(Xtrain, Ytrain)
+        Ypred = model.predict(Xval)
+        scores.append((name, r2_score(Yval, Ypred)))
+    best = max(scores, key=lambda x: x[1])
+    return best[1]

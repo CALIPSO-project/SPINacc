@@ -152,7 +152,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
     elif alg == "gbm":
         model = XGBRegressor(
             n_estimators=500,
-            # max_depth=30,
+            max_depth=16,
             # learning_rate=0.001,
             random_state=1000,
         )
@@ -165,6 +165,15 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
             Xtrain,
             Ytrain,
             [
+                (
+                    "bt",
+                    BaggingRegressor(
+                        DecisionTreeRegressor(random_state=1000),
+                        max_samples=0.8,
+                        n_estimators=300,
+                        random_state=1000,
+                    ),
+                ),
                 (
                     "nn",
                     MLPRegressor(
@@ -191,9 +200,15 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                     "xgb",
                     XGBRegressor(
                         n_estimators=500,
-                        # max_depth=30,
+                        max_depth=16,
                         # learning_rate=0.001,
                         random_state=1000,
+                    ),
+                ),
+                (
+                    "lasso",
+                    Lasso(
+                        alpha=0.3,
                     ),
                 ),
             ],

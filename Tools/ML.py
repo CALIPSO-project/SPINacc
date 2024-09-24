@@ -156,6 +156,7 @@ def MLmap_multidim(
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
         res["var"] = varname
         res["ind"] = ind[0]
+        res["alg"] = type(model).__name__
         return res
         # check.display(
         #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"

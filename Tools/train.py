@@ -198,7 +198,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                     "xgb",
                     XGBRegressor(
                         n_estimators=500,
-                        max_depth=16,
+                        # max_depth=16,
                         # learning_rate=0.001,
                         random_state=1000,
                     ),
@@ -282,7 +282,7 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
 
 
 def select_best_model(X, Y, estimators):
-    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.25)
+    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.3)
     scores = []
     for name, estimator in estimators:
         model = deepcopy(

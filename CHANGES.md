@@ -17,6 +17,9 @@
 - Updated README.md and CONTRIBUTING.md
 - Added explanation of the varlist.json file
 
+## TODO
+- Investigate (on bad-performance variables): feature importance, target variable correlation, sample size
+
 ## Performance Benchmark
 
 ### Separated Years

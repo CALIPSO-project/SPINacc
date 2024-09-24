@@ -156,10 +156,8 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
             # learning_rate=0.001,
             random_state=1000,
         )
-    elif alg == "lasso":
-        model = Lasso(
-            alpha=0.3,
-        )
+    elif alg == "ridge":
+        model = RidgeCV()
     elif alg == "best":
         model = select_best_model(
             Xtrain,
@@ -187,15 +185,15 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                         random_state=1000,
                     ),
                 ),
-                (
-                    "rf",
-                    RandomForestRegressor(
-                        n_estimators=500,
-                        max_samples=0.8,
-                        max_depth=30,
-                        random_state=1000,
-                    ),
-                ),
+                # (
+                #     "rf",
+                #     RandomForestRegressor(
+                #         n_estimators=500,
+                #         max_samples=0.8,
+                #         max_depth=30,
+                #         random_state=1000,
+                #     ),
+                # ),
                 (
                     "xgb",
                     XGBRegressor(
@@ -206,10 +204,8 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
                     ),
                 ),
                 (
-                    "lasso",
-                    Lasso(
-                        alpha=0.3,
-                    ),
+                    "ridge",
+                    RidgeCV(),
                 ),
             ],
         )
@@ -286,17 +282,18 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
 
 
 def select_best_model(X, Y, estimators):
-    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.2)
+    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.25)
     scores = []
-    for i, (name, estimator) in enumerate(estimators):
-        model = Pipeline(
-            [
-                ("scaler", StandardScaler()),
-                ("estimator", estimator),
-            ]
+    for name, estimator in estimators:
+        model = deepcopy(
+            Pipeline(
+                [
+                    ("scaler", StandardScaler()),
+                    ("estimator", estimator),
+                ]
+            )
         )
         model.fit(Xtrain, Ytrain)
         Ypred = model.predict(Xval)
-        scores.append((i, r2_score(Yval, Ypred)))
-    best = max(scores, key=lambda x: x[1])[0]
-    return estimators[best][1]
+        scores.append(r2_score(Yval, Ypred))
+    return estimators[np.argmax(scores)][1]

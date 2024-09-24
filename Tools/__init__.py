@@ -22,6 +22,7 @@ import os
 import matplotlib
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 from netCDF4 import Dataset
 
 matplotlib.use("Agg")
@@ -42,7 +43,7 @@ from scipy import stats
 from sklearn.cluster import Birch, KMeans
 from sklearn.datasets import make_regression
 from sklearn.ensemble import BaggingRegressor, RandomForestRegressor, StackingRegressor
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso, RidgeCV
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import (
     LeaveOneOut,

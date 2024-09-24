@@ -19,7 +19,7 @@ algorithms = [
     # "rf",
     # "gbm",
     # "nn",
-    # "lasso",
+    "ridge",
     "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
 leave_one_out_cv = False

@@ -257,6 +257,8 @@ if "4" in itask:
                 res_df.to_csv(res_path)
             else:
                 print("Degraded performance:", perf_diff.mean(), (perf_diff > 0).mean())
+        else:
+            res_df.to_csv(res_path)
 
     # we need to handle additional variables in the restart files but are not state variables of ORCHIDEE
 

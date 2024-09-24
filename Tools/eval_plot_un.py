@@ -35,9 +35,11 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     # dims=np.array([0,1])# biomass: [1,0]
     # shape=np.array([14*loop_n,4])# biomass: [14,8sect_n,
     shape = np.array([npfts, subps])
-    R22 = np.genfromtxt(data_path + ipool + "_R2.txt", delimiter=",")[:, :-1]
-    slope = np.genfromtxt(data_path + ipool + "_slope.txt", delimiter=",")[:, :-1]
-    dNRMSE = np.genfromtxt(data_path + ipool + "_dNRMSE.txt", delimiter=",")[:, :-1]
+    df = pd.read_csv(data_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df = df.loc[ipool].round(2)
+    R22 = df["R2"].unstack().values
+    slope = df["slope"].unstack().values
+    dNRMSE = df["dNRMSE"].unstack().values
 
     print(R22)
     yTickLabel = [

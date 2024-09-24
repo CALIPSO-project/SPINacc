@@ -17,17 +17,29 @@
 from Tools import *
 
 
-##@param[in]   ipft                   index of PFT
-##@param[in]   PFTmask                PFT mask
-##@param[in]   XVarName               input variables
-##@param[in]   Tree_Ens               tree ensemble
-##@param[in]   colum
-##@param[in]   Nm
-##@param[in]   labx
-##@retval      R2                     R2 between predicted Y and target Y
-##@retval      RMSE                   RMSE of prediceted Y
-##@retval      slope                  regression slope of target Y and predicted Y
 def evaluation_map(Global_Predicted_Y_map, Y_map, ipft, PFTmask):
+    """
+    Evaluate the performance of the machine learning predictions.
+
+    Args:
+        Global_Predicted_Y_map (numpy.ndarray): Predicted values.
+        Y_map (numpy.ndarray): Actual values.
+        ipft (int): Index of current Plant Functional Type.
+        PFT_mask (numpy.ndarray): Mask for Plant Functional Types.
+
+    Returns:
+        dict: Dictionary containing various evaluation metrics:
+            - R2: R-squared value
+            - RMSE: Root Mean Squared Error
+            - slope: Regression slope
+            - reMSE: Relative Mean Squared Error
+            - dNRMSE: Normalized RMSE (by range)
+            - sNRMSE: Normalized RMSE (by standard deviation)
+            - iNRMSE: Normalized RMSE (by interquartile range)
+            - f_SB: Fraction of MSE due to bias
+            - f_SDSD: Fraction of MSE due to difference in standard deviations
+            - f_LSC: Fraction of MSE due to lack of correlation
+    """
     pmask = np.squeeze(PFTmask[ipft - 1][:])
     all_predY = np.reshape(Global_Predicted_Y_map, (-1, 1))
     all_Y = np.reshape(Y_map * pmask, (-1, 1))

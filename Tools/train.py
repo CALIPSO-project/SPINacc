@@ -282,8 +282,8 @@ def training_BAT(XY_train, logfile, config, alg="gbm"):
     )
 
 
-def select_best_model(X, Y, estimators, SW=None):
-    Xtrain, Xval, Ytrain, Yval = train_test_split(X, Y, test_size=0.25)
+def select_best_model(X, Y, estimators, SW):
+    Xtrain, Xval, Ytrain, Yval, SWtrain, _ = train_test_split(X, Y, SW, test_size=0.25)
     scores = []
     for name, estimator in estimators:
         model = deepcopy(
@@ -295,7 +295,7 @@ def select_best_model(X, Y, estimators, SW=None):
             )
         )
         try:
-            model.fit(Xtrain, Ytrain, estimator__sample_weight=SW)
+            model.fit(Xtrain, Ytrain, estimator__sample_weight=SWtrain)
         except TypeError:
             model.fit(Xtrain, Ytrain)
         Ypred = model.predict(Xval)

@@ -15,7 +15,7 @@ kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000
 algorithms = [
-    "bt",
+    # "bt",
     # "rf",
     # "gbm",
     # "nn",

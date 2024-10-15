@@ -154,9 +154,39 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        res["var"] = varname
-        res["ind"] = ind[0]
-        res["alg"] = type(model).__name__
+        if varname.startswith("carbon"):
+            ipft = int(varname.split("_")[1])
+            ivar = ind[0]
+        else:
+            ipft = ind[0]
+            ivar = int(varname.split("_")[1])
+        if type(model).__name__ == "Pipeline":
+            alg = type(model.named_steps["estimator"]).__name__
+        else:
+            alg = type(model).__name__
+        res["varname"] = varname
+        res["ipft"] = ipft
+        res["pft"] = [
+            "TrENF",
+            "TrEBF",
+            "TrDBF",
+            "TeENF",
+            "TeEBF",
+            "TeDBF",
+            "BoENF",
+            "BoDBF",
+            "BoDNF",
+            "C3G",
+            "C4G",
+            "C3C",
+            "C4C",
+            "C3S",
+            "C4S",
+        ][ipft - 1]
+        res["ivar"] = ivar
+        res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+        res["dim"] = ii["dim_loop"][0]
+        res["alg"] = alg
         return res
         # check.display(
         #     "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
@@ -306,6 +336,11 @@ def MLloop(
                                 alg,
                             )
                         )
+                #         break
+                #     if result:
+                #         break
+                # if result:
+                #     break
 
                 # close&save netCDF file
                 restnc.close()
@@ -314,4 +349,4 @@ def MLloop(
     with ThreadPoolExecutor() as pool:
         result = list(filter(None, pool.map(MLmap_multidim, *zip(*result))))
 
-    return pd.DataFrame(result).set_index(["var", "ind"]).sort_index()
+    return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()

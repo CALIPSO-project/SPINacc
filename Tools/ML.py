@@ -154,12 +154,15 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-        if varname.startswith("carbon"):
-            ipft = int(varname.split("_")[1])
-            ivar = ind[0]
-        else:
+        if varname.startswith("biomass"):
             ipft = ind[0]
             ivar = int(varname.split("_")[1])
+        else:
+            ipft = int(varname.split("_")[1])
+            ivar = ind[0]
+            if varname.startswith("litter"):
+                j = ["ab", "be"].index(varname.split("_")[2])
+                ivar = ivar * 2 + j - 1
         if type(model).__name__ == "Pipeline":
             alg = type(model.named_steps["estimator"]).__name__
         else:
@@ -180,8 +183,8 @@ def MLmap_multidim(
             "C4G",
             "C3C",
             "C4C",
-            "C3S",
-            "C4S",
+            "_",
+            "_",
         ][ipft - 1]
         res["ivar"] = ivar
         res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]

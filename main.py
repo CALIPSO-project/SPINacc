@@ -302,7 +302,6 @@ if "5" in itask:
         subpool_name = varlist["resp"]["pool_name_" + ipool]
         npfts = varlist["resp"]["npfts"]
         subLabel = varlist["resp"]["sub_item"]
-        print(subLabel)
         pp = varlist["resp"]["dim"][ipool]
         sect_n = varlist["resp"]["sect_n"][ipool]
         if pp[0] == "pft":

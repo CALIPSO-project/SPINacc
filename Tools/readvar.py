@@ -66,7 +66,7 @@ def readvar(varlist, config, logfile):
             if "land" in f[varname_clim[index]].dimensions:
                 land = f["land"][:] - 1
                 ntime = len(da)
-                uncomp = np.arr.masked_all((ntime, nlat * nlon))
+                uncomp = np.ma.masked_all((ntime, nlat * nlon))
                 uncomp[:, land] = da
                 da = uncomp.reshape((ntime, nlat, nlon))
             # DSG: end

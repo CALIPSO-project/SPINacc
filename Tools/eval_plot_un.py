@@ -28,18 +28,20 @@ from Tools import *
 # data_path='/home/orchidee04/ysun/MLacc_Python_Tool/'
 def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     subps = len(xTickLabel)
-    print(subps)
+    # print(subps)
     # subLabel=['C']
     loop_n = len(subLabel)
     # print(loop_n)
     # dims=np.array([0,1])# biomass: [1,0]
     # shape=np.array([14*loop_n,4])# biomass: [14,8sect_n,
     shape = np.array([npfts, subps])
-    R22 = np.genfromtxt(data_path + ipool + "_R2.txt", delimiter=",")[:, :-1]
-    slope = np.genfromtxt(data_path + ipool + "_slope.txt", delimiter=",")[:, :-1]
-    dNRMSE = np.genfromtxt(data_path + ipool + "_dNRMSE.txt", delimiter=",")[:, :-1]
+    df = pd.read_csv(data_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df = df.loc[ipool].round(2)
+    R22 = df["R2"].unstack().values
+    slope = df["slope"].unstack().values
+    dNRMSE = df["dNRMSE"].unstack().values
 
-    print(R22)
+    # print(R22)
     yTickLabel = [
         "PFT02",
         "PFT03",
@@ -86,15 +88,15 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     mymap_rmse = mcolors.LinearSegmentedColormap.from_list("mylist", mycolor_rmse, N=5)
     # clip
     # print(npfts)
-    print(ipool)
-    print(sect_n)
+    # print(ipool)
+    # print(sect_n)
     if sect_n > 1:
         jq = sect_n * npfts
     else:
         jq = npfts
     for n in range(0, loop_n):
-        print(n)
-        print(dims)
+        # print(n)
+        # print(dims)
         if dims[0] == 0:
             R22_n = R22[n * jq : (n + 1) * jq, :]
             slope_n = slope[n * jq : (n + 1) * jq, :]
@@ -103,9 +105,9 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
             R22_n = R22[n * subps : (n + 1) * subps, :]
             slope_n = slope[n * subps : (n + 1) * subps, :]
             dNRMSE_n = dNRMSE[n * subps : (n + 1) * subps, :]
-        print(R22_n)
+        # print(R22_n)
         R22_n = np.transpose(R22_n, dims).reshape(shape, order="F")
-        print(R22_n)
+        # print(R22_n)
         slope_n = np.transpose(slope_n, dims).reshape(shape, order="F")
         dNRMSE_n = np.transpose(dNRMSE_n, dims).reshape(shape, order="F")
         # R2_Cpools

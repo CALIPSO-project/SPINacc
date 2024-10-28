@@ -49,14 +49,14 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     for clus in range(K):
         A = Cluster_output[Cluster_output == clus]
         locations = np.array(A.index.to_list())
-        cluster_dic["clus_%.2i_loc" % clus] = locations
+        cluster_dic["clus_%.2i_loc" % (clus + 1)] = locations
         # 1.3 Randomly select Nc sites from each cluster
         if len(locations) > Nc:
             RandomS = random.sample(range(len(locations)), Nc)
             SelectedID = locations[RandomS]
         else:
             SelectedID = locations
-        cluster_dic["clus_%.2i_loc_select" % clus] = SelectedID
+        cluster_dic["clus_%.2i_loc_select" % (clus + 1)] = SelectedID
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 
     return cluster_dic, distance, All_selectedID
@@ -106,7 +106,6 @@ def Cluster_all(packdata, varlist, KK, logfile):
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["cluster_thres"]
     )
-
     var_pred_name = varlist["pred"]["clustering"]
     for veg in kpfts:
         ClusD, disx, training_ID = Cluster_Ana(
@@ -126,7 +125,7 @@ def Cluster_all(packdata, varlist, KK, logfile):
 
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
-    IDx = np.unique(IDx, axis=0)
+    # IDx = np.unique(IDx, axis=0)
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

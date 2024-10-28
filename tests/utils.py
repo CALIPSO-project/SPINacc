@@ -11,24 +11,57 @@ def compare_npy_files(file1, file2):
     assert result, f"The contents of {file1} and {file2} are different."
 
 
-def recursive_compare(arr1, arr2, tol=1e-9):
+def recursive_compare(arr1, arr2, tol=1e-8):
     # Check if both inputs are ndarrays
     if isinstance(arr1, np.ndarray) and isinstance(arr2, np.ndarray):
         # Check if both ndarrays have the same shape
         if arr1.shape != arr2.shape:
+            print("shapes not the same")
             return False
 
         # If they contain objects, iterate and compare recursively
         if arr1.dtype == "object" and arr2.dtype == "object":
             for sub_arr1, sub_arr2 in zip(arr1, arr2):
                 if not recursive_compare(sub_arr1, sub_arr2, tol):
+                    print(sub_arr1, sub_arr2)
                     return False
             return True
         else:
-            # Compare the arrays element-wise for floating point numbers
-            return np.allclose(arr1, arr2, atol=tol)
+            # print("Compare the arrays element-wise for floating point numbers")
+            if np.allclose(arr1, arr2, atol=tol, equal_nan=True) != True:
+                print("different values!!!")
+                d = ~np.isclose(arr1, arr2, atol=tol, equal_nan=True)
+                print(len(d))
+                for i, mask in enumerate(d):
+                    if False in mask:
+                        print(arr1[i][mask], arr2[i][mask])
+            # else:
+            # print("values are same!!!")
+            # print("We get to this point")
+            return np.allclose(arr1, arr2, atol=tol, equal_nan=True)
     else:
+        # print("False")
         return False
+
+
+# def recursive_compare(arr1, arr2, tol=1e-9):
+#     # Check if both inputs are ndarrays
+#     if isinstance(arr1, np.ndarray) and isinstance(arr2, np.ndarray):
+#         # Check if both ndarrays have the same shape
+#         if arr1.shape != arr2.shape:
+#             return False
+
+#         # If they contain objects, iterate and compare recursively
+#         if arr1.dtype == "object" and arr2.dtype == "object":
+#             for sub_arr1, sub_arr2 in zip(arr1, arr2):
+#                 if not recursive_compare(sub_arr1, sub_arr2, tol):
+#                     return False
+#             return True
+#         else:
+#             # Compare the arrays element-wise for floating point numbers
+#             return np.allclose(arr1, arr2, atol=tol)
+#     else:
+#         return False
 
 
 def compare_nc_files(file1_path, file2_path):

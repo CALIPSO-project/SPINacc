@@ -2,6 +2,7 @@ import pytest
 from utils import compare_nc_files
 
 
+@pytest.mark.skip("Skipped for redundancy of tests.")
 @pytest.mark.parametrize(
     "filename", ["SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc"]
 )

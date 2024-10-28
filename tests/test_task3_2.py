@@ -2,6 +2,7 @@ import pytest
 from utils import compare_nc_files
 
 
+@pytest.mark.skip("Skipped for redundancy of tests.")
 @pytest.mark.parametrize(
     "filename",
     [

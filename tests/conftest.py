@@ -5,7 +5,16 @@ import os
 
 
 def pytest_addoption(parser):
-    # Define a pytest option to pass the config directory
+    """
+    Define a pytest option to pass the config directory
+
+    This allows users to point to their specific output directory.
+    The default is set to DEF_Trunk.
+
+    A typical execution line is as follows:
+
+    pytest --trunk=testing_Trunk -v --capture=sys ./tests/test_init.py
+    """
     parser.addoption(
         "--trunk",
         action="store",
@@ -14,9 +23,11 @@ def pytest_addoption(parser):
     )
 
 
-# Fixture to get the config module from any given Trunk directory
 @pytest.fixture(scope="session", autouse=True)
 def add_config_dir_to_path(pytestconfig):
+    """
+    Fixture to get the config module from any given Trunk directory
+    """
     trunk_dir = pytestconfig.getoption("trunk")
     if trunk_dir:
         sys.path.append(trunk_dir)

@@ -6,6 +6,12 @@ import pytest
 
 @pytest.mark.skip("Skipped for redundancy of tests.")
 def test_compare_all_files(reference_path, test_path):
+    """
+    This function compares all files in the reference_path to the test_path.
+
+    This will compare .txt files against each other. No longer relevant
+    as we have transitioned to .csv files for MLacc_results.
+    """
     files1 = [
         f
         for f in os.listdir(reference_path)
@@ -63,7 +69,10 @@ def get_df_comp(EXE_DIR, file_name, comp):
 
 def test_compare_csv_to_txt(reference_path, test_path):
     """
-    Compare the old .txt files to the new MLacc_results.csv file
+    Compare the old .txt files to the new MLacc_results.csv file.
+
+    We construct a new DataFrame with the contents of the .txt files and compare.
+    This currently only works for the 'som' component.
     """
     comps = ["som", "biomass", "litter"]
 
@@ -77,6 +86,8 @@ def test_compare_csv_to_txt(reference_path, test_path):
         "f_SB",
         "f_LSC",
     ]
+
+    # construct a new dataframe with the contents of the .txt files.
     reference_results = pd.DataFrame()
 
     for comp in comps:
@@ -89,8 +100,6 @@ def test_compare_csv_to_txt(reference_path, test_path):
         reference_results = pd.concat(
             [reference_results, reference_comp], ignore_index=True, axis=0
         )
-
-    test = reference_results.loc[reference_results["comp"] == "biomass"]
 
     mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
 

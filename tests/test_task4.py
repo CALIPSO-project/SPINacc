@@ -1,5 +1,6 @@
 import os
-
+import pandas as pd
+import numpy as np
 import pytest
 
 
@@ -16,6 +17,8 @@ def test_compare_all_files(reference_path, test_path):
 
     common_files = set(files1) & set(files2)
 
+    print(common_files)
+
     for file in common_files:
         file1_path = os.path.join(reference_path, file)
         file2_path = os.path.join(test_path, file)
@@ -26,3 +29,86 @@ def test_compare_all_files(reference_path, test_path):
             assert (
                 content1 == content2
             ), f"File {file} in {reference_path} and {test_path} are different."
+
+
+def get_df_comp(EXE_DIR, file_name):
+    """
+    Read the component i.e. 'som', 'litter' or 'biomass' .txt files and return a DataFrame
+
+    Consider preprocessing all of the .txt files into a single DataFrame before comparing.
+    """
+
+    file_path = os.path.join(EXE_DIR, file_name)
+
+    # Determine the column name based on the file name
+    column_name = file_name.split(".")[0].split("_")[1:]
+    column_name = "_".join(column_name)
+
+    # Read the file and remove the trailing comma from each line
+    with open(file_path, "r") as file:
+        data = [line.strip().strip(",").split(",") for line in file]
+
+    data = [[float(value) for value in row] for row in data]
+
+    reshaped_data = []
+
+    for index, row in enumerate(data, start=1):
+        for col_num, value in enumerate(row, start=1):
+            reshaped_data.append(["som", index, col_num, value])
+
+    df = pd.DataFrame(reshaped_data, columns=["comp", "var", "var2", column_name])
+
+    return df
+
+
+def test_compare_csv_to_txt(reference_path, test_path):
+    """
+    Compare the old .txt files to the new MLacc_results.csv file
+    """
+    files = [
+        "som_R2.txt",
+        "som_dNRMSE.txt",
+        "som_slope.txt",
+        "som_sNRMSE.txt",
+        "som_iNRMSE.txt",
+        "som_f_SDSD.txt",
+        "som_f_SB.txt",
+        "som_f_LSC.txt",
+    ]
+    reference_results = pd.DataFrame()
+
+    # construct a new dataframe
+    for file in files:
+        df = get_df_comp(reference_path, file)
+        reference_results = pd.concat([reference_results, df], axis=1)
+
+    # remove duplicated columns
+    reference_results = reference_results.loc[
+        :, ~reference_results.columns.duplicated()
+    ]
+
+    # go from txt filenames to metrics. i.e som_R2.txt -> R2 and som_f_LSC.txt -> f_LSC
+    metrics = ["_".join(file.split(".")[0].split("_")[1:]) for file in files]
+
+    mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
+
+    # Do comparison on 'som'
+    mlacc_results = mlacc_results.loc[mlacc_results["comp"] == "som"]
+
+    for metric in metrics:
+        comparison = np.isclose(
+            mlacc_results[metric], reference_results[metric], atol=1e-2
+        )
+        if comparison.all():
+            print(f"All values in {metric} match MLacc_results.csv")
+        else:
+            print(f"Some values in {metric} do not match MLacc_results.csv")
+            print(
+                pd.concat(
+                    [
+                        mlacc_results[~comparison][["comp", "var", metric]],
+                        reference_results[~comparison][["comp", "var", metric]],
+                    ],
+                    axis=1,
+                )
+            )

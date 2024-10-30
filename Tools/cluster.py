@@ -65,7 +65,7 @@ def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc, sel_most_PFTs=Tr
             if sel_most_PFTs:
                 ids = list(map(tuple, locations))
                 n_pft = packdata.PFT_counts.to_series().loc[ids].sort_values()
-                SelectedID = n_pft.index[-Nc:].values
+                SelectedID = np.array(list(n_pft.index[-Nc:]))
             else:
                 RandomS = random.sample(range(len(locations)), Nc)
                 SelectedID = locations[RandomS]

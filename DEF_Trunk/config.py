@@ -2,7 +2,7 @@
 
 logfile = "log.MLacc_Trunk"
 tasks = [
-    # 2,
+    2,
     4,
     5,
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation

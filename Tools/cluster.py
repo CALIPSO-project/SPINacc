@@ -17,7 +17,7 @@
 from Tools import *
 
 
-def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
+def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc, sel_most_PFTs=True):
     """
     Perform clustering analysis on the data for a specific Plant Functional Type (PFT).
 
@@ -60,9 +60,15 @@ def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
         locations = np.array(A.index.to_list())
         cluster_dic["clus_%.2i_loc" % (clus + 1)] = locations
         # 1.3 Randomly select Nc sites from each cluster
+        random.shuffle(locations)
         if len(locations) > Nc:
-            RandomS = random.sample(range(len(locations)), Nc)
-            SelectedID = locations[RandomS]
+            if sel_most_PFTs:
+                ids = list(map(tuple, locations))
+                n_pft = packdata.PFT_counts.to_series().loc[ids].sort_values()
+                SelectedID = n_pft.index[-Nc:].values
+            else:
+                RandomS = random.sample(range(len(locations)), Nc)
+                SelectedID = locations[RandomS]
         else:
             SelectedID = locations
         print(
@@ -132,6 +138,11 @@ def cluster_all(packdata, varlist, KK, logfile, take_unique):
     Ncc = varlist["clustering"]["Ncc"]
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["cluster_thres"]
+    )
+
+    packdata["PFT_counts"] = (
+        ("lat", "lon"),
+        len(PFT_mask) - np.isnan(PFT_mask).sum(axis=0),
     )
 
     # var_pred_name = varlist["pred"]["clustering"]

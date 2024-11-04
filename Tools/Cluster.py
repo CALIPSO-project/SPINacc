@@ -99,7 +99,7 @@ def Cluster_test(packdata, varlist, logfile):
 ##@retval      IDx                    chosen IDs of pixels for MLacc
 ##@retval      IDloc                  # to be complete by Yan (just for plotting)
 ##@retval      IDsel                  # to be complete by Yan (just for plotting)
-def Cluster_all(packdata, varlist, KK, logfile):
+def Cluster_all(packdata, varlist, KK, logfile, take_unique):
     adict = locals()
     kpfts = varlist["clustering"]["pfts"]
     Ncc = varlist["clustering"]["Ncc"]
@@ -125,7 +125,10 @@ def Cluster_all(packdata, varlist, KK, logfile):
 
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
-    # IDx = np.unique(IDx, axis=0)
+
+    # 6. If take_unique is False, we are equivalent to the original implementation
+    if take_unique:
+        IDx = np.unique(IDx, axis=0)
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

@@ -167,6 +167,9 @@ if "3" in itask:
 if "4" in itask:
     # ML extrapolation
 
+    random.seed(config.random_seed)
+    np.random.seed(iseed)
+
     var_pred_name1 = varlist["pred"]["allname"]
     var_pred_name2 = varlist["pred"]["allname_pft"]
     var_pred_name = var_pred_name1 + var_pred_name2

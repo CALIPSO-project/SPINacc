@@ -8,6 +8,7 @@ tasks = [
 results_dir = "./EXE_DIR/"
 reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
 start_from_scratch = True
+take_unique = False
 kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000

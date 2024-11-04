@@ -108,7 +108,9 @@ if "1" in itask:
     )
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_1:
-        subprocess.run(["python", "tests/task1_log.py"])
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task1.py", "--trunk", dir_def]
+        )
         check.display(
             "Task 1 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -143,7 +145,9 @@ if "2" in itask:
     )
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_2:
-        subprocess.run(["python", "tests/task2_log.py"])
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task2.py", "--trunk", dir_def]
+        )
         check.display(
             "Task 2 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -157,8 +161,12 @@ if "3" in itask:
     forcing.write(varlist, resultpath, IDx)
     # Run test of reproducibility for the task if yes
     if config.repro_test_task_3:
-        subprocess.run(["python", "tests/task3_log.py"])
-        subprocess.run(["python", "tests/task3_2_log.py"])
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task3.py", "--trunk", dir_def]
+        )
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task3_2.py", "--trunk", dir_def]
+        )
         check.display(
             "Task 3 reproducibility test results have been stored in tests_results.txt",
             logfile,
@@ -251,8 +259,12 @@ if "4" in itask:
             restnc.close()
         # Run test of reproducibility for the task if yes
     if config.repro_test_task_4:
-        subprocess.run(["python", "tests/task4_log.py"])
-        subprocess.run(["python", "tests/task4_2_log.py"])
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task4.py", "--trunk", dir_def]
+        )
+        subprocess.run(
+            ["python", "-m", "pytest", "tests/test_task4_2.py", "--trunk", dir_def]
+        )
         check.display(
             "Task 4 reproducibility test results have been stored in tests_results.txt",
             logfile,

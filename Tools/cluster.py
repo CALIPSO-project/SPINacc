@@ -17,7 +17,9 @@
 from Tools import *
 
 
-def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc, sel_most_PFTs=True):
+def cluster_ana(
+    packdata, PFT_mask, ipft, var_pred_name, K, Nc, adict, sel_most_PFTs=True
+):
     """
     Perform clustering analysis on the data for a specific Plant Functional Type (PFT).
 
@@ -28,6 +30,8 @@ def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc, sel_most_PFTs=Tr
         var_pred_name (list): List of predictor variable names.
         K (int): Number of clusters.
         Nc (int): Number of sites to select from each cluster.
+        adict (dict): Dictionary of variables.
+        sel_most_PFTs (bool): Whether to select sites with the most PFTs or randomly.
 
     Returns:
         tuple:
@@ -77,6 +81,8 @@ def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc, sel_most_PFTs=Tr
         cluster_dic["clus_%.2i_loc_select" % (clus + 1)] = SelectedID
         All_selectedID = np.append(All_selectedID, SelectedID, axis=0)
 
+    adict["PFT" + str(ipft) + "ClusD"] = cluster_dic
+    adict["PFT" + str(ipft) + "trainingID"] = All_selectedID
     return cluster_dic, distance, All_selectedID
 
 
@@ -142,26 +148,25 @@ def cluster_all(packdata, varlist, KK, logfile, take_unique):
 
     packdata["PFT_counts"] = (
         ("lat", "lon"),
-        len(PFT_mask) - np.isnan(PFT_mask).sum(axis=0),
+        len(PFT_mask_lai) - np.isnan(PFT_mask_lai).sum(axis=0),
     )
 
     # var_pred_name = varlist["pred"]["clustering"]
     var_pred_name = [k for k, v in packdata.items() if "veget" not in v.dims]
-    for veg in kpfts:
-        ClusD, disx, training_ID = cluster_ana(
-            packdata,
-            PFT_mask,
-            veg,
-            var_pred_name,
-            KK,
-            Ncc[kpfts.index(veg)],
-        )
-        #    locations=ClusD['Aloc']
-        #    SelectedID=ClusD['Aloc_select']
-        adict["PFT" + str(veg) + "ClusD"] = ClusD
-        adict["PFT" + str(veg) + "trainingID"] = training_ID
 
-    # 4. Check if the selected sites are representative? (not sure)
+    with ThreadPoolExecutor() as pool:
+        pool.map(
+            lambda veg: cluster_ana(
+                packdata,
+                PFT_mask,
+                veg,
+                var_pred_name,
+                KK,
+                Ncc[kpfts.index(veg)],
+                adict,
+            ),
+            kpfts,
+        )
 
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])

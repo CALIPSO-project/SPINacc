@@ -33,6 +33,7 @@ def MLmap_multidim(
     missVal,
     alg,
     seed,
+    savedir=None,
 ):
     """
     Perform multi-dimensional machine learning mapping.
@@ -150,6 +151,7 @@ def MLmap_multidim(
             PFT_mask,
             varlist,
             logfile,
+            savedir,
         )
     else:
         check.display(
@@ -157,8 +159,7 @@ def MLmap_multidim(
             % (ipool, varname, ind, ii["dim_loop"]),
             logfile,
         )
-    if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
-        raise Exception
+        raise RuntimeError("No PFT mask found for PFT %i" % ipft)
 
 
 def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
@@ -280,6 +281,7 @@ def evaluate(
     PFT_mask,
     varlist,
     logfile,
+    savedir,
 ):
     """
     Evaluate the machine learning model.
@@ -306,12 +308,12 @@ def evaluate(
     res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
     if varname.startswith("biomass"):
         ipft = ind[0]
-        ivar = int(varname.split("_")[1])
+        ivar = int(re.search(r"\d+", varname)[0])
     else:
-        ipft = int(varname.split("_")[1])
+        ipft = int(re.search(r"\d+", varname)[0])
         ivar = ind[0]
         if varname.startswith("litter"):
-            j = ["ab", "be"].index(varname.split("_")[2])
+            j = ["ab", "be"].index(varname.split("_")[-1])
             ivar = ivar * 2 + j - 1
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__
@@ -319,86 +321,20 @@ def evaluate(
         alg = type(model).__name__
     res["varname"] = varname
     res["ipft"] = ipft
-    res["pft"] = [
-        "TrENF",
-        "TrEBF",
-        "TrDBF",
-        "TeENF",
-        "TeEBF",
-        "TeDBF",
-        "BoENF",
-        "BoDBF",
-        "BoDNF",
-        "C3G",
-        "C4G",
-        "C3C",
-        "C4C",
-        "_",
-        "_",
-    ][ipft - 1]
+    res["pft"] = f"PFT{ipft + 1:02d}"
     res["ivar"] = ivar
     res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
     res["dim"] = ii["dim_loop"][0]
     res["alg"] = alg
+
+    if savedir:
+        os.makedirs(savedir, exist_ok=True)
+        np.save(
+            os.path.join(savedir, f"{varname}_{ivar}_{ipft}.npy"),
+            dict(model=model, pred=Global_Predicted_Y_map),
+            allow_pickle=True,
+        )
     return res
-
-    # evaluation
-    R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
-        MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-    )
-    check.display(
-        "%s, variable %s, index %s (dim: %s) : R2=%.3f , RMSE=%.2f, slope=%.2f, reMSE=%.2f"
-        % (ipool, varname, ind, ii["dim_loop"], R2, RMSE, slope, reMSE),
-        logfile,
-    )
-    # save R2, RMSE, slope to txt files
-    # fx.write('%.2f' % R2+',')
-    # plot the results
-    fig = plt.figure(figsize=[12, 12])
-    # training dat
-    ax1 = plt.subplot(221)
-    ax1.scatter(combineXY.iloc[:, 0].values, predY_train)
-    # global dta
-    ax2 = plt.subplot(222)
-    #    predY=Global_Predicted_Y_map.flatten()
-    #    simuY=pool_map.flatten()
-    ax2.scatter(
-        pool_map[PFT_mask[ipft - 1] > 0],
-        Global_Predicted_Y_map[PFT_mask[ipft - 1] > 0],
-    )
-    xx = np.linspace(0, np.nanmax(pool_map), 10)
-    yy = np.linspace(0, np.nanmax(pool_map), 10)
-    ax2.text(
-        0.1 * np.nanmax(pool_map),
-        0.7 * np.nanmax(Global_Predicted_Y_map),
-        "R2=%.2f" % R2,
-    )
-    ax2.text(
-        0.1 * np.nanmax(pool_map),
-        0.8 * np.nanmax(Global_Predicted_Y_map),
-        "RMSE=%i" % RMSE,
-    )
-    ax2.plot(xx, yy, "k--")
-    ax2.set_xlabel("ORCHIDEE simulated")
-    ax2.set_ylabel("Machine-learning predicted")
-    ax3 = plt.subplot(223)
-    im = ax3.imshow(pool_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-    ax3.set_title("ORCHIDEE simulated")
-    plt.colorbar(im, orientation="horizontal")
-    ax4 = plt.subplot(224)
-    im = ax4.imshow(Global_Predicted_Y_map, vmin=0, vmax=0.8 * np.nanmax(pool_map))
-    ax4.set_title("Machine-learning predicted")
-    plt.colorbar(im, orientation="horizontal")
-
-    # fig.savefig(
-    #     resultpath
-    #     + "Eval_%s" % varname
-    #     + "".join(
-    #         ["_" + ii["dim_loop"][ll] + "%2.2i" % ind[ll] for ll in range(len(ind))]
-    #         + [".png"]
-    #     )
-    # )
-    # plt.close("all")
 
 
 def MLloop(
@@ -477,6 +413,7 @@ def MLloop(
                                 missVal,
                                 alg,
                                 seed,
+                                "results",
                             )
                         )
                     # Debugging
@@ -500,7 +437,7 @@ def MLloop(
         result = []
         for input in inputs:
             if input:
-                output = MLmap_multidim(*input, seed)
+                output = MLmap_multidim(*input)
                 if output:  # Filter out None results
                     result.append(output)
 

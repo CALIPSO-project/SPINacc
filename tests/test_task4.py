@@ -24,7 +24,7 @@ def test_compare_mlacc_csv_files(reference_path, test_path, metric):
         None
 
     """
-    numeric_tolerance = 1e-2
+    numeric_tolerance = 1e-8
     # metrics = [
     #     "R2",
     #     "dNRMSE",
@@ -41,7 +41,9 @@ def test_compare_mlacc_csv_files(reference_path, test_path, metric):
     )
 
 
-def compare_csv_files_filtered(reference_dir, test_dir, metric, numeric_tolerance=1e-2):
+def compare_csv_files_filtered(
+    reference_path, test_path, metric, numeric_tolerance=1e-2
+):
     """
     Compare MLacc_results.csv files for the given metric to a reference.
 
@@ -55,8 +57,8 @@ def compare_csv_files_filtered(reference_dir, test_dir, metric, numeric_toleranc
         None
     """
     # Load the CSV files
-    df1 = pd.read_csv(os.path.join(reference_dir, "MLacc_results.csv"))
-    df2 = pd.read_csv(os.path.join(test_dir, "/MLacc_results.csv"))
+    df1 = pd.read_csv(os.path.join(reference_path, "MLacc_results.csv"))
+    df2 = pd.read_csv(os.path.join(test_path, "MLacc_results.csv"))
 
     # Check if columns match
     if set(df1.columns) != set(df2.columns):

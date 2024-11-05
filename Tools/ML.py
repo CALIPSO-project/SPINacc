@@ -154,40 +154,65 @@ def MLmap_multidim(
 
     if (PFT_mask[ipft - 1] > 0).any():
         res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+
+        postfix = ""
+        cnp = ""
         if varname.startswith("biomass"):
             ipft = ind[0]
             ivar = int(varname.split("_")[1])
-        else:
+        elif (
+            varname.startswith("carbon")
+            or varname.startswith("nitrogen")
+            or varname.startswith("phosphorus")
+        ):
             ipft = int(varname.split("_")[1])
+            # cnp = varname.split("_")[0]
             ivar = ind[0]
-            if varname.startswith("litter"):
-                j = ["ab", "be"].index(varname.split("_")[2])
-                ivar = ivar * 2 + j - 1
+        elif varname.startswith("microbe") or varname.startswith("litter"):
+            ipft = int(varname.split("_")[1])
+            postfix = varname.split("_")[2]
+            ivar = ind[0]
+            j = ["ab", "be"].index(varname.split("_")[2])
+            ivar = ivar * 2 + j - 1
+        elif (
+            varname.startswith("npp")
+            or varname.startswith("lai")
+            or varname.startswith("lignin")
+        ):
+            ipft = ind[0]
+            ivar = None
+
         if type(model).__name__ == "Pipeline":
             alg = type(model.named_steps["estimator"]).__name__
         else:
             alg = type(model).__name__
         res["varname"] = varname
         res["ipft"] = ipft
-        res["pft"] = [
-            "TrENF",
-            "TrEBF",
-            "TrDBF",
-            "TeENF",
-            "TeEBF",
-            "TeDBF",
-            "BoENF",
-            "BoDBF",
-            "BoDNF",
-            "C3G",
-            "C4G",
-            "C3C",
-            "C4C",
-            "_",
-            "_",
-        ][ipft - 1]
+        # res["pft"] = [
+        #     "TrENF",
+        #     "TrEBF",
+        #     "TrDBF",
+        #     "TeENF",
+        #     "TeEBF",
+        #     "TeDBF",
+        #     "BoENF",
+        #     "BoDBF",
+        #     "BoDNF",
+        #     "C3G",
+        #     "C4G",
+        #     "C3C",
+        #     "C4C",
+        #     "_",
+        #     "_",
+        # ][ipft - 1]
+
+        pools = ["som", "biomass", "litter", "microbe"]
+
         res["ivar"] = ivar
-        res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+        if ipool in pools:
+            res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+        else:
+            res["var"] = None
         res["dim"] = ii["dim_loop"][0]
         res["alg"] = alg
         return res

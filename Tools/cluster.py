@@ -64,17 +64,16 @@ def cluster_ana(
         locations = np.array(A.index.to_list())
         cluster_dic["clus_%.2i_loc" % (clus + 1)] = locations
         # 1.3 Randomly select Nc sites from each cluster
+        n = max(Nc, int(len(locations) * 0.2))
         random.shuffle(locations)
-        if len(locations) > Nc:
-            if sel_most_PFTs:
-                ids = list(map(tuple, locations))
-                n_pft = packdata.PFT_counts.to_series().loc[ids].sort_values()
-                SelectedID = np.array(list(n_pft.index[-Nc:]))
-            else:
-                RandomS = random.sample(range(len(locations)), Nc)
-                SelectedID = locations[RandomS]
+        if sel_most_PFTs:
+            ids = list(map(tuple, locations))
+            n_pft = (
+                packdata.PFT_counts.to_series().loc[ids].sort_values(ascending=False)
+            )
+            SelectedID = np.array(list(n_pft.index[:n]))
         else:
-            SelectedID = locations
+            SelectedID = locations[:n]
         print(
             f"Selected {len(SelectedID)} ({len(SelectedID) / len(locations):.2%}) sites in cluster {clus}"
         )

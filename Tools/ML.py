@@ -285,7 +285,23 @@ def MLmap_multidim(
         return None
 
     if (PFT_mask[ipft - 1] > 0).any():
-        return MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+        if varname.startswith("biomass"):
+            ipft = ind[0]
+            ivar = int(varname.split("_")[1])
+        else:
+            ipft = int(varname.split("_")[1])
+            ivar = ind[0]
+            if varname.startswith("litter"):
+                j = ["ab", "be"].index(varname.split("_")[2])
+                ivar = ivar * 2 + j - 1
+        res["varname"] = varname
+        res["ipft"] = ipft
+        res["ivar"] = ivar
+        res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+        res["dim"] = ii["dim_loop"][0]
+        return res
+
         # evaluation
         R2, RMSE, slope, reMSE, dNRMSE, sNRMSE, iNRMSE, f_SB, f_SDSD, f_LSC = (
             MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
@@ -461,4 +477,4 @@ def MLloop(
                             result.append(res)
                 # close&save netCDF file
                 restnc.close()
-    return pd.DataFrame(result).set_index(["var", "ind_1"]).sort_index()
+    return pd.DataFrame(result).set_index(["ipft", "ivar"]).sort_index()

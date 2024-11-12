@@ -461,5 +461,4 @@ def MLloop(
                             result.append(res)
                 # close&save netCDF file
                 restnc.close()
-
-    return pd.DataFrame(result).set_index("var")
+    return pd.DataFrame(result).set_index(["var", "ind_1"]).sort_index()

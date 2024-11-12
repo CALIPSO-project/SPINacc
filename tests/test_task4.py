@@ -104,10 +104,20 @@ def test_compare_csv_to_txt(reference_path, test_path):
     mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
 
     for comp in comps:
-        mlacc_results_comp = mlacc_results.loc[mlacc_results["comp"] == comp]
+        mlacc_results_comp = mlacc_results.loc[
+            mlacc_results["varname"].str.contains(comp)
+        ]
         reference_results_comp = reference_results.loc[
             reference_results["comp"] == comp
         ]
+        if comp == "litter":
+            df_ab = mlacc_results_comp[
+                mlacc_results_comp["varname"].str.endswith("_ab")
+            ]
+            df_be = mlacc_results_comp[
+                mlacc_results_comp["varname"].str.endswith("_be")
+            ]
+            mlacc_results_comp = pd.concat([df_ab, df_be], axis=0, ignore_index=True)
 
         for metric in metrics:
             print("metrics ", metric, comp)

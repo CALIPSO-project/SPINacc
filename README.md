@@ -5,6 +5,8 @@ Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedu
 
 Documentation of aims, concepts, workflows are described in Sun et al.202 [open-source]: https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623
 
+Developer team: Mandresy Rasolonjatovo (LSCE),  Tianzhang Cai (ICCS), Matthew Archer (ICCS),  Daniel Goll (LSCE)
+
 ![202208_ML_manuscript_figures_v1 0 pptx (2)](https://user-images.githubusercontent.com/79981678/209093236-1601237a-7959-42b6-b6f1-306be1bc0b44.png)
 
 ## CONTENT

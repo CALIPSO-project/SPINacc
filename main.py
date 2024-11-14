@@ -118,6 +118,7 @@ if "1" in itask:
     check.display("task 1: done", logfile)
 if "2" in itask:
     #
+    random.seed(config.random_seed)
     # clustering
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)

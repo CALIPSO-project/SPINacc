@@ -102,15 +102,22 @@ def test_compare_csv_to_txt(reference_path, test_path):
         )
 
     mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
+    mlacc_results = mlacc_results.sort_values(
+        by=["comp", "ipft", "ivar"], ignore_index=True
+    )
 
     for comp in comps:
-        mlacc_results_comp = mlacc_results.loc[
-            mlacc_results["comp"] == comp
-            # mlacc_results["varname"].str.contains(comp)
-        ]
+        mlacc_results_comp = mlacc_results.loc[mlacc_results["comp"] == comp]
+
         reference_results_comp = reference_results.loc[
             reference_results["comp"] == comp
         ]
+
+        if comp == "biomass":
+            mlacc_results_comp = mlacc_results_comp.sort_values(
+                by=["ivar", "ipft"], ignore_index=True
+            )
+
         if comp == "litter":
             df_ab = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_ab")]
             df_be = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_be")]

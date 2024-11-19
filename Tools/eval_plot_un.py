@@ -14,7 +14,15 @@
 #
 # =============================================================================================
 
-from Tools import *
+# from Tools import *
+
+import numpy as np
+import pandas as pd
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 
 ##@param[in]   data_path            config[5] resultpath
 ##@param[in]   npfts                number of PFT
@@ -26,9 +34,218 @@ from Tools import *
 
 
 # data_path='/home/orchidee04/ysun/MLacc_Python_Tool/'
-def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
+def plot_metric_diff(
+    data_path, reference_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel
+):
     subps = len(xTickLabel)
     print(subps)
+    # subLabel=['C']
+    loop_n = len(subLabel)
+    # print(loop_n)
+    # dims=np.array([0,1])# biomass: [1,0]
+    # shape=np.array([14*loop_n,4])# biomass: [14,8sect_n,
+    shape = np.array([npfts, subps])
+    df = pd.read_csv(data_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df_ref = pd.read_csv(reference_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df = df.loc[ipool].round(2)
+    df_ref = df_ref.loc[ipool].round(2)
+    R22 = df["R2"].unstack().values
+    slope = df["slope"].unstack().values
+    dNRMSE = df["dNRMSE"].unstack().values
+    R22_ref = df_ref["R2"].unstack().values
+    slope_ref = df_ref["slope"].unstack().values
+    dNRMSE_ref = df_ref["dNRMSE"].unstack().values
+
+    # print(R22)
+    yTickLabel = [
+        "PFT02",
+        "PFT03",
+        "PFT04",
+        "PFT05",
+        "PFT06",
+        "PFT07",
+        "PFT08",
+        "PFT09",
+        "PFT10",
+        "PFT11",
+        "PFT12",
+        "PFT13",
+        "PFT14",
+        "PFT15",
+    ]
+    yTickLabel = yTickLabel[0:npfts]
+    fonts = 7
+    # slope=slope[0:npfts,0:subps]
+    # dNRMSE=dNRMSE[0:npfts,0:subps]
+    # titles=['Cpools','Npools','Ppools'];
+    colors1 = plt.cm.YlGn(np.linspace(0, 1, 128))
+    colors2 = plt.cm.YlGn_r(np.linspace(0, 1, 128))
+    colors = np.vstack((colors1, colors2))
+    mycolor_R2 = ["maroon", "tomato", "gold", "limegreen", "forestgreen"]
+    mycolor_slope = [
+        "maroon",
+        "tomato",
+        "gold",
+        "limegreen",
+        "forestgreen",
+        "forestgreen",
+        "limegreen",
+        "gold",
+        "tomato",
+        "maroon",
+    ]
+    mycolor_rmse = ["forestgreen", "limegreen", "gold", "tomato", "maroon"]
+    mymap = mcolors.LinearSegmentedColormap.from_list("my_colormap", colors)
+    mymap_R2 = mcolors.LinearSegmentedColormap.from_list("my_list", mycolor_R2, N=5)
+    mymap_slope = mcolors.LinearSegmentedColormap.from_list(
+        "my_list", mycolor_slope, N=5
+    )  # this previously was N=10
+    mymap_rmse = mcolors.LinearSegmentedColormap.from_list("mylist", mycolor_R2, N=5)
+    # clip
+    # print(npfts)
+    # print(ipool)
+    # print(sect_n)
+    if sect_n > 1:
+        jq = sect_n * npfts
+    else:
+        jq = npfts
+    for n in range(0, loop_n):
+        # print(n)
+        # print(dims)
+        if dims[0] == 0:
+            R22_n = R22[n * jq : (n + 1) * jq, :]
+            R22_n_ref = R22_ref[n * jq : (n + 1) * jq, :]
+            slope_n = slope[n * jq : (n + 1) * jq, :]
+            slope_n_ref = slope_ref[n * jq : (n + 1) * jq, :]
+            dNRMSE_n = dNRMSE[n * jq : (n + 1) * jq, :]
+            dNRMSE_n_ref = dNRMSE_ref[n * jq : (n + 1) * jq, :]
+        else:
+            R22_n = R22[n * subps : (n + 1) * subps, :]
+            R22_n_ref = R22_ref[n * subps : (n + 1) * subps, :]
+            slope_n = slope[n * subps : (n + 1) * subps, :]
+            slope_n_ref = slope_ref[n * subps : (n + 1) * subps, :]
+            dNRMSE_n = dNRMSE[n * subps : (n + 1) * subps, :]
+            dNRMSE_n_ref = dNRMSE_ref[n * subps : (n + 1) * subps, :]
+        # print(R22_n)
+        R22_n = np.transpose(R22_n, dims).reshape(shape, order="F")
+        R22_n_ref = np.transpose(R22_n_ref, dims).reshape(shape, order="F")
+        # print(R22_n)
+        slope_n = np.transpose(slope_n, dims).reshape(shape, order="F")
+        slope_n_ref = np.transpose(slope_n_ref, dims).reshape(shape, order="F")
+        dNRMSE_n = np.transpose(dNRMSE_n, dims).reshape(shape, order="F")
+        dNRMSE_n_ref = np.transpose(dNRMSE_n_ref, dims).reshape(shape, order="F")
+
+        # print("R22_n\n ",repr(R22_n))
+        # print("R22_n_ref \n", repr(R22_n_ref))
+
+        R22_n_diff = -1 * (R22_n_ref - R22_n)
+        slope_n_diff = -1 * (slope_n_ref - slope_n)
+        dNRMSE_n_diff = -1 * (dNRMSE_n_ref - dNRMSE_n)
+
+        # print(R22_n_diff)
+        # print(slope_n_diff)
+        # print(dNRMSE_n_diff)
+
+        # R2_Cpools
+        # if n_cnp ==1:
+        fig, axs = plt.subplots(nrows=3, figsize=(10, 24))
+        axs[0].imshow(R22_n_diff, vmin=0.5, vmax=1, cmap=mymap_R2)
+        for jj in range(0, subps):
+            # print(jj)
+            for ii in range(0, npfts):
+                # print(R22_n[ii,jj])
+                axs[0].text(
+                    -0.5 + jj,
+                    ii,
+                    str(round(R22_n_diff[ii, jj], 2)),
+                    size=fonts,
+                    color="k",
+                )
+
+        my_x_ticks = np.arange(subps)
+        axs[0].set_xticks(my_x_ticks)
+        # axs[0].set_xticklabels([""])
+        my_y_ticks = np.arange(npfts)
+        axs[0].set_yticks(my_y_ticks)
+        axs[0].set_yticklabels(yTickLabel)
+        axs[0].set_title("R2_" + subLabel[n])
+        fig.subplots_adjust(right=0.9)
+        l = 0.92
+        b = 0.66
+        w = 0.015
+        h = 0.22
+        rect = [l, b, w, h]
+        cbar_ax = fig.add_axes(rect)
+        sc = axs[0].imshow(R22_n_diff, vmin=-0.1, vmax=0.1, cmap=mymap_R2)
+        plt.colorbar(sc, cax=cbar_ax)
+        # slope
+        axs[1].imshow(slope_n, vmin=-0.1, vmax=0.1, cmap=mymap_slope)
+        for jj in range(0, subps):
+            for ii in range(0, npfts):
+                axs[1].text(
+                    -0.5 + jj,
+                    ii,
+                    str(round(slope_n_diff[ii, jj], 2)),
+                    size=fonts,
+                    color="k",
+                    weight="bold",
+                )
+        my_x_ticks = np.arange(subps)
+        axs[1].set_xticks(my_x_ticks)
+        # axs[1].set_xticklabels([""])
+        my_y_ticks = np.arange(npfts)
+        axs[1].set_yticks(my_y_ticks)
+        axs[1].set_yticklabels(yTickLabel)
+        axs[1].set_title("slope_" + subLabel[n])
+        fig.subplots_adjust(right=0.9)
+        l = 0.92
+        b = 0.39
+        w = 0.015
+        h = 0.22
+        rect = [l, b, w, h]
+        cbar_ax = fig.add_axes(rect)
+        # slope
+        sc = axs[1].imshow(slope_n_diff, vmin=-0.1, vmax=0.1, cmap=mymap_slope)
+        plt.colorbar(sc, cax=cbar_ax)
+
+        # remse
+        axs[2].imshow(dNRMSE_n_diff, vmin=-0.1, vmax=0.1, cmap=mymap_rmse)
+        for jj in range(0, subps):
+            for ii in range(0, npfts):
+                axs[2].text(
+                    -0.5 + jj,
+                    ii,
+                    str(round(dNRMSE_n_diff[ii, jj], 2)),
+                    size=fonts,
+                    color="k",
+                    weight="bold",
+                )
+        my_x_ticks = np.arange(subps)
+        axs[2].set_xticks(my_x_ticks)
+        axs[2].set_xticklabels(xTickLabel, rotation=60)
+        my_y_ticks = np.arange(npfts)
+        axs[2].set_yticks(my_y_ticks)
+        axs[2].set_yticklabels(yTickLabel)
+        axs[2].set_title("dNRMSE_" + subLabel[n])
+        fig.subplots_adjust(right=0.9)
+        l = 0.92
+        b = 0.12
+        w = 0.015
+        h = 0.22
+        rect = [l, b, w, h]
+        cbar_ax = fig.add_axes(rect)
+        sc = axs[2].imshow(dNRMSE_n_diff, vmin=-0.1, vmax=0.1, cmap=mymap_rmse)
+        plt.colorbar(sc, cax=cbar_ax)
+
+        plt.savefig(data_path + "DIFF_Eval_all_" + ipool + subLabel[n] + ".png")
+        plt.close("all")
+    return
+
+
+# data_path='/home/orchidee04/ysun/MLacc_Python_Tool/'
+def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
+    subps = len(xTickLabel)
+    # print(subps)
     # subLabel=['C']
     loop_n = len(subLabel)
     # print(loop_n)
@@ -41,7 +258,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     slope = df["slope"].unstack().values
     dNRMSE = df["dNRMSE"].unstack().values
 
-    print(R22)
+    # print(R22)
     yTickLabel = [
         "PFT02",
         "PFT03",
@@ -88,15 +305,15 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     mymap_rmse = mcolors.LinearSegmentedColormap.from_list("mylist", mycolor_rmse, N=5)
     # clip
     # print(npfts)
-    print(ipool)
-    print(sect_n)
+    # print(ipool)
+    # print(sect_n)
     if sect_n > 1:
         jq = sect_n * npfts
     else:
         jq = npfts
     for n in range(0, loop_n):
-        print(n)
-        print(dims)
+        # print(n)
+        # print(dims)
         if dims[0] == 0:
             R22_n = R22[n * jq : (n + 1) * jq, :]
             slope_n = slope[n * jq : (n + 1) * jq, :]
@@ -105,9 +322,9 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
             R22_n = R22[n * subps : (n + 1) * subps, :]
             slope_n = slope[n * subps : (n + 1) * subps, :]
             dNRMSE_n = dNRMSE[n * subps : (n + 1) * subps, :]
-        print(R22_n)
+        # print(R22_n)
         R22_n = np.transpose(R22_n, dims).reshape(shape, order="F")
-        print(R22_n)
+        # print(R22_n)
         slope_n = np.transpose(slope_n, dims).reshape(shape, order="F")
         dNRMSE_n = np.transpose(dNRMSE_n, dims).reshape(shape, order="F")
         # R2_Cpools

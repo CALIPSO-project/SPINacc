@@ -290,6 +290,16 @@ if "5" in itask:
         eval_plot_un.plot_metric(
             resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
         )
+        eval_plot_un.plot_metric_diff(
+            resultpath,
+            config.reference_dir,
+            npfts,
+            ipool,
+            subLabel,
+            dims,
+            sect_n,
+            subpool_name,
+        )
         if loocv:
             eval_plot_loocv_un.plot_metric(
                 resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name

@@ -122,7 +122,7 @@ def cluster_test(packdata, varlist, logfile):
     return dis_all
 
 
-def cluster_all(packdata, varlist, KK, logfile, take_unique):
+def cluster_all(packdata, varlist, KK, logfile, take_unique, sel_most_PFTs=True):
     """
     Perform clustering for all specified PFTs with a chosen K value.
 
@@ -163,6 +163,7 @@ def cluster_all(packdata, varlist, KK, logfile, take_unique):
                 KK,
                 Ncc[kpfts.index(veg)],
                 adict,
+                sel_most_PFTs=sel_most_PFTs,
             ),
             kpfts,
         )

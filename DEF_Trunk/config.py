@@ -2,7 +2,7 @@
 
 logfile = "log.MLacc_Trunk"
 tasks = [
-    # 2,
+    2,
     4,
     5,
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
@@ -22,6 +22,7 @@ algorithms = [
     # "ridge",
     "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
+sel_most_PFT_sites = True
 leave_one_out_cv = False
 repro_test_task_1 = False
 repro_test_task_2 = False

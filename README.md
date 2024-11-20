@@ -3,48 +3,154 @@ A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
 
 Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML.
 
-Documentation of aims, concepts, workflows are described in Sun et al.202 [open-source]: https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623
+Documentation of aims, concepts, workflows are described in [Sun et al (2022)](https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623).
 
 ![202208_ML_manuscript_figures_v1 0 pptx (2)](https://user-images.githubusercontent.com/79981678/209093236-1601237a-7959-42b6-b6f1-306be1bc0b44.png)
 
-## CONTENT
+## Contents
 The SPINacc package includes:
-* job - the job file for a bash environment
-* job_tcsh - the job file for a tcsh environment
-* main.py - the main python module
-* Tools/* - folder with the other python modules
-* DEF_*/  - folders containting the configuration files for each of the supported ORCHIDEE versions
-* AuxilaryTools/SteadyState_checker.py - tool to assess the state of equilibration in ORCHIDEE simulations
-* tests/ - the reproducibility code in Python
-* requirements.txt - listing necessary dependencies to use SPINacc
-* ORCHIDEE_cecill.txt - the same license used by ORCHIDEE
-* docs/ - more detailed documentation about ORCHIDEE simulations
+* `job` - the job file for a bash environment
+* `job_tcsh` - the job file for a tcsh environment
+* `main.py` - the main python module
+* `Tools/*` - folder with the other python modules
+* `DEF_*/`  - folders containting the configuration files for each of the supported ORCHIDEE versions
+* `AuxilaryTools/SteadyState_checker.py` - tool to assess the state of equilibration in ORCHIDEE simulations
+* `tests/` - the reproducibility code in Python
+* `requirements.txt` - listing necessary dependencies to use SPINacc
+* `ORCHIDEE_cecill.txt` - the same license used by ORCHIDEE
+* `docs/` - more detailed documentation about ORCHIDEE simulations
 
-## INFORMATION FOR USERS:
-### HOW TO RUN THE CODE:
-Here are the steps to launch the different tasks of this repository (and the reproducibility tests associated):
+## Usage
+### Running SPINacc
+Here are the steps to launch SPINacc end-to-end, including the optional tests.
 
-* Download the code: `git clone git@github.com:CALIPSO-project/SPINacc.git`
-* Find the associated ZENODO repository online (for reproducibility test including the corresponding ORCHIDEE forcing data) here: [https://doi.org/10.5281/zenodo.10514124]
-* From ZENODO: DOWNLOAD __ORCHIDEE_forcing_data.zip__, unzip and store it in a directory **'/your/path/to/SPINacc_ref/'**
-* From ZENODO: DOWNLOAD __Reproducibility_tests_reference.zip__, unzip and store it in a directory __'/your/path/to/reference/'__
-* In your local machine:  __cd SPINacc__
-* If you want to stay on the main code skip this point, otherwise do : __git checkout your_branch__
-* Create an execution directory: __mkdir EXE_DIR__
-* In __DEF_Trunk/varlist.json__ file : replace all the __'/home/surface5/vbastri/'__ occurences with **'/your/path/to/SPINacc_ref/vlad_files/vlad_files/'**
-* Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results).
+#### Installation
+
+1. Navigate to the location in which you wish to install the source and clone the repo as so:
+    ```
+    git clone git@github.com:CALIPSO-project/SPINacc.git
+    ```
+2. Create a virtual environment and activate:
+    ```
+    python3 -m venv ./venv3
+    source ./venv3/bin/activate
+    ```
+3. Build all relevant dependencies:
+    ```
+    cd SPINacc
+    pip install -r requirements.txt
+    ```
+4. Add tools to PYTHONPATH
+    ```
+    export PYTHONPATH=$(pwd)/Tools:$PYTHONPATH
+    ```
+
+#### Get data from Zenodo
+
+Find the associated ZENODO repository online (including the corresponding ORCHIDEE forcing data) here: [https://doi.org/10.5281/zenodo.10514124].
+
+From Zenodo, Download `ORCHIDEE_forcing_data.zip`, unzip and store it in a directory `/your/path/to/SPINacc_ref/`
+
+#### Run SPINacc
+
+1. Create an execution directory:
+    ```
+    cd SPINacc
+    mkdir EXE_DIR
+    ```
+2. In the `DEF_Trunk/varlist.json` file, replace all the `/home/surface5/vbastri/` occurences with `/your/path/to/SPINacc_ref/vlad_files/vlad_files/`
+
+3. In `DEF_Trunk` modify results directory accordingly (if different from above). To run SPINacc from end-to-end ensure that the steps are set as follows:
+    ```
+    tasks = [
+        1,
+        2,
+        4,
+        5,
+    ]
+    # 1 = test clustering
+    # 2 = clustering
+    # 3 = compress forcing
+    # 4 = ML
+    # 5 = evaluation / visualisation
+    ```
+    If running from scratch, ensure that `start_from_scratch` is set to `True` in `config.py`. It is possible to run just a single task, if necessary.
+
+4. Then run:
+    ```
+    python main.py DEF_Trunk/
+    ```
+    By default, `main.py` will look for the `DEF_Trunk` directory. SPINacc supports passing other configuration / job directories as arguments to `main.py`.
+
+    Results are located in your **EXE_DIR** under `MLacc_results.csv`. Visualisations of R2, Slope and dNRMSE are located for each component in `Eval_all_biomassCpool.png`, `Eval_all_litterCpool.png` and `Eval_all_somCpool.png`.
+
+    For other versions of ORCHIDEE, for instance, CNP2, outputs will be structured similarly.
+
+
+#### Set up baseline reproducibility checks
+
+It is possible to run a set of baseline checks that compare the code to some reference output.
+These tests are important to ensure that regressions have not been unexpectedly introduced during development. Currently, these checks only work for the Trunk version of ORCHIDEE.
+
+1. From Zenodo, Download `Reproducibility_tests_reference.zip`, unzip and store it in a directory `/your/path/to/reference/`
+
+2. In `DEF_Trunk/config.py` set the `reference_dir` variable as above.
+
+3. To execute the reproducibility checks at runtime ensure that True values are set in all relevant steps in `DEF_Trunk/config.py`.
+
+4. Alternatively, steps can be executed following the completion of a successful run by doing the following:
+
+    ```
+    pytest --trunk=DEF_Trunk/ -v --capture=sys
+    ```
+    Above we demonstrate that it is possible to point to different output directories with the `--trunk` flag.
+
+    To run a single test do:
+
+    ```
+    pytest --trunk=DEF_Trunk -v --capture=sys ./tests/test_task4.py
+    ```
+
+5. The configuration `config.py` in branch `main` should be configured correctly. But if not, ensure that
+    the following assignments have been made:
+
+    ```
+    alg = 'bt'
+    start_from_scratch = True
+    take_unique = False
+    kmeans_clusters = 4
+    max_kmeans_clusters = 9
+    random_seed = 1000
+    ```
+
+6. The checks are as follows:
+
+    - `test_init.py`: Computes recursive compare of `packdata.nc` to reference `packdata.npy` and `auxil.npy`.
+    - `test_task1.py`: Checks `dist_all.npy` to the reference.
+    - `test_task2.py`: Checks `IDloc.npy`, `IDSel.npy` and `IDx.npy` to the reference.
+    - `test_task3.py`: Currently not checked.
+    - `test_task4.py`: Reads in old *.txt formatted files in reference and compares to new `MLacc_results.csv` across all components. Tolerance is 1e-2.
+    - `test_task4_2.py`: Compares `SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc` file to reference.
+
+<!-- * Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). -->
+<!-- * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__ -->
+<!-- * Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__ -->
+<!-- * For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** -->
+<!-- * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt** -->
+
+## Obtaining 'best' performance
+
+
+
+
+## Run on Obelix Supercomputer
+
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
-* In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__
-* Also in **tests/config.py** you have to modify: __reference_path='/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/'__ to __reference_path='/your/path/to/reference/'__
+
 * Then launch your first job using  **qsub -q short job**, for task 1
-* For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def**
 * For tasks 3 and 4, it is better to use **qsub -q medium job**
-* Launching tasks in chain (e.g. "1, 2" or "3, 4, 5") will be a possibility soon
-* The results of the tasks are located in your **EXE_DIR**
-* The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt**
 
-
-### OVERVIEW OF THE INDIVIDUAL TASKS OF THE TOOL:
+## Overview of the individual tasks:
 (The detail of each tasks of the tool is provided in docs/documentation.txt)
 
 The different tasks are (the number of tasks does not correspond to sequence - YET):
@@ -60,14 +166,3 @@ The different tasks are (the number of tasks does not correspond to sequence - Y
 
 * Task 5 [optional]: Visualizes ML performance from Task 3, offering two evaluation modes: global pixel evaluation and leave-one-cross-validation (LOOCV) for training sites, generating plots for various state variables at the PFT level, including comparisons of ML predictions with conventional spinup data.
 ![Eval_all_loocv_biomassCpool_trim](https://user-images.githubusercontent.com/79981678/197768665-c868f95b-d7f4-4a2f-a942-d37c9e509596.png)
-
-
-### REPRODUCIBILITY TESTS :
-The configuration file has been updated to include new parameters that control the execution of reproducibility tests for each task. These parameters are:
-
-config[17]: Controls the reproducibility test for Task 1.
-config[19]: Controls the reproducibility test for Task 2.
-config[21]: Controls the reproducibility test for Task 3.
-config[23]: Controls the reproducibility test for Task 4.
-
-For each parameter, setting the value to 1 enables the reproducibility test for the corresponding task, while setting it to 0 disables it.

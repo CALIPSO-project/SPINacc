@@ -130,7 +130,7 @@ if "2" in itask:
     # clustering
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, varlist, K, logfile)
+    IDx, IDloc, IDsel = Cluster.Cluster_all(packdata, varlist, K, logfile, sel_most_PFTs=config.sel_most_PFT_sites)
     IDx.dump(resultpath + "IDx.npy")
     IDloc.dump(resultpath + "IDloc.npy")
     IDsel.dump(resultpath + "IDsel.npy")

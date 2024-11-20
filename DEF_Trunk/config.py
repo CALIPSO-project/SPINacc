@@ -28,7 +28,8 @@ take_year_average = False  # Performance improved when set to True
 smote_bat = True
 model_out = False  # Optional
 parallel = True  # True by default
-take_unique = False
+sel_most_PFT_sites = True
+take_unique = True
 
 # Output and testing
 results_dir = "./EXE_DIR/"

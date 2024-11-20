@@ -138,6 +138,10 @@ These tests are important to ensure that regressions have not been unexpectedly 
 <!-- * For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** -->
 <!-- * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt** -->
 
+## Obtaining 'best' performance
+
+
+
 
 ## Run on Obelix Supercomputer
 

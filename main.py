@@ -156,7 +156,14 @@ if "2" in itask:
     random.seed(config.random_seed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = cluster.cluster_all(packdata, varlist, K, logfile, take_unique)
+    IDx, IDloc, IDsel = cluster.cluster_all(
+        packdata,
+        varlist,
+        K,
+        logfile,
+        take_unique,
+        config.sel_most_PFT_sites,
+    )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")
     IDloc.dump(resultpath / "IDloc.npy")

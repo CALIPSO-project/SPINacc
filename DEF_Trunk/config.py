@@ -22,6 +22,7 @@ algorithms = [
     # "ridge",
     "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
+sel_most_PFT_sites = True
 leave_one_out_cv = False
 repro_test_task_1 = False
 repro_test_task_2 = False

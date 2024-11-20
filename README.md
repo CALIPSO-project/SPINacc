@@ -115,7 +115,7 @@ These tests are important to ensure that regressions have not been unexpectedly 
     the following assignments have been made:
 
     ```
-    algorithm = bagging
+    algorithm = 'bt'
     start_from_scratch = True
     take_unique = False
     kmeans_clusters = 4

@@ -3,7 +3,7 @@ A spinup acceleration tool for land surface model (LSM) family of ORCHIDEE.
 
 Concept: The proposed machine-learning (ML)-enabled spin-up acceleration procedure (MLA) predicts the steady-state of any land pixel of the full model domain after training on a representative subset of pixels. As the computational efficiency of the current generation of LSMs scales linearly with the number of pixels and years simulated, MLA reduces the computation time quasi-linearly with the number of pixels predicted by ML.
 
-Documentation of aims, concepts, workflows are described in Sun et al.202 [open-source]: https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623
+Documentation of aims, concepts, workflows are described in [Sun et al (2022)](https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.16623).
 
 ![202208_ML_manuscript_figures_v1 0 pptx (2)](https://user-images.githubusercontent.com/79981678/209093236-1601237a-7959-42b6-b6f1-306be1bc0b44.png)
 
@@ -20,11 +20,11 @@ The SPINacc package includes:
 * `ORCHIDEE_cecill.txt` - the same license used by ORCHIDEE
 * `docs/` - more detailed documentation about ORCHIDEE simulations
 
-## Usage:
-### Running SPINacc:
+## Usage
+### Running SPINacc
 Here are the steps to launch SPINacc end-to-end, including the optional tests.
 
-#### To build and install the library:
+#### Installation
 
 1. Navigate to the location in which you wish to install the source and clone the repo as so:
     ```
@@ -45,13 +45,13 @@ Here are the steps to launch SPINacc end-to-end, including the optional tests.
     export PYTHONPATH=$(pwd)/Tools:$PYTHONPATH
     ```
 
-#### Get Data from Zenodo:
+#### Get data from Zenodo
 
 Find the associated ZENODO repository online (including the corresponding ORCHIDEE forcing data) here: [https://doi.org/10.5281/zenodo.10514124].
 
 From Zenodo, Download `ORCHIDEE_forcing_data.zip`, unzip and store it in a directory `/your/path/to/SPINacc_ref/`
 
-#### To execute SPINacc:
+#### Run SPINacc
 
 1. Create an execution directory:
     ```
@@ -82,12 +82,15 @@ From Zenodo, Download `ORCHIDEE_forcing_data.zip`, unzip and store it in a direc
     ```
     By default, `main.py` will look for the `DEF_Trunk` directory. SPINacc supports passing other configuration / job directories as arguments to `main.py`.
 
-    The results of the tasks are located in your **EXE_DIR**.
+    Results are located in your **EXE_DIR** under `MLacc_results.csv`. Visualisations of R2, Slope and dNRMSE are located for each component in `Eval_all_biomassCpool.png`, `Eval_all_litterCpool.png` and `Eval_all_somCpool.png`.
+
+    For other versions of ORCHIDEE, for instance, CNP2, outputs will be structured similarly.
 
 
-#### Setting up baseline reproducibility checks:
+#### Set up baseline reproducibility checks
 
-SPINacc will run the baseline tests if the following steps are taken. These tests are important to run when changes are made to the code to ensure that regressions have not been unexpectedly introduced.
+It is possible to run a set of baseline checks that compare the code to some reference output.
+These tests are important to ensure that regressions have not been unexpectedly introduced during development. Currently, these checks only work for the Trunk version of ORCHIDEE.
 
 1. From Zenodo, Download `Reproducibility_tests_reference.zip`, unzip and store it in a directory `/your/path/to/reference/`
 
@@ -108,9 +111,26 @@ SPINacc will run the baseline tests if the following steps are taken. These test
     pytest --trunk=DEF_Trunk -v --capture=sys ./tests/test_task4.py
     ```
 
-5. The checks are as follows:
+5. The configuration `config.py` in branch `main` should be configured correctly. But if not, ensure that
+    the following assignments have been made:
 
-    Task1: Compares the output of ...
+    ```
+    algorithm = bagging
+    start_from_scratch = True
+    take_unique = False
+    kmeans_clusters = 4
+    max_kmeans_clusters = 9
+    random_seed = 1000
+    ```
+
+6. The checks are as follows:
+
+    - `test_init.py`: Computes recursive compare of `packdata.nc` to reference `packdata.npy` and `auxil.npy`.
+    - `test_task1.py`: Checks `dist_all.npy` to the reference.
+    - `test_task2.py`: Checks `IDloc.npy`, `IDSel.npy` and `IDx.npy` to the reference.
+    - `test_task3.py`: Currently not checked.
+    - `test_task4.py`: Reads in old *.txt formatted files in reference and compares to new `MLacc_results.csv` across all components. Tolerance is 1e-2.
+    - `test_task4_2.py`: Compares `SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc` file to reference.
 
 <!-- * Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). -->
 <!-- * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__ -->
@@ -119,7 +139,7 @@ SPINacc will run the baseline tests if the following steps are taken. These test
 <!-- * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt** -->
 
 
-## Running on Obelix Supercomputer
+## Run on Obelix Supercomputer
 
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
 

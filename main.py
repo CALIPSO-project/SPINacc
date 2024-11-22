@@ -193,18 +193,15 @@ if "4" in itask:
 
     var_pred_name1 = varlist["pred"]["allname"]
     var_pred_name2 = varlist["pred"]["allname_pft"]
+
+    # All feature names (X)
     var_pred_name = var_pred_name1 + var_pred_name2
 
-    # Response variables
+    # Response variable names (Y)
     Yvar = varlist["resp"]["variables"]
-    responseY = Dataset(varlist["resp"]["sourcefile"], "r")
 
     check.check_file(resultpath + "IDx.npy", logfile)
     IDx = np.load(resultpath + "IDx.npy", allow_pickle=True)
-    # generate PFT mask
-    PFT_mask, PFT_mask_lai = genMask.PFT(
-        packdata, varlist, varlist["PFTmask"]["pred_thres"]
-    )
 
     packdata.attrs.update(
         Nv_nopft=len(var_pred_name1),

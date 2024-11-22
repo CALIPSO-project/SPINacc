@@ -290,11 +290,6 @@ def MLloop(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
-    # We can't do it here: we would overwrite the file repeatidly loosing the information we wrote before
-    # it's done now in main.py
-    # Copy restart file template (might have to be changed)
-    #  restfile=resultpath+varlist['resp']['sourcefile'].split('/')[-1]
-    #  os.system('cp -f %s %s'%(varlist['resp']['sourcefile'],restfile))
     missVal = varlist["resp"]["missing_value"]
 
     result = []

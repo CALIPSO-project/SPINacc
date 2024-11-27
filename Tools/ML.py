@@ -73,6 +73,7 @@ def MLmap_multidim(
     pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
 
     # extract Y
+
     pool_map = np.squeeze(ivar)[
         tuple(i - 1 for i in ind)
     ]  # all indices start from 1, but python loop starts from 0

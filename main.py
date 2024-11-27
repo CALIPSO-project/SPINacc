@@ -48,17 +48,22 @@ import config
 # Define task
 itask = str(config.tasks)
 
-logfile = open(config.logfile, "w", buffering=1)
-check.display("DEF directory: " + dir_def, logfile)
-check.display("running task: %s" % itask, logfile)
-
-# Define task
+# Define result directory
 resultpath = config.results_dir
-check.display("results are stored at: " + resultpath, logfile)
 
 # Create results directory if it does not exist
 if not os.path.exists(resultpath):
     os.makedirs(resultpath)
+
+logfile = open(config.logfile, "w", buffering=1)
+check.display("running task: %s" % itask, logfile)
+check.display("results are stored at: " + resultpath, logfile)
+
+# write the configuration to the log file in the results directory
+with open(dir_def + "config.py", "r") as f:
+    check.display(f.read(), logfile)
+
+check.display("DEF directory: " + dir_def, logfile)
 
 # Read list of variables
 with open(dir_def + "varlist.json", "r") as f:

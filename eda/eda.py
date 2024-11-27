@@ -92,7 +92,16 @@ for pool in Yvar.values():
                     )  # convert the array into dataframe
                     combine_XY = df_data.dropna().drop(["pft"], axis=1)
 
-                    d = datasets[jj].setdefault(varname, {"Y": pd.DataFrame()})
+                    if jj == "biomass":
+                        print(jj, varname, ind)
+                        s, i = varname.split("_")
+                        ll = f"{s}_{int(ind[0]):02d}"
+                        ind = (int(i),)
+                        print(jj, ll, ind)
+                    else:
+                        ll = varname
+
+                    d = datasets[jj].setdefault(ll, {"Y": pd.DataFrame()})
                     d["X"] = combine_XY.drop(columns=["Y"])
                     y = combine_XY["Y"].rename(f"{ind[0]:02d}")
                     d["Y"] = pd.concat([d["Y"], y], axis=1)
@@ -124,23 +133,21 @@ for pool, ds in datasets.items():
     plt.savefig(f"{pool}_dataset_sizes.png")
 
 # %%
-for pool, ds in datasets.items():
-    # Plot the size of each dataset in datasets
-    dataset_corr = {k: v["X"].corrwith(v["Y"]) for k, v in ds.items()}
-    dataset_sizes_df = pd.DataFrame(
-        list(dataset_sizes.items()), columns=["Dataset", "Size"]
-    )
+# Load the dataset
+# Assuming datasets is a dictionary with keys as variable names and values as DataFrames
+# Example: datasets = {('biomass', 14): df1, ('litter_12_be', 1): df2, ...}
 
-    plt.figure(figsize=(12, 8))
-    sns.barplot(
-        x="Size",
-        y="Dataset",
-        data=dataset_sizes_df.sort_values(by="Size", ascending=False),
-    )
-    plt.title("Size of Each Dataset")
-    plt.xlabel("Number of Samples")
-    plt.ylabel("Dataset")
-    plt.savefig(f"{pool}_dataset_sizes.png")
+# Select a specific dataset for analysis
+for pool, ds in datasets.items():
+    for k, v in ds.items():
+        Y, X = v.values()
+        print(X.shape, Y.shape)
+        corr = X.corr()
+        plt.figure(figsize=(12, 8))
+        plt.imshow(corr, cmap="coolwarm", interpolation="none")
+        plt.colorbar()
+        plt.title(f"Correlation Matrix for {k}")
+        plt.savefig(f"{k}_correlation_matrix.png")
 
 # %%
 # Load the dataset
@@ -148,44 +155,65 @@ for pool, ds in datasets.items():
 # Example: datasets = {('biomass', 14): df1, ('litter_12_be', 1): df2, ...}
 
 # Select a specific dataset for analysis
-Y, X = datasets[jj][varname].values()
-
-# 4. Visualizations
-# Distribution of the target variable
-sns.histplot(Y, kde=True)
-plt.title(f"Distribution of Target Variable Y for {varname}")
-plt.savefig(f"{varname}_target_variable_distribution.png")
-
-# Pairplot to visualize relationships
-sns.pairplot(X)
-plt.title(f"Pairplot for {varname}")
-plt.savefig(f"{varname}_pairplot.png")
-
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, Y, test_size=0.2, random_state=42
-)
-
-# Train the model
-model = XGBRegressor()
-model.fit(X_train, y_train)
-
-# Predict and evaluate
-y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error for {varname}: {mse}")
-
-# Feature importance
-importance = model.feature_importances_
-feature_importance_df = pd.DataFrame({"Feature": X.columns, "Importance": importance})
-feature_importance_df = feature_importance_df.sort_values(
-    by="Importance", ascending=False
-)
-
-# Plot feature importance
-plt.figure(figsize=(12, 8))
-sns.barplot(x="Importance", y="Feature", data=feature_importance_df)
-plt.title(f"Feature Importance for {varname}")
-plt.show()
+for pool, ds in datasets.items():
+    for k, v in ds.items():
+        Y, X = v.values()
+        corrs = {}
+        for c, y in Y.items():
+            corr = X.corrwith(y, axis=0)
+            corrs[c] = corr
+        corr_matrix = pd.DataFrame(corrs)
+        plt.figure(figsize=(12, 8))
+        sns.heatmap(corr_matrix)
+        plt.title(f"Feature-Target Correlation Matrix for {k}")
+        plt.savefig(f"{k}_xy_correlation_matrix.png")
+        print(k)
 
 # %%
+# 4. Visualizations
+# # Distribution of the target variable
+# sns.histplot(Y, kde=True)
+# plt.title(f"Distribution of Target Variable Y for {varname}")
+# plt.savefig(f"{varname}_target_variable_distribution.png")
+
+# # Pairplot to visualize relationships
+# sns.pairplot(X)
+# plt.title(f"Pairplot for {varname}")
+# plt.savefig(f"{varname}_pairplot.png")
+
+for pool, ds in datasets.items():
+    if pool != "biomass":
+        continue
+    for k, v in ds.items():
+        Y, X = v.values()
+
+    # Split the data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, Y, test_size=0.2, random_state=42
+    )
+
+    # Train the model
+    model = XGBRegressor()
+    model.fit(X_train, y_train)
+
+    # Predict and evaluate
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    print(f"Mean Squared Error for {varname}: {mse}")
+
+    # Feature importance
+    importance = model.feature_importances_
+    feature_importance_df = pd.DataFrame(
+        {"Feature": X.columns, "Importance": importance}
+    )
+    feature_importance_df = feature_importance_df.sort_values(
+        by="Importance", ascending=False
+    )
+
+    # Plot feature importance
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x="Importance", y="Feature", data=feature_importance_df)
+    plt.title(f"Feature Importance for {varname}")
+    plt.savefig(f"{varname}_feature_importance.png")
+
+    # %%

@@ -171,49 +171,34 @@ for pool, ds in datasets.items():
 
 # %%
 # 4. Visualizations
-# # Distribution of the target variable
-# sns.histplot(Y, kde=True)
-# plt.title(f"Distribution of Target Variable Y for {varname}")
-# plt.savefig(f"{varname}_target_variable_distribution.png")
-
-# # Pairplot to visualize relationships
-# sns.pairplot(X)
-# plt.title(f"Pairplot for {varname}")
-# plt.savefig(f"{varname}_pairplot.png")
-
 for pool, ds in datasets.items():
-    if pool != "biomass":
-        continue
     for k, v in ds.items():
         Y, X = v.values()
 
-    # Split the data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.2, random_state=42
-    )
+        # Split the data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, Y, test_size=0.2, random_state=42
+        )
 
-    # Train the model
-    model = XGBRegressor()
-    model.fit(X_train, y_train)
+        # Train the model
+        model = XGBRegressor()
+        model.fit(X_train, y_train)
 
-    # Predict and evaluate
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    print(f"Mean Squared Error for {varname}: {mse}")
+        # Predict and evaluate
+        y_pred = model.predict(X_test)
+        mse = mean_squared_error(y_test, y_pred)
+        print(f"Mean Squared Error for {k}: {mse}")
 
-    # Feature importance
-    importance = model.feature_importances_
-    feature_importance_df = pd.DataFrame(
-        {"Feature": X.columns, "Importance": importance}
-    )
-    feature_importance_df = feature_importance_df.sort_values(
-        by="Importance", ascending=False
-    )
+        # Feature importance
+        importance = model.feature_importances_
+        feature_importance_df = pd.DataFrame(
+            {"Feature": X.columns, "Importance": importance}
+        ).sort_values(by="Importance", ascending=False)
 
-    # Plot feature importance
-    plt.figure(figsize=(12, 8))
-    sns.barplot(x="Importance", y="Feature", data=feature_importance_df)
-    plt.title(f"Feature Importance for {varname}")
-    plt.savefig(f"{varname}_feature_importance.png")
+        # Plot feature importance
+        plt.figure(figsize=(12, 8))
+        sns.barplot(x="Importance", y="Feature", data=feature_importance_df)
+        plt.title(f"Feature Importance for {k}")
+        plt.savefig(f"{k}_feature_importance.png")
 
     # %%

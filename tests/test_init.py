@@ -51,3 +51,5 @@ def test_packdata_equivalence(reference_path, test_path):
             assert recursive_compare(
                 packdata_test[v].values, packdata_ref[v]
             ), f"Variable {v} differs between datasets"
+
+            print(f"Variable {v} matches between datasets.")

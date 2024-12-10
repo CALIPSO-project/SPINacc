@@ -86,12 +86,14 @@ def readvar(varlist, config, logfile):
         adict["MY%s" % varname_clim[index]] = var_month_year[:]
 
     # 0.1.1 Tair (Tmax, Tmin, Tmean,Tstd,AMT)
-    packdata.Tair = (["year", "month", "lat", "lon"], adict["MYTair"] - 273.15)
+    Tair = adict["MYTair"] - 273.15
 
     # 0.1.2 Other climatic variables (Rainf,Snowf,Qair,Psurf,SWdown,LWdown)
     packdata.update(
         (k, (["year", "month", "lat", "lon"], adict[f"MY{k}"])) for k in varname_clim
     )
+
+    packdata.Tair = (["year", "month", "lat", "lon"], Tair)
 
     # 0.1.3 P and T for growing season (Pre_GS, Temp_GS, GS_length)
     pre = 30 * 24 * 3600 * np.mean(adict["MYRainf"], axis=0)
@@ -177,7 +179,7 @@ def readvar(varlist, config, logfile):
                     Tstd=arr.std("month"),
                     Tmin=arr.min("month"),
                     Tmax=arr.max("month"),
-                    # Tamp=arr.max("month") - arr.min("month"),
+                    Tamp=arr.max("month") - arr.min("month"),
                 )
             else:
                 stats = {

@@ -18,7 +18,13 @@ def test_packdata_variable_equivalence(reference_path, test_path):
     # Eliminate all contents of vars_old beginning with "_"
     vars_ref = [var for var in vars_ref if not var.startswith("_")]
     for var in vars_ref:
-        assert var in vars_ref, f"Variable {var} is not present in new packdata"
+        assert var in vars, f"Variable {var} is not present in new packdata"
+
+    for var in vars:
+        if var in ["lat", "lon"]:
+            continue
+        print(var)
+        assert var in vars_ref, f"Variable {var} is not present in refpackdata"
 
 
 def test_packdata_equivalence(reference_path, test_path):

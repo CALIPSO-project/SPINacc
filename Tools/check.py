@@ -21,13 +21,15 @@ import sys
 ##@param[in] sss string to be written
 ##@param[in] logfile verbose file
 def verbose(sss, logfile):
-    logfile.write(sss + "\n")
+    if logfile:
+        logfile.write(sss + "\n")
 
 
 ##@param[in] sss string to be written
 ##@param[in] logfile verbose file
 def display(sss, logfile):
-    logfile.write(sss + "\n")
+    if logfile:
+        logfile.write(sss + "\n")
     print(sss)
 
 

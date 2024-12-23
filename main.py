@@ -216,7 +216,8 @@ if "4" in itask:
         Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
     )
     labx = ["Y"] + list(packdata.data_vars) + ["pft"]
-
+    # labx = ["Y"] + var_pred_name + ["pft"]
+    # breakpoint()
     # copy the restart file to be modified
     targetfile = (
         varlist["resp"]["targetfile"]
@@ -241,8 +242,11 @@ if "4" in itask:
                 config,
                 restfile,
                 alg,
+                seed=iseed,
             )
             result.append(res_df)
+            # DEBUGGING
+            break
         res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
         print(res_df)
 

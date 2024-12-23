@@ -179,6 +179,7 @@ def readvar(varlist, config, logfile):
                     Tstd=arr.std("month"),
                     Tmin=arr.min("month"),
                     Tmax=arr.max("month"),
+                    # This was previously dropped.
                     Tamp=arr.max("month") - arr.min("month"),
                 )
             else:
@@ -200,5 +201,8 @@ def readvar(varlist, config, logfile):
     maxK = config.max_kmeans_clusters
     ds.attrs["Ks"] = list(range(2, maxK + 1))
     ds.attrs["K"] = config.kmeans_clusters
+
+    # drop variables so they are not used in clustering.
+    # ds = ds.drop_vars(['LWdown_std', 'PSurf_std', 'Qair_std', 'SWdown_std', 'Snowf_mean','Snowf_std'])
 
     return ds

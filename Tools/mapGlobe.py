@@ -37,16 +37,30 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
     """
     if "year" in packdata.dims:
         packdata = packdata.mean("year", keep_attrs=True)
+    # breakpoint()
     global_X_map = np.full((len(XVarName), packdata.nlat, packdata.nlon), np.nan)
     # PFTmask[np.isnan(PFTmask)]=0
     pmask = np.squeeze(PFTmask[ipft - 1][:])
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
+
+    ind = -1
+    # not really sure why we loop over packdata.values() here
     for ii, arr in enumerate(packdata.values()):
+        if arr.name in [
+            "LWdown_std",
+            "PSurf_std",
+            "Qair_std",
+            "SWdown_std",
+            "Snowf_mean",
+            "Snowf_std",
+        ]:
+            continue
+        ind += 1
         if arr.ndim == 2:
-            global_X_map[ii] = arr.values
+            global_X_map[list(XVarName).index(arr.name)] = arr.values
         else:
-            global_X_map[ii] = arr[ipft - 1].values
+            global_X_map[list(XVarName).index(arr.name)] = arr[ipft - 1].values
         #    global_X_map=lc['global_X_map']
         das = global_X_map.transpose(1, 2, 0)
     for llat in range(packdata.nlat):

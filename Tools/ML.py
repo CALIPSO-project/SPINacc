@@ -340,12 +340,6 @@ def MLloop(
                                 alg,
                             )
                         )
-                #         break
-                #     if result:
-                #         break
-                # if result:
-                #     break
-
                 # close&save netCDF file
                 restnc.close()
 

@@ -149,7 +149,6 @@ def MLmap_multidim(
             ipft,
             PFT_mask,
             combine_XY.columns.drop("Y"),
-            # new_cols,
             model,
             col_type,
             type_val,
@@ -352,7 +351,7 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
                 # close&save netCDF file
                 restnc.close()
 
-    parallel = True
+    parallel = False
 
     # breakpoint()
     if parallel:
@@ -371,7 +370,7 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
         result = []
         for input in inputs:
             if input:
-                output = MLmap_multidim(*input)
+                output = MLmap_multidim(*input, seed)
                 if output:  # Filter out None results
                     result.append(output)
                     # print(args)

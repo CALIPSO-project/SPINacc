@@ -34,18 +34,17 @@ def recursive_compare(arr1, arr2, tol=1e-8):
                     return False
             return True
         else:
-            # print("Compare the arrays element-wise for floating point numbers")
+            # Compare the arrays element-wise for floating point numbers
             if np.allclose(arr1, arr2, atol=tol, equal_nan=True) != True:
-                print("different values!!!")
+                print("Values are different!")
                 d = ~np.isclose(arr1, arr2, atol=tol, equal_nan=True)
                 print(len(d))
                 for i, mask in enumerate(d):
                     if False in mask:
                         print(arr1[i][mask], arr2[i][mask])
-            # this redundant line evaluates to True
+            # This redundant line evaluates to True
             return np.allclose(arr1, arr2, atol=tol, equal_nan=True)
     else:
-        # print("False")
         return False
 
 

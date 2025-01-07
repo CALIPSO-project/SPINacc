@@ -151,87 +151,91 @@ def get_df_comp(EXE_DIR, file_name, comp):
 #     assert True
 
 
-# def test_compare_csv_to_txt(reference_path, test_path):
-#     """
-#     Compare the old .txt files to the new MLacc_results.csv file.
+@pytest.mark.skip("Skipped for redundancy of tests.")
+def test_compare_csv_to_txt(reference_path, test_path):
+    """
+    Compare the old .txt files to the new MLacc_results.csv file.
 
-#     We construct a new DataFrame with the contents of the .txt files and compare.
-#     This currently only works for the 'som' component.
-#     """
-#     comps = ["som", "biomass", "litter"]
+    We construct a new DataFrame with the contents of the .txt files and compare.
+    This currently only works for the 'som' component.
 
-#     metrics = [
-#         "R2",
-#         "dNRMSE",
-#         "slope",
-#         "sNRMSE",
-#         "iNRMSE",
-#         "f_SDSD",
-#         "f_SB",
-#         "f_LSC",
-#     ]
+    This function has been replaced by test_compare_csv_files_filtered.
+    Output format has changed from .txt to .csv.
+    """
+    comps = ["som", "biomass", "litter"]
 
-#     # construct a new dataframe with the contents of the .txt files.
-#     reference_results = pd.DataFrame()
+    metrics = [
+        "R2",
+        "dNRMSE",
+        "slope",
+        "sNRMSE",
+        "iNRMSE",
+        "f_SDSD",
+        "f_SB",
+        "f_LSC",
+    ]
 
-#     for comp in comps:
-#         reference_comp = pd.DataFrame()
-#         for metric in metrics:
-#             df = get_df_comp(reference_path, comp + "_" + metric + ".txt", comp)
-#             reference_comp = pd.concat([reference_comp, df], axis=1)
-#             reference_comp = reference_comp.loc[:, ~reference_comp.columns.duplicated()]
+    # construct a new dataframe with the contents of the .txt files.
+    reference_results = pd.DataFrame()
 
-#         reference_results = pd.concat(
-#             [reference_results, reference_comp], ignore_index=True, axis=0
-#         )
+    for comp in comps:
+        reference_comp = pd.DataFrame()
+        for metric in metrics:
+            df = get_df_comp(reference_path, comp + "_" + metric + ".txt", comp)
+            reference_comp = pd.concat([reference_comp, df], axis=1)
+            reference_comp = reference_comp.loc[:, ~reference_comp.columns.duplicated()]
 
-#     mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
-#     mlacc_results = mlacc_results.sort_values(
-#         by=["comp", "ipft", "ivar"], ignore_index=True
-#     )
+        reference_results = pd.concat(
+            [reference_results, reference_comp], ignore_index=True, axis=0
+        )
 
-#     for comp in comps:
-#         mlacc_results_comp = mlacc_results.loc[mlacc_results["comp"] == comp]
+    mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
+    mlacc_results = mlacc_results.sort_values(
+        by=["comp", "ipft", "ivar"], ignore_index=True
+    )
 
-#         reference_results_comp = reference_results.loc[
-#             reference_results["comp"] == comp
-#         ]
+    for comp in comps:
+        mlacc_results_comp = mlacc_results.loc[mlacc_results["comp"] == comp]
 
-#         if comp == "biomass":
-#             mlacc_results_comp = mlacc_results_comp.sort_values(
-#                 by=["ivar", "ipft"], ignore_index=True
-#             )
+        reference_results_comp = reference_results.loc[
+            reference_results["comp"] == comp
+        ]
 
-#         if comp == "litter":
-#             df_ab = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_ab")]
-#             df_be = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_be")]
-#             mlacc_results_comp = pd.concat([df_ab, df_be], axis=0, ignore_index=True)
+        if comp == "biomass":
+            mlacc_results_comp = mlacc_results_comp.sort_values(
+                by=["ivar", "ipft"], ignore_index=True
+            )
 
-#         for metric in metrics:
-#             print("metrics ", metric, comp)
-#             comparison = np.isclose(
-#                 mlacc_results_comp[metric],
-#                 reference_results_comp[metric],
-#                 atol=1e-2,
-#                 equal_nan=True,
-#             )
-#             if comparison.all():
-#                 print(f"All values in {metric} match MLacc_results.csv")
-#             else:
-#                 print(f"Some values in {metric} do not match MLacc_results.csv")
-#                 print(
-#                     pd.concat(
-#                         [
-#                             mlacc_results_comp[~comparison][["comp", "var", metric]],
-#                             reference_results_comp[~comparison][
-#                                 ["comp", "var", metric]
-#                             ],
-#                         ],
-#                         axis=1,
-#                     )
-#                 )
-#                 # assert False
-# assert True
+        if comp == "litter":
+            df_ab = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_ab")]
+            df_be = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_be")]
+            mlacc_results_comp = pd.concat([df_ab, df_be], axis=0, ignore_index=True)
+
+        for metric in metrics:
+            print("metrics ", metric, comp)
+            comparison = np.isclose(
+                mlacc_results_comp[metric],
+                reference_results_comp[metric],
+                atol=1e-2,
+                equal_nan=True,
+            )
+            if comparison.all():
+                print(f"All values in {metric} match MLacc_results.csv")
+            else:
+                print(f"Some values in {metric} do not match MLacc_results.csv")
+                print(
+                    pd.concat(
+                        [
+                            mlacc_results_comp[~comparison][["comp", "var", metric]],
+                            reference_results_comp[~comparison][
+                                ["comp", "var", metric]
+                            ],
+                        ],
+                        axis=1,
+                    )
+                )
+                # assert False
+    assert True
 
 
 def compare_csv_files_filtered(
@@ -253,17 +257,6 @@ def compare_csv_files_filtered(
     columns_of_interest = ["comp", "ipft", "ivar", metric]
     df1_filtered = df1[columns_of_interest].copy()
     df2_filtered = df2[columns_of_interest].copy()
-
-    metrics = [
-        "R2",
-        "dNRMSE",
-        "slope",
-        "sNRMSE",
-        "iNRMSE",
-        "f_SDSD",
-        "f_SB",
-        "f_LSC",
-    ]
 
     if pd.api.types.is_numeric_dtype(df1[metric]):
         # Compare numerical columns with tolerance
@@ -287,18 +280,26 @@ def compare_csv_files_filtered(
         differences = pd.concat([differences, diff], axis=0)
         print(differences)
         assert False
-
-    if differences.empty:
-        print("The two files match exactly.")
     else:
-        print("Differences found:")
-        print(differences)
+        print("The two files match exactly.")
+        assert True
 
 
-# @pytest.mark.parametrize("metric", ["R2", "dNRMSE", "slope", "sNRMSE"])
+# # @pytest.mark.parametrize("metric", ["R2", "dNRMSE", "slope", "sNRMSE"])
 @pytest.mark.parametrize("metric", ["R2"])
 def test_compare_csv_files_filtered(reference_path, test_path, metric):
     key_columns = (["comp", "ipft", "ivar"],)
     numeric_tolerance = 1e-2
 
     compare_csv_files_filtered(reference_path, test_path, metric=metric)
+
+    # metrics = [
+    #     "R2",
+    #     "dNRMSE",
+    #     "slope",
+    #     "sNRMSE",
+    #     "iNRMSE",
+    #     "f_SDSD",
+    #     "f_SB",
+    #     "f_LSC",
+    # ]

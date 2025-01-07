@@ -44,11 +44,18 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
 
-    for ii, arr in enumerate(packdata.values()):
+    for ii in range(len(XVarName)):
+        # if arr.ndim == 2:
+        #     global_X_map[list(XVarName).index(arr.name)] = arr.values
+        # else:
+        #     global_X_map[list(XVarName).index(arr.name)] = arr[ipft - 1].values
+
+        arr = packdata[XVarName[ii]]
         if arr.ndim == 2:
-            global_X_map[list(XVarName).index(arr.name)] = arr.values
+            global_X_map[ii] = arr.values
         else:
-            global_X_map[list(XVarName).index(arr.name)] = arr[ipft - 1].values
+            global_X_map[ii] = arr[ipft - 1].values
+
         #    global_X_map=lc['global_X_map']
         das = global_X_map.transpose(1, 2, 0)
     for llat in range(packdata.nlat):

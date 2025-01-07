@@ -86,7 +86,7 @@ def Cluster_test(packdata, varlist, logfile):
     Returns:
         numpy.ndarray: Array of distances for different K values and PFTs.
     """
-    # 1.clustering def
+    # 1. Clustering analysis
     # Make a mask map according to PFT fractions: nan - <0.00000001; 1 - >=0.00000001
     # I used the output 'VEGET_COV_MAX' by ORCHIDEE-CNP with run the spin-up for 1 year.
     # Please provide the file path and name for PFT fractions with resolution of 2 deg.
@@ -94,7 +94,7 @@ def Cluster_test(packdata, varlist, logfile):
         packdata, varlist, varlist["PFTmask"]["cluster_thres"]
     )
 
-    # predictor metrcis
+    # Predictor metrics
     var_pred_name = varlist["pred"]["clustering"]
 
     # 2. Use different K value and valuate the clustering results

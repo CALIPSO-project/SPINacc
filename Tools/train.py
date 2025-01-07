@@ -44,8 +44,8 @@ def training_BAT(
     # thread_local_data.random.random()
     # thread_local_data.random_np.random()
 
-    random.seed(1000)
-    np.random.seed(1000)
+    random.seed(seed)
+    np.random.seed(seed)
     Xtrain = XY_train.drop(columns="Y")
     Ytrain = XY_train["Y"]
     # labels=np.zeros(shape=(len(Ytrain),1))
@@ -89,7 +89,7 @@ def training_BAT(
             )
             count = Counter(lab)
             check.display("Counter(lab): " + str(count), logfile)
-            over_samples = SMOTE(random_stte=seed)
+            over_samples = SMOTE(random_state=seed)
             over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
             check.display(
                 "Counter(over_samples_y: " + str(Counter(over_samples_y)), logfile
@@ -148,28 +148,28 @@ def training_BAT(
             learning_rate_init=0.6,
             power_t=0.99,
             max_iter=int(1e6 / len(Ytrain)),
-            random_state=1000,
+            random_state=seed,
         )
     elif alg == "bt":
         model = BaggingRegressor(
             DecisionTreeRegressor(random_state=1000),
             max_samples=0.8,
             n_estimators=300,
-            random_state=1000,
+            random_state=seed,
         )
     elif alg == "rf":
         model = RandomForestRegressor(
             n_estimators=500,
             max_samples=0.8,
             max_depth=30,
-            random_state=1000,
+            random_state=seed,
         )
     elif alg == "gbm":
         model = XGBRegressor(
             n_estimators=500,
             max_depth=16,
             # learning_rate=0.001,
-            random_state=1000,
+            random_state=seed,
         )
     elif alg == "ridge":
         model = RidgeCV()
@@ -184,7 +184,7 @@ def training_BAT(
                         DecisionTreeRegressor(random_state=1000),
                         max_samples=0.8,
                         n_estimators=300,
-                        random_state=1000,
+                        random_state=seed,
                     ),
                 ),
                 (
@@ -197,16 +197,18 @@ def training_BAT(
                         learning_rate_init=0.6,
                         power_t=0.99,
                         max_iter=int(1e6 / len(Ytrain)),
-                        random_state=1000,
+                        random_state=seed,
                     ),
                 ),
+                # bt and xgboost both have better performance than rf
+                # therefore we comment out for now
                 # (
                 #     "rf",
                 #     RandomForestRegressor(
                 #         n_estimators=500,
                 #         max_samples=0.8,
                 #         max_depth=30,
-                #         random_state=1000,
+                #         random_state=seed
                 #     ),
                 # ),
                 (
@@ -215,7 +217,7 @@ def training_BAT(
                         n_estimators=500,
                         # max_depth=16,
                         # learning_rate=0.001,
-                        random_state=1000,
+                        random_state=seed,
                     ),
                 ),
                 (
@@ -228,6 +230,7 @@ def training_BAT(
     else:
         raise ValueError("invalid ML algorithm name")
 
+    # Package in sklearn.pipeline.Pipeline object and apply standard scaling
     model = Pipeline(
         [
             ("scaler", StandardScaler()),

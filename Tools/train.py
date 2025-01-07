@@ -88,19 +88,19 @@ def training_BAT(
                 np.reshape(Ytrain.values, (-1, 1)),
             )
             count = Counter(lab)
-            check.display("Counter(lab): 1" + str(count), logfile)
-            over_samples = SMOTE(random_state=seed)
+            check.display("Counter(lab): " + str(count), logfile)
+            over_samples = SMOTE(random_stte=seed)
             over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
             check.display(
-                "Counter(over_samples_y: 1:" + str(Counter(over_samples_y)), logfile
+                "Counter(over_samples_y: " + str(Counter(over_samples_y)), logfile
             )
             Xtrain = over_samples_X.iloc[:, 1:]
             Ytrain = over_samples_X.iloc[:, 0]
         except:
-            mod = KMeans(n_clusters=2, random_state=1000)
+            mod = KMeans(n_clusters=2, random_state=seed)
             lab = mod.fit_predict(np.reshape(Ytrain.values, (-1, 1)))
             count = Counter(lab)
-            check.display("Counter(lab): 2" + str(Counter(lab)), logfile)
+            check.display("Counter(lab): " + str(Counter(lab)), logfile)
             # resample requires minimum number of a cluster >=6, if not, then repeat current samples
             for label, number in count.items():
                 if number < 6:
@@ -114,11 +114,11 @@ def training_BAT(
                             np.repeat(lab[lab == label], int(np.ceil(6 / number) - 1)),
                         )
                     )
-            check.display("Counter(lab): 2" + str(Counter(lab)), logfile)
-            over_samples = SMOTE(random_state=1000)
+            check.display("Counter(lab): " + str(Counter(lab)), logfile)
+            over_samples = SMOTE(random_state=seed)
             over_samples_X, over_samples_y = over_samples.fit_resample(XY_train, lab)
             check.display(
-                "Counter(over_samples_y): 2" + str(Counter(over_samples_y)), logfile
+                "Counter(over_samples_y): " + str(Counter(over_samples_y)), logfile
             )
             Xtrain = over_samples_X.iloc[:, 1:]
             Ytrain = over_samples_X.iloc[:, 0]

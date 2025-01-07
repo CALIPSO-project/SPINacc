@@ -44,19 +44,7 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
     Pred_Y = np.full(PFTmask[0].shape, np.nan)
     # global metrics -> dataframe
 
-    ind = -1
-    # not really sure why we loop over packdata.values() here
     for ii, arr in enumerate(packdata.values()):
-        if arr.name in [
-            "LWdown_std",
-            "PSurf_std",
-            "Qair_std",
-            "SWdown_std",
-            "Snowf_mean",
-            "Snowf_std",
-        ]:
-            continue
-        ind += 1
         if arr.ndim == 2:
             global_X_map[list(XVarName).index(arr.name)] = arr.values
         else:

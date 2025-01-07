@@ -54,15 +54,14 @@ def MLmap_multidim(
         restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         alg (str): ML algorithm to use.
+        seed (int): Random seed to ensure reproducibility.
 
     Returns:
         tuple:
             - Global_Predicted_Y_map (numpy.ndarray): Globally predicted Y map.
             - model: Trained machine learning model.
     """
-    # initialize_thread_random(seed)
-    # thread_local_data.random.random()
-    # thread_local_data.random_np.random()
+
     random.seed(seed)
     np.random.seed(seed)
 
@@ -72,17 +71,16 @@ def MLmap_multidim(
         logfile,
     )
 
-    # extract data
+    # Extract data
     extr_var = extract_X.var(packdata, ipft)
 
-    # extract PFT map
+    # Extract PFT map
     pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
     pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
 
-    # extract Y
-    pool_map = np.squeeze(ivar)[
-        tuple(i - 1 for i in ind)
-    ]  # all indices start from 1, but python loop starts from 0
+    # Extract Y
+    # All indices start from 1, but python loop starts from 0
+    pool_map = np.squeeze(ivar)[tuple(i - 1 for i in ind)]
     pool_map[pool_map == 1e20] = np.nan
     # Y_map[ind[0]] = pool_map
 
@@ -95,14 +93,11 @@ def MLmap_multidim(
     extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=-1)
     extr_all = extr_all.reshape(-1, extr_all.shape[-1])
 
-    df_data = DataFrame(extr_all, columns=labx)  # convert the array into dataframe
-    # drop [LWdown_std', 'PSurf_std', 'Qair_std', 'SWdown_std', 'Snowf_mean','Snowf_std']
+    # Convert the array into dataframe
+    df_data = DataFrame(extr_all, columns=labx)
 
     combine_XY = df_data.dropna().drop(["pft"], axis=1)
-    # output combine_XY to file for debugging
-    # combine_XY_sorted = combine_XY.sort_index(axis=1)
-    # combine_XY_sorted.to_csv("combine_XY.csv")
-    # reorder combine_XY columns as so: Y,Tamp,Tmax,Tmean,Tmin,Tstd,Ranf_mean,Rainf_std,Qair_mean,P
+
     if len(combine_XY) == 0:
         check.display(
             "%s, variable %s, index %s (dim: %s) : NO DATA in training set!"
@@ -112,10 +107,7 @@ def MLmap_multidim(
         if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
             print(varname, ind)
         return None
-    # breakpoint()
-    # TODO: Need to check if the columns are the same in both files
-
-    # need Yan Sun to modify it
+    # TODO: Need to check if the columns are the same in both files, need Yan Sun to modify it
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
         type_val = varlist["pred"]["type_code"]
@@ -153,12 +145,12 @@ def MLmap_multidim(
             col_type,
             type_val,
         )
-        # write to restart file
+        # Write to restart file
         pmask = np.nansum(PFT_mask, axis=0)
         pmask[np.isnan(pmask)] == 0
-        # set ocean pixel to missVal
+        # Set ocean pixel to missVal
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
-        # some pixel with nan remain, so set them zero
+        # Some pixels with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
         idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
         restvar[idx] = Pred_Y_out
@@ -275,7 +267,9 @@ def MLmap_multidim(
         raise Exception
 
 
-def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed):
+def MLloop(
+    packdata, ipool, logfile, varlist, labx, config, restfile, alg, parallel, seed
+):
     """
     Main loop for machine learning processing.
 
@@ -288,12 +282,12 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
         config (module): module of config.
         restfile (str): Path to restart file.
         alg (str): ML algorithm to use.
+        parallel (bool): Whether to run in parallel.
+        seed (int): Random seed to ensure reproducibility.
 
     Returns:
         pandas.DataFrame: Results of machine learning evaluations.
     """
-    # initialize_thread_random(seed)
-
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
     PFT_mask, PFT_mask_lai = genMask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -312,7 +306,7 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
                     ipft = kk
                 ivar = responseY[varname]
 
-                # open restart file and select variable (memory is exceeded if open outside this loop)
+                # Open restart file and select variable (memory is exceeded if open outside this loop)
                 restnc = Dataset(restfile, "a")
                 restvar = restnc[varname]
 
@@ -348,22 +342,19 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
                                 alg,
                             )
                         )
-                # close&save netCDF file
+                # Close netCDF file
                 restnc.close()
 
-    parallel = False
-
-    # breakpoint()
     if parallel:
-        # result = result[:3]
         with ThreadPoolExecutor(max_workers=8) as executor:
-            # Partial is a workaround to pass the seed to the function
             from functools import partial
 
+            # Partial is a workaround to pass the random seed to the function
             partial_function = partial(MLmap_multidim, seed=seed)
+
             # Call the MLmap_multidim function with the arguments in inputs
-            # inputs is a list of tuples, each tuple is the arguments for the function
-            # we've collected all inputs in the result list
+            # Inputs is a list of tuples, each tuple is the arguments for the function
+            # All inputs are collected in  the result list
             result = list(filter(None, executor.map(partial_function, *zip(*inputs))))
     else:
         # do it serially
@@ -373,9 +364,5 @@ def MLloop(packdata, ipool, logfile, varlist, labx, config, restfile, alg, seed)
                 output = MLmap_multidim(*input, seed)
                 if output:  # Filter out None results
                     result.append(output)
-                    # print(args)
-                    # DEBUGGING
-                    # break
 
-    # breakpoint()
     return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()

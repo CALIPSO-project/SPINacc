@@ -32,9 +32,9 @@ def test_compare_all_files(reference_path, test_path):
         with open(file1_path, "rb") as file1, open(file2_path, "rb") as file2:
             content1 = file1.read()
             content2 = file2.read()
-            assert (
-                content1 == content2
-            ), f"File {file} in {reference_path} and {test_path} are different."
+            assert content1 == content2, (
+                f"File {file} in {reference_path} and {test_path} are different."
+            )
 
 
 def get_df_comp(EXE_DIR, file_name, comp):

@@ -62,9 +62,9 @@ def test_packdata_equivalence_npy(reference_path, test_path):
         if v == "lat" or v == "lon":
             continue
         else:
-            assert recursive_compare(
-                packdata_test[v].values, packdata_ref[v]
-            ), f"Variable {v} differs between datasets"
+            assert recursive_compare(packdata_test[v].values, packdata_ref[v]), (
+                f"Variable {v} differs between datasets"
+            )
 
             print(f"Variable {v} matches between datasets.")
 
@@ -94,9 +94,9 @@ def test_packdata_equivalence(reference_path, test_path):
         if v == "lat" or v == "lon":
             continue
         else:
-            assert recursive_compare(
-                packdata_test[v].values, packdata_ref[v].values
-            ), f"Variable {v} differs between datasets"
+            assert recursive_compare(packdata_test[v].values, packdata_ref[v].values), (
+                f"Variable {v} differs between datasets"
+            )
 
             print(f"Variable {v} matches between datasets.")
 

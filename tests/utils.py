@@ -58,22 +58,22 @@ def compare_nc_files(file1_path, file2_path):
     nc2 = nc.Dataset(file2_path)
 
     # Compare dimensions
-    assert set(nc1.dimensions.keys()) == set(
-        nc2.dimensions.keys()
-    ), "Dimensions are different."
+    assert set(nc1.dimensions.keys()) == set(nc2.dimensions.keys()), (
+        "Dimensions are different."
+    )
 
     # Compare variables
-    assert set(nc1.variables.keys()) == set(
-        nc2.variables.keys()
-    ), "Variables are different."
+    assert set(nc1.variables.keys()) == set(nc2.variables.keys()), (
+        "Variables are different."
+    )
 
     # Compare variable values
     for variable in set(nc1.variables.keys()) & set(nc2.variables.keys()):
         values1 = nc1[variable][:]
         values2 = nc2[variable][:]
-        assert np.allclose(
-            values1, values2
-        ), f"Variable '{variable}' values are different."
+        assert np.allclose(values1, values2), (
+            f"Variable '{variable}' values are different."
+        )
 
     # Close the netCDF files
     nc1.close()

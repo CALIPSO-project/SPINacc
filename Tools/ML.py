@@ -76,31 +76,11 @@ def MLmap_multidim(
     )
 
     # 1. Extract data
-    extr_var = extract_X.var(packdata, ipft)
+    df_data, pool_map = extract_data(
+        packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind
+    )
 
-    # Extract PFT map
-    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
-    pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
-
-    # Extract Y
-    # All indices start from 1, but python loop starts from 0
-    pool_map = np.squeeze(ivar)[tuple(i - 1 for i in ind)]
-    pool_map[pool_map == 1e20] = np.nan
-    # Y_map[ind[0]] = pool_map
-
-    if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
-        pool_arr = pool_map.flatten()
-    else:
-        pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
-
-    extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
-
-    extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=-1)
-    extr_all = extr_all.reshape(-1, extr_all.shape[-1])
-
-    df_data = DataFrame(extr_all, columns=labx)
-
-    # 2. Train
+    # 2. Train model
     combine_XY = df_data.dropna().drop(["pft"], axis=1)
     if len(combine_XY) == 0:
         check.display(
@@ -179,6 +159,49 @@ def MLmap_multidim(
         )
     if ind[-1] == ii["loops"][ii["dim_loop"][-1]][-1]:
         raise Exception
+
+
+def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
+    """
+    Extract data from the dataset.
+
+    Args:
+        packdata (xarray.Dataset): Dataset containing input variables.
+        ivar (numpy.ndarray): Array of response variable.
+        ipft (int): Index of current Plant Functional Type.
+        PFT_mask_lai (numpy.ndarray): Mask for Plant Functional Types based on LAI.
+        varlist (dict): Dictionary of variable information.
+        labx (list): List of column labels.
+        ind (tuple): Index tuple for multi-dimensional variables.
+
+    Returns:
+        DataFrame: DataFrame of extracted data.
+        numpy.ma.core.MaskedArray: Map of target variables.
+    """
+
+    extr_var = extract_X.var(packdata, ipft)
+
+    # Extract PFT map
+    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
+    pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
+
+    # Extract Y
+    # All indices start from 1, but python loop starts from 0
+    pool_map = np.squeeze(ivar)[tuple(i - 1 for i in ind)]
+    pool_map[pool_map == 1e20] = np.nan
+    # Y_map[ind[0]] = pool_map
+
+    if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
+        pool_arr = pool_map.flatten()
+    else:
+        pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
+
+    extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
+
+    extr_all = np.concatenate((extracted_Y, extr_var, pft_ny), axis=-1)
+    extr_all = extr_all.reshape(-1, extr_all.shape[-1])
+
+    return DataFrame(extr_all, columns=labx), pool_map
 
 
 def extrapolate_globally(
@@ -408,6 +431,8 @@ def MLloop(
 
     inputs = []
 
+    # Open restart file and select variable (memory is exceeded if open outside this loop)
+    restnc = Dataset(restfile, "a")
     Yvar = varlist["resp"]["variables"][ipool]
     for ii in Yvar:
         for jj in ii["name_prefix"]:
@@ -417,8 +442,6 @@ def MLloop(
                     ipft = kk
                 ivar = responseY[varname]
 
-                # Open restart file and select variable (memory is exceeded if open outside this loop)
-                restnc = Dataset(restfile, "a")
                 restvar = restnc[varname]
 
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
@@ -458,11 +481,11 @@ def MLloop(
                     #     break
 
                 # Close netCDF file
-                restnc.close()
+    restnc.close()
 
     # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor() as executor:
             from functools import partial
 
             # Partial is a workaround to pass the random seed to the function

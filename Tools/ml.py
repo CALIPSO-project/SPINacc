@@ -307,6 +307,7 @@ def evaluate(
 
     """
 
+<<<<<<< HEAD:Tools/ml.py
     res = mleval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
     if varname.startswith("biomass"):
         ipft = ind[0]
@@ -317,15 +318,85 @@ def evaluate(
         if varname.startswith("litter"):
             j = ["ab", "be"].index(varname.split("_")[-1])
             ivar = ivar * 2 + j - 1
+=======
+    res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+
+    postfix = ""
+    cnp = ""
+
+    # In biomass the x-axis is the PFT, in the other pools it is the variable
+    # varname looks something like "litter_01_ab" - this is unique
+    # we need to assign a number to index based on (ipft) and (ind)
+    # we then use this index as part of a multiindex ensuring uniqueness.
+    if varname.startswith("biomass"):
+        ipft = ind[0]
+        index = int(varname.split("_")[1])
+    elif (
+        varname.startswith("carbon")
+        or varname.startswith("nitrogen")
+        or varname.startswith("phosphorus")
+    ):
+        ipft = int(varname.split("_")[1])
+        # cnp = varname.split("_")[0]
+        index = ind[0]
+    elif varname.startswith("microbe") or varname.startswith("litter"):
+        ipft = int(varname.split("_")[1])
+        postfix = varname.split("_")[2]
+        index = ind[0]
+        j = ["ab", "be"].index(varname.split("_")[2])
+        # ivar is numbered as so : (0 = ab, 1 = be, 2 = ab, 3 = be, 4 = ab, 5 = be)
+        # this then matches up to the varlist
+        # there should be a more elegant way to do this
+        index = index * 2 + j - 1
+    elif varname.startswith("npp") or varname.startswith("lai"):
+        ipft = ind[0]
+        index = None
+    elif varname.startswith("lignin"):
+        ipft = ind[0]
+        index = ["ab", "be"].index(varname.split("_")[2])
+        mat = ["struc", "wood"].index(varname.split("_")[1])
+        index = 2 * index + mat  # [struc_ab, wood_ab, struc_be, wood_be]
+
+>>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__
     else:
         alg = type(model).__name__
     res["varname"] = varname
     res["ipft"] = ipft
+<<<<<<< HEAD:Tools/ml.py
     res["pft"] = f"PFT{ipft:02d}"
     res["ivar"] = ivar
     res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+=======
+    res["pft"] = [
+        "TrENF",
+        "TrEBF",
+        "TrDBF",
+        "TeENF",
+        "TeEBF",
+        "TeDBF",
+        "BoENF",
+        "BoDBF",
+        "BoDNF",
+        "C3G",
+        "C4G",
+        "C3C",
+        "C4C",
+        "_",
+        "_",
+    ][ipft - 1]
+
+    pools = ["som", "biomass", "litter", "microbe", "lignin"]
+
+    res["ivar"] = index
+    if ipool in pools:
+        # it would be good to eventually remove a dependency on the varlist
+        # especially as is utilised for ordering purposes.
+        res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
+    else:
+        res["var"] = None
+>>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
     res["dim"] = ii["dim_loop"][0]
     res["alg"] = alg
 
@@ -338,6 +409,7 @@ def evaluate(
         )
     return res
 
+<<<<<<< HEAD:Tools/ml.py
 
 def ml_loop(
     packdata,
@@ -351,6 +423,10 @@ def ml_loop(
     parallel,
     model_out_dir,
     seed,
+=======
+def MLloop(
+    packdata, ipool, logfile, varlist, labx, config, restfile, alg, parallel, seed
+>>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
 ):
     """
     Main loop for machine learning processing.
@@ -388,6 +464,7 @@ def ml_loop(
     for ii in Yvar:
         for jj in ii["name_prefix"]:
             for kk in ii["loops"][ii["name_loop"]]:
+                # Get response
                 varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                 if ii["name_loop"] == "pft":
                     ipft = kk

@@ -146,7 +146,6 @@ def mlmap_multidim(
             ind,
             ii,
             model,
-            combineXY,
             Global_Predicted_Y_map,
             pool_map,
             PFT_mask,
@@ -276,7 +275,6 @@ def evaluate(
     ind,
     ii,
     model,
-    combineXY,
     Global_Predicted_Y_map,
     pool_map,
     PFT_mask,
@@ -294,7 +292,6 @@ def evaluate(
         ind (tuple): Index tuple for multi-dimensional variables.
         ii (dict): Dictionary containing dimension information.
         model (sklearn.pipeline.Pipeline): Trained machine learning model.
-        combineXY: DataFrame of input variables.
         Global_Predicted_Y_map: Predicted map of target variables.
         pool_map: Map of target variables.
         PFT_mask: Mask for Plant Functional Types.
@@ -307,19 +304,7 @@ def evaluate(
 
     """
 
-<<<<<<< HEAD:Tools/ml.py
     res = mleval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
-    if varname.startswith("biomass"):
-        ipft = ind[0]
-        ivar = int(re.search(r"\d+", varname)[0])
-    else:
-        ipft = int(re.search(r"\d+", varname)[0])
-        ivar = ind[0]
-        if varname.startswith("litter"):
-            j = ["ab", "be"].index(varname.split("_")[-1])
-            ivar = ivar * 2 + j - 1
-=======
-    res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
 
     postfix = ""
     cnp = ""
@@ -357,35 +342,15 @@ def evaluate(
         mat = ["struc", "wood"].index(varname.split("_")[1])
         index = 2 * index + mat  # [struc_ab, wood_ab, struc_be, wood_be]
 
->>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__
     else:
         alg = type(model).__name__
     res["varname"] = varname
     res["ipft"] = ipft
-<<<<<<< HEAD:Tools/ml.py
     res["pft"] = f"PFT{ipft:02d}"
-    res["ivar"] = ivar
-    res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
-=======
-    res["pft"] = [
-        "TrENF",
-        "TrEBF",
-        "TrDBF",
-        "TeENF",
-        "TeEBF",
-        "TeDBF",
-        "BoENF",
-        "BoDBF",
-        "BoDNF",
-        "C3G",
-        "C4G",
-        "C3C",
-        "C4C",
-        "_",
-        "_",
-    ][ipft - 1]
+    res["ivar"] = index
+    res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
 
     pools = ["som", "biomass", "litter", "microbe", "lignin"]
 
@@ -396,20 +361,18 @@ def evaluate(
         res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
     else:
         res["var"] = None
->>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
     res["dim"] = ii["dim_loop"][0]
     res["alg"] = alg
 
     if model_out_dir:
         os.makedirs(model_out_dir, exist_ok=True)
         np.save(
-            model_out_dir / f"{varname}_{ivar}_{ipft}.npy",
+            model_out_dir / f"{varname}_{index}_{ipft}.npy",
             dict(model=model, pred=Global_Predicted_Y_map),
             allow_pickle=True,
         )
     return res
 
-<<<<<<< HEAD:Tools/ml.py
 
 def ml_loop(
     packdata,
@@ -423,11 +386,8 @@ def ml_loop(
     parallel,
     model_out_dir,
     seed,
-=======
-def MLloop(
-    packdata, ipool, logfile, varlist, labx, config, restfile, alg, parallel, seed
->>>>>>> 4481b64 (Make visualisation compatible for CNP2):Tools/ML.py
 ):
+
     """
     Main loop for machine learning processing.
 

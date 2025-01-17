@@ -431,7 +431,9 @@ def MLloop(
 
     inputs = []
 
-    # Open restart file and select variable (memory is exceeded if open outside this loop)
+    # Open restart file and select variable
+    # - old comment suggested that memory was exceeded outside loop
+
     restnc = Dataset(restfile, "a")
     Yvar = varlist["resp"]["variables"][ipool]
     for ii in Yvar:
@@ -474,6 +476,7 @@ def MLloop(
                                 restvar[:],
                                 missVal,
                                 alg,
+                                seed,
                             )
                         )
                     # Debugging
@@ -488,13 +491,10 @@ def MLloop(
         with ThreadPoolExecutor() as executor:
             from functools import partial
 
-            # Partial is a workaround to pass the random seed to the function
-            partial_function = partial(MLmap_multidim, seed=seed)
-
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in  the result list
-            result = list(filter(None, executor.map(partial_function, *zip(*inputs))))
+            result = list(filter(None, executor.map(MLmap_multidim, *zip(*inputs))))
     else:
         # Serial processing
         result = []

@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 
-# @pytest.mark.parametrize("metric", ["R2", "dNRMSE", "slope", "sNRMSE"])
 @pytest.mark.parametrize("metric", ["R2"])
 def test_compare_mlacc_csv_files(reference_path, test_path, metric):
     """
@@ -12,6 +11,9 @@ def test_compare_mlacc_csv_files(reference_path, test_path, metric):
 
     Currently this only runs with the R2 check. Add more metrics to the parametrize decorator
     if desired.
+
+    e.g.:
+    @pytest.mark.parametrize("metric", ["R2", "dNRMSE", "slope", "sNRMSE"])
 
     Args:
         reference_path (str): Path to the reference directory.

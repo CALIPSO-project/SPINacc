@@ -38,11 +38,11 @@ def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     if "year" in packdata.dims:
         packdata = packdata.mean("year", keep_attrs=True)
     if "Ndep_nhx_pft" in var_pred_name:
-        packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
+        packdata["Ndep_nhx_pft"] = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:
-        packdata.Ndep_noy_pft = packdata.Ndep_noy[ipft - 1]
+        packdata["Ndep_noy_pft"] = packdata.Ndep_noy[ipft - 1]
     if "Pdep_pft" in var_pred_name:
-        packdata.Pdep_pft = packdata.Pdep[ipft - 1]
+        packdata["Pdep_pft"] = packdata.Pdep[ipft - 1]
     pp = PFT_mask[ipft - 1]
     laix = packdata.LAI0[ipft - 1]
     pp[laix < 0.01] = np.nan

@@ -71,17 +71,18 @@ def plot_metric(data_path, npfts, ipool, subLabel, xTickLabel):
     # Pre-processing for pools that have C, N and P components
     # Create new 'discriminator' column containing component and stack C, N, P components.
     if loop_n == 3:
-        if ipool == "som":
+        if ipool == "lignin":
+            loop_n = 1
+            pass
+        elif ipool == "som":
             df["discrim"] = df["varname"].str.split("_").str[0]
             df.set_index(["discrim"], append=True, inplace=True)
-        elif (
-            ipool == "biomass"
-            or ipool == "microbe"
-            or ipool == "litter"
-            or ipool == "lignin"
-        ):
+        elif ipool == "biomass" or ipool == "microbe" or ipool == "litter":
             df["discrim"] = df["varname"].apply(get_suffix_mapping)
             df.set_index(["discrim"], append=True, inplace=True)
+
+    if ipool == "lignin":
+        breakpoint()
 
     # (ipft, ivar) stacked by carbon, nitrogen, phosphorus
     # The sort_index() function only applies when the index is a MultiIndex - i.e. when C, N, P are stacked

@@ -17,7 +17,7 @@
 from Tools import *
 
 
-def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
+def cluster_ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     """
     Perform clustering analysis on the data for a specific Plant Functional Type (PFT).
 
@@ -74,7 +74,7 @@ def Cluster_Ana(packdata, PFT_mask, ipft, var_pred_name, K, Nc):
     return cluster_dic, distance, All_selectedID
 
 
-def Cluster_test(packdata, varlist, logfile):
+def cluster_test(packdata, varlist, logfile):
     """
     Test clustering with different K values for all specified PFTs.
 
@@ -103,7 +103,7 @@ def Cluster_test(packdata, varlist, logfile):
     dis_all = np.zeros(shape=(len(kvalues), len(kpfts)))
     for veg in kpfts:
         for kkk in kvalues:
-            ClusD, disx, traID = Cluster_Ana(
+            ClusD, disx, traID = cluster_ana(
                 packdata, PFT_mask, veg, var_pred_name, kkk, 10
             )
             dis_all[kvalues.index(kkk), kpfts.index(veg)] = disx
@@ -111,7 +111,7 @@ def Cluster_test(packdata, varlist, logfile):
     return dis_all
 
 
-def Cluster_all(packdata, varlist, KK, logfile, take_unique):
+def cluster_all(packdata, varlist, KK, logfile, take_unique):
     """
     Perform clustering for all specified PFTs with a chosen K value.
 
@@ -137,7 +137,7 @@ def Cluster_all(packdata, varlist, KK, logfile, take_unique):
     # var_pred_name = varlist["pred"]["clustering"]
     var_pred_name = [k for k, v in packdata.items() if "veget" not in v.dims]
     for veg in kpfts:
-        ClusD, disx, training_ID = Cluster_Ana(
+        ClusD, disx, training_ID = cluster_ana(
             packdata,
             PFT_mask,
             veg,

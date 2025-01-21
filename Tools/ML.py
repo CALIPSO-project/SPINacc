@@ -32,8 +32,8 @@ def MLmap_multidim(
     restvar,
     missVal,
     alg,
+    model_out_dir,
     seed,
-    savedir=None,
 ):
     """
     Perform multi-dimensional machine learning mapping.
@@ -61,6 +61,7 @@ def MLmap_multidim(
         restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         alg (str): ML algorithm to use.
+        model_out_dir (Path): Directory to save trained model output.
         seed (int): Random seed to ensure reproducibility.
 
     Returns:
@@ -151,7 +152,7 @@ def MLmap_multidim(
             PFT_mask,
             varlist,
             logfile,
-            savedir,
+            model_out_dir,
         )
     else:
         check.display(
@@ -281,7 +282,7 @@ def evaluate(
     PFT_mask,
     varlist,
     logfile,
-    savedir,
+    model_out_dir,
 ):
     """
     Evaluate the machine learning model.
@@ -299,6 +300,7 @@ def evaluate(
         PFT_mask: Mask for Plant Functional Types.
         varlist (dict): Dictionary of variable information.
         logfile (file): File object for logging.
+        model_out_dir (Path): Directory to save trained model output.
 
     Returns:
         res (dict): Dictionary of evaluation results.
@@ -327,10 +329,10 @@ def evaluate(
     res["dim"] = ii["dim_loop"][0]
     res["alg"] = alg
 
-    if savedir:
-        os.makedirs(savedir, exist_ok=True)
+    if model_out_dir:
+        os.makedirs(model_out_dir, exist_ok=True)
         np.save(
-            os.path.join(savedir, f"{varname}_{ivar}_{ipft}.npy"),
+            model_out_dir / f"{varname}_{ivar}_{ipft}.npy",
             dict(model=model, pred=Global_Predicted_Y_map),
             allow_pickle=True,
         )
@@ -338,7 +340,17 @@ def evaluate(
 
 
 def MLloop(
-    packdata, ipool, logfile, varlist, labx, config, restfile, alg, parallel, seed
+    packdata,
+    ipool,
+    logfile,
+    varlist,
+    labx,
+    config,
+    restfile,
+    alg,
+    parallel,
+    model_out_dir,
+    seed,
 ):
     """
     Main loop for machine learning processing.
@@ -353,6 +365,7 @@ def MLloop(
         restfile (str): Path to restart file.
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
+        save_model (bool): Option to save trained model output.
         seed (int): Random seed to ensure reproducibility.
 
     Returns:
@@ -412,8 +425,8 @@ def MLloop(
                                 restvar[:],
                                 missVal,
                                 alg,
+                                model_out_dir,
                                 seed,
-                                "results",
                             )
                         )
                     # Debugging

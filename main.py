@@ -93,10 +93,20 @@ check.display("Random seed = %i" % iseed, logfile)
 loocv = config.leave_one_out_cv
 
 # Check if parallel exists in config
+# Evaluates to True by default
 if hasattr(config, "parallel"):
     parallel = config.parallel
 else:
     parallel = True
+
+
+# Create directory for model output if config has model_out
+if hasattr(config, "model_out"):
+    model_out = config.model_out
+    if model_out:
+        model_out_dir = resultpath / "model_output"
+else:
+    model_out_dir = None
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -247,6 +257,7 @@ if "4" in itask:
                 restfile,
                 alg,
                 parallel,
+                model_out_dir,
                 seed=iseed,
             )
             result.append(res_df)

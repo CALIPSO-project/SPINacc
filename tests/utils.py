@@ -6,9 +6,9 @@ def compare_npy_files(file1, file2):
     file1_npy = np.load(file1, allow_pickle=True)
     file2_npy = np.load(file2, allow_pickle=True)
 
-    assert recursive_compare(
-        file1_npy, file2_npy
-    ), f"The contents of {file1} and {file2} are different."
+    assert recursive_compare(file1_npy, file2_npy), (
+        f"The contents of {file1} and {file2} are different."
+    )
 
 
 def recursive_compare(arr1, arr2, tol=1e-8):

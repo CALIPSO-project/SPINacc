@@ -113,6 +113,12 @@ if hasattr(config, "take_unique"):
 else:
     take_unique = True
 
+# Check if sel_most_PFT_sites exists in config
+# Evaluates to False by default
+if hasattr(config, "sel_most_PFT_sites"):
+    sel_most_PFT_sites = config.sel_most_PFT_sites
+else:
+    sel_most_PFT_sites = False
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -162,7 +168,7 @@ if "2" in itask:
         K,
         logfile,
         take_unique,
-        config.sel_most_PFT_sites,
+        sel_most_PFT_sites,
     )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")

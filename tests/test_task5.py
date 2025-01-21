@@ -15,6 +15,16 @@ import eval_plot_un
 
 
 def test_visualisation():
+    """
+    Test the visualisation function.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     resultpath = Path("tests/data/")
 
     with open(resultpath / "varlist.json", "r") as f:

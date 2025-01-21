@@ -47,39 +47,41 @@ import config
 # Define task
 itask = str(config.tasks)
 
+# Create Path to dir_def
+dir_def = Path(dir_def)
+
 # Define result directory
-resultpath = config.results_dir
+resultpath = Path(config.results_dir)
 
 # Create results directory if it does not exist
-if not os.path.exists(resultpath):
-    os.makedirs(resultpath)
+resultpath.mkdir(parents=True, exist_ok=True)
 
 logfile = open(config.logfile, "w", buffering=1)
 check.display("Running task: %s" % itask, logfile)
-check.display("Results are stored at: " + resultpath, logfile)
+check.display("Results are stored at: " + str(resultpath), logfile)
 
 # Write the configuration to the log file in the results directory
-with open(dir_def + "config.py", "r") as f:
+with open(dir_def / "config.py", "r") as f:
     check.display(f.read(), logfile)
 
-check.display("DEF directory: " + dir_def, logfile)
+check.display("DEF directory: " + str(dir_def), logfile)
 
 # Read list of variables
-with open(dir_def + "varlist.json", "r") as f:
+with open(dir_def / "varlist.json", "r") as f:
     varlist = json.loads(f.read())
 
 # Load stored results or start from scratch
 if not config.start_from_scratch:
     check.display("Read from previous results...", logfile)
-    packdata = xarray.load_dataset(resultpath + "packdata.nc")
+    packdata = xarray.load_dataset(resultpath / "packdata.nc")
 else:
     check.display("MLacc start from scratch...", logfile)
     # Initialize packaged data
     packdata = readvar(varlist, config, logfile)
-    if os.path.exists(resultpath + "packdata.nc"):
-        refdata = xarray.load_dataset(resultpath + "packdata.nc")
+    if os.path.exists(resultpath / "packdata.nc"):
+        refdata = xarray.load_dataset(resultpath / "packdata.nc")
         assert (refdata == packdata).all()
-    packdata.to_netcdf(resultpath + "packdata.nc")
+    packdata.to_netcdf(resultpath / "packdata.nc")
 
 # Define random seed
 iseed = config.random_seed
@@ -101,7 +103,7 @@ if "1" in itask:
     dis_all = Cluster.Cluster_test(packdata, varlist, logfile)
     # added line
     np.random.seed(iseed)
-    dis_all.dump(resultpath + "dist_all.npy")
+    dis_all.dump(resultpath / "dist_all.npy")
     check.display(
         "Test clustering done!\nResults have been stored as dist_all.npy", logfile
     )
@@ -116,7 +118,7 @@ if "1" in itask:
         "Sum of squared distances of samples to\ntheir closest cluster center"
     )
     ax.set_xlabel("K-value (cluster size)")
-    fig.savefig(resultpath + "dist_all.png")
+    fig.savefig(resultpath / "dist_all.png")
     plt.close("all")
     check.display(
         "Test clustering results plotted!\nResults have been stored as dist_all.png",
@@ -141,10 +143,10 @@ if "2" in itask:
     IDx, IDloc, IDsel = Cluster.Cluster_all(
         packdata, varlist, K, logfile, config.take_unique
     )
-    np.savetxt(resultpath + "IDx.txt", IDx, fmt="%.2f")
-    IDx.dump(resultpath + "IDx.npy")
-    IDloc.dump(resultpath + "IDloc.npy")
-    IDsel.dump(resultpath + "IDsel.npy")
+    np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
+    IDx.dump(resultpath / "IDx.npy")
+    IDloc.dump(resultpath / "IDloc.npy")
+    IDsel.dump(resultpath / "IDsel.npy")
     check.display("Clustering done!\nResults have been stored as IDx.npy", logfile)
 
     # Plot clustering results
@@ -155,7 +157,7 @@ if "2" in itask:
         m.drawcoastlines()
         m.scatter(IDloc[ipft][:, 1], IDloc[ipft][:, 0], s=10, marker="o", c="gray")
         m.scatter(IDsel[ipft][:, 1], IDsel[ipft][:, 0], s=10, marker="o", c="red")
-        fig.savefig(resultpath + "ClustRes_PFT%i.png" % kpfts[ipft])
+        fig.savefig(resultpath / f"ClustRes_PFT{kpfts[ipft]}.png")
         plt.close("all")
     check.display(
         "Clustering results plotted!\nResults have been stored as ClustRes_PFT*.png",
@@ -174,8 +176,8 @@ if "2" in itask:
 
 # Task 3: Build aligned forcing and aligned restart files (optional)
 if "3" in itask:
-    check.check_file(resultpath + "IDx.npy", logfile)
-    IDx = np.load(resultpath + "IDx.npy", allow_pickle=True)
+    check.check_file(resultpath / "IDx.npy", logfile)
+    IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
     forcing.write(varlist, resultpath, IDx)
     # Run test of reproducibility for task 3
     if config.repro_test_task_3:
@@ -208,8 +210,8 @@ if "4" in itask:
     # Response variable names (Y)
     Yvar = varlist["resp"]["variables"]
 
-    check.check_file(resultpath + "IDx.npy", logfile)
-    IDx = np.load(resultpath + "IDx.npy", allow_pickle=True)
+    check.check_file(resultpath / "IDx.npy", logfile)
+    IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
 
     packdata.attrs.update(
         Nv_nopft=len(var_pred_name1),
@@ -226,7 +228,7 @@ if "4" in itask:
         if "targetfile" in varlist["resp"]
         else varlist["resp"]["sourcefile"]
     )
-    restfile = resultpath + targetfile.split("/")[-1]
+    restfile = resultpath / targetfile.split("/")[-1]
     os.system("cp -f %s %s" % (targetfile, restfile))
     # Add rights to manipulate file:
     os.chmod(restfile, 0o644)
@@ -254,10 +256,10 @@ if "4" in itask:
         res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
         scores = res_df.mean()[["R2", "slope"]].to_frame().T
         scores = scores.assign(alg=alg).set_index("alg")
-        path = Path(resultpath + "ML_log.csv")
+        path = resultpath / "ML_log.csv"
         scores.to_csv(path, mode="a", header=not path.exists())
 
-        res_path = Path(resultpath + "MLacc_results.csv")
+        res_path = resultpath / "MLacc_results.csv"
         # if res_path.exists():
         #     ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
         #     perf_diff = res_df["slope"] - ref_df["slope"]

@@ -35,7 +35,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     # dims=np.array([0,1])# biomass: [1,0]
     # shape=np.array([14*loop_n,4])# biomass: [14,8sect_n,
     shape = np.array([npfts, subps])
-    df = pd.read_csv(data_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df = pd.read_csv(data_path / "MLacc_results.csv", index_col=[0, 1, 2])
     df = df.loc[ipool].round(2)
     R22 = df["R2"].unstack().values
     slope = df["slope"].unstack().values
@@ -272,6 +272,6 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
         #     sc = axs[2,n_cnp-1].imshow(remse,vmin = 0,vmax = 0.25,cmap = mymap_rmse)
         #     plt.colorbar(sc,cax=cbar_ax)
 
-        plt.savefig(data_path + "Eval_all_" + ipool + subLabel[n] + ".png")
+        plt.savefig(data_path / f"Eval_all_{ipool}{subLabel[n]}.png")
         plt.close("all")
     return

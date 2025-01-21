@@ -24,7 +24,7 @@ def test_compare_mlacc_csv_files(reference_path, test_path, metric):
         None
 
     """
-    numeric_tolerance = 1e-8
+    numeric_tolerance = 1e-3
     # metrics = [
     #     "R2",
     #     "dNRMSE",

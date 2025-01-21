@@ -44,7 +44,7 @@ jobs:
         run: |
           DEF_DIR=$(readlink -f SPINacc-data/reference/DEF_Trunk/)
           # stomate files in varlist.json
-          varlist_json="$EXE_DIR/varlist.json"
+          varlist_json="DEF_DIR/varlist.json"
           VLAD_DATA="$(readlink -f ./SPINacc-data)/vlad_files/vlad_files/"
           sed -i "s@/home/surface5/vbastri/SPINacc_ref@$VLAD_DATA@g" $varlist_json
           python3 main.py $DEF_DIR

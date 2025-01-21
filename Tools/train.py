@@ -17,7 +17,7 @@
 from Tools import *
 
 
-def training_BAT(
+def training_bat(
     XY_train,
     logfile,
     config,

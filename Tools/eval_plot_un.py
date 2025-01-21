@@ -42,23 +42,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, dims, sect_n, xTickLabel):
     dNRMSE = df["dNRMSE"].unstack().values
 
     # print(R22)
-    yTickLabel = [
-        "PFT02",
-        "PFT03",
-        "PFT04",
-        "PFT05",
-        "PFT06",
-        "PFT07",
-        "PFT08",
-        "PFT09",
-        "PFT10",
-        "PFT11",
-        "PFT12",
-        "PFT13",
-        "PFT14",
-        "PFT15",
-    ]
-    yTickLabel = yTickLabel[0:npfts]
+    yTickLabel = [f"PFT{pft:02d}" for pft in range(2, npfts + 2)]
     fonts = 7
     # slope=slope[0:npfts,0:subps]
     # dNRMSE=dNRMSE[0:npfts,0:subps]

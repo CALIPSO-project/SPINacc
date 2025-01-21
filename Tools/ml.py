@@ -15,7 +15,7 @@
 from Tools import *
 
 
-def MLmap_multidim(
+def mlmap_multidim(
     packdata,
     ivar,
     PFT_mask,
@@ -98,7 +98,7 @@ def MLmap_multidim(
     if "allname_type" in varlist["pred"].keys():
         col_type = labx.index(varlist["pred"]["allname_type"])
         type_val = varlist["pred"]["type_code"]
-        combineXY = encode.en_code(combine_XY, col_type, type_val)
+        combineXY = encode.encode(combine_XY, col_type, type_val)
     else:
         col_type = "None"
         type_val = "None"
@@ -116,7 +116,7 @@ def MLmap_multidim(
         loocv_f_SB,
         loocv_f_SDSD,
         loocv_f_LSC,
-    ) = train.training_BAT(combineXY, logfile, config, seed, alg)
+    ) = train.training_bat(combineXY, logfile, config, seed, alg)
 
     # 3. Extrapolate
     Global_Predicted_Y_map = extrapolate_globally(
@@ -181,10 +181,10 @@ def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
         numpy.ma.core.MaskedArray: Map of target variables.
     """
 
-    extr_var = extract_X.var(packdata, ipft)
+    extr_var = extract_x.var(packdata, ipft)
 
     # Extract PFT map
-    pft_ny = extract_X.pft(packdata, PFT_mask_lai, ipft)
+    pft_ny = extract_x.pft(packdata, PFT_mask_lai, ipft)
     pft_ny = np.resize(pft_ny, (*extr_var.shape[:-1], 1))
 
     # Extract Y
@@ -246,7 +246,7 @@ def extrapolate_globally(
         predY = np.where(pool_map == pool_map, predY_train.iloc[0], np.nan)
         Global_Predicted_Y_map = predY
     else:
-        Global_Predicted_Y_map, predY = mapGlobe.extrp_global(
+        Global_Predicted_Y_map, predY = mapglobe.extrp_global(
             packdata,
             ipft,
             PFT_mask,
@@ -307,7 +307,7 @@ def evaluate(
 
     """
 
-    res = MLeval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+    res = mleval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
     if varname.startswith("biomass"):
         ipft = ind[0]
         ivar = int(re.search(r"\d+", varname)[0])
@@ -323,7 +323,7 @@ def evaluate(
         alg = type(model).__name__
     res["varname"] = varname
     res["ipft"] = ipft
-    res["pft"] = f"PFT{ipft + 1:02d}"
+    res["pft"] = f"PFT{ipft:02d}"
     res["ivar"] = ivar
     res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
     res["dim"] = ii["dim_loop"][0]
@@ -372,7 +372,7 @@ def MLloop(
         pandas.DataFrame: Results of machine learning evaluations.
     """
     responseY = Dataset(varlist["resp"]["sourcefile"], "r")
-    PFT_mask, PFT_mask_lai = genMask.PFT(
+    PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
 
@@ -444,13 +444,13 @@ def MLloop(
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in  the result list
-            result = list(filter(None, executor.map(MLmap_multidim, *zip(*inputs))))
+            result = list(filter(None, executor.map(mlmap_multidim, *zip(*inputs))))
     else:
         # Serial processing
         result = []
         for input in inputs:
             if input:
-                output = MLmap_multidim(*input)
+                output = mlmap_multidim(*input)
                 if output:  # Filter out None results
                     result.append(output)
 

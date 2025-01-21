@@ -66,7 +66,7 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
         Xtr = Xtr.dropna()
         if len(Xtr) > 0:
             if colum != "None":
-                Xtr_encode = encode.en_code(Xtr, colum - 1, Nm)
+                Xtr_encode = encode.encode(Xtr, colum - 1, Nm)
             else:
                 Xtr_encode = Xtr
             # Xtr.ix[:,colum]=(Xtr.ix[:,colum].astype(int)).astype(str)

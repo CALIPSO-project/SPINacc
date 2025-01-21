@@ -21,7 +21,7 @@ from Tools import *
 ##@param[in]   colum
 ##@param[in]   Nm
 ##@retval      combine_XY_encode
-def en_code(comXY, colum, Nm):
+def encode(comXY, colum, Nm):
     combine_XY_encode = []
     jum = comXY.iloc[:, colum]
     append_array = DataFrame(np.zeros(shape=(len(jum), len(Nm))))

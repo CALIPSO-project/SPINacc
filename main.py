@@ -110,7 +110,7 @@ else:
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
-    dis_all = Cluster.Cluster_test(packdata, varlist, logfile)
+    dis_all = cluster.Cluster_test(packdata, varlist, logfile)
     # added line
     np.random.seed(iseed)
     dis_all.dump(resultpath / "dist_all.npy")
@@ -150,7 +150,7 @@ if "2" in itask:
     random.seed(config.random_seed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = Cluster.Cluster_all(
+    IDx, IDloc, IDsel = cluster.Cluster_all(
         packdata, varlist, K, logfile, config.take_unique
     )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
@@ -247,7 +247,7 @@ if "4" in itask:
         result = []
         for ipool in Yvar.keys():
             check.display("processing %s..." % ipool, logfile)
-            res_df = ML.MLloop(
+            res_df = ml.MLloop(
                 packdata,
                 ipool,
                 logfile,

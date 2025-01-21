@@ -99,7 +99,6 @@ if hasattr(config, "parallel"):
 else:
     parallel = True
 
-
 # Create directory for model output if config has model_out
 if hasattr(config, "model_out"):
     model_out = config.model_out
@@ -107,6 +106,13 @@ if hasattr(config, "model_out"):
         model_out_dir = resultpath / "model_output"
 else:
     model_out_dir = None
+
+# Read take_unique setting in config
+if hasattr(config, "take_unique"):
+    take_unique = config.take_unique
+else:
+    take_unique = True
+
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -150,9 +156,7 @@ if "2" in itask:
     random.seed(config.random_seed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = cluster.cluster_all(
-        packdata, varlist, K, logfile, config.take_unique
-    )
+    IDx, IDloc, IDsel = cluster.cluster_all(packdata, varlist, K, logfile, take_unique)
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")
     IDloc.dump(resultpath / "IDloc.npy")

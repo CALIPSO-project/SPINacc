@@ -17,11 +17,18 @@
 from Tools import *
 
 
-##@param[in]   comXY                 X and Y variables
-##@param[in]   colum
-##@param[in]   Nm
-##@retval      combine_XY_encode
 def encode(comXY, colum, Nm):
+    """
+    Encode the categorical variable.
+
+    Args:
+        comXY (pandas.DataFrame): DataFrame containing the combined input and target variables.
+        colum (str): Column name for encoding.
+        Nm (int): Number of categories for encoding.
+
+    Returns:
+        combine_XY_encode (pandas.DataFrame): DataFrame containing the encoded variable.
+    """
     combine_XY_encode = []
     jum = comXY.iloc[:, colum]
     append_array = DataFrame(np.zeros(shape=(len(jum), len(Nm))))

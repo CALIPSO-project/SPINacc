@@ -62,15 +62,15 @@ sys.path.append(os.path.dirname(__file__))
 
 # Home-made
 import check
-import genMask
-import extract_X
+import genmask
+import extract_x
 import encode
 from readvar import readvar
-import Cluster
+import cluster
 import train
-import mapGlobe
-import MLeval
+import mapglobe
+import mleval
 import eval_plot_un
 import eval_plot_loocv_un
-import ML
+import ml
 import forcing

@@ -114,6 +114,7 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     ```
     pytest --trunk=DEF_Trunk -v --capture=sys ./tests/test_task4.py
     ```
+    The command line arguments `-v` and `--capture=sys` makes test output more visible to users.
 
 5. The configuration `config.py` in branch `main` should be configured correctly. But if not, ensure that
     the following assignments have been made.

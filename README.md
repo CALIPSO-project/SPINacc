@@ -25,6 +25,8 @@ The SPINacc package includes:
 ### Running SPINacc
 Here are the steps to launch SPINacc end-to-end, including the optional tests.
 
+> SPINacc has been tested and developed using `Python==3.9.*`.
+
 #### Installation
 
 1. Navigate to the location in which you wish to install and clone the repo as so:
@@ -44,13 +46,13 @@ Here are the steps to launch SPINacc end-to-end, including the optional tests.
 
 #### Get data from Zenodo
 
-These instructions are relevant regardless of the system you work on, however if you already have access to datasets on the Obelix supercomputer it is likely that SPINacc will run with minimal modification (see [Running on Obelix](#running-on-the-obelix-supercomputer) if you believe this is the case). We provide a ZENODO repository that contains forcing data [here](https://doi.org/10.5281/zenodo.10514124) as well as reference output for reproducibility testing.
+These instructions are applicable regardless of the system you work on, however if you already have access to datasets on the Obelix supercomputer it is likely that SPINacc will run with minimal modification (see [Running on Obelix](#running-on-the-obelix-supercomputer) if you believe this is the case). We provide a ZENODO repository that contains forcing data [here](https://doi.org/10.5281/zenodo.10514124) as well as reference output for reproducibility testing.
 
 It includes:
 * `ORCHIDEE_forcing_data` - Explained in [DEF_Trunk/varlist-explained.md](DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The `setup-data.sh` script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed).
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed).
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 

@@ -102,7 +102,7 @@ These tests are useful to ensure that regressions have not been unexpectedly int
 
 3. \[Optional\] To execute the reproducibility checks at runtime ensure that `True` values are set in all relevant steps in `DEF_Trunk/config.py`.
 
-4. Alternatively, steps can be executed following the completion of a successful run by doing the following:
+4. Alternatively, the tests can be executed after the successful completion of a run by doing the following:
 
     ```
     pytest --trunk=DEF_Trunk/ -v --capture=sys
@@ -119,12 +119,15 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     the following assignments have been made.
 
     ```
-    alg = 'bt'
-    start_from_scratch = True
-    take_unique = False
     kmeans_clusters = 4
     max_kmeans_clusters = 9
     random_seed = 1000
+
+    algorithms = ['bt',]
+    take_year_average = True
+    take_unique = False
+    smote_bat = True
+    sel_most_PFTs = False
     ```
     The SPINacc-results repo also contains the [https://github.com/ma595/SPINacc-results/tree/main/jobs/DEF_Trunk](DEF_Trunk) settings used to obtain the reference output.
 

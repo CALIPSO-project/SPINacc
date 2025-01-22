@@ -9,17 +9,17 @@ Documentation of aims, concepts, workflows are described in [Sun et al (2022)](h
 
 ## Contents
 The SPINacc package includes:
-* `main.py` - the main python module that steers the execution of SPINacc.
-* `DEF_*/`  - folders with configuration files for each of the supported ORCHIDEE versions.
-    * `config.py` - settings to configure the machine learning performance.
-    * `varlist.json` - directories for
-    * `varlist-explained.md`
-* `Tools/*` - relevant modules for SPINacc
-* `AuxilaryTools/SteadyState_checker.py` - tool to assess the state of equilibration in ORCHIDEE simulations
+* `main.py` - The main python module that steers the execution of SPINacc.
+* `DEF_*/`  - Directories with configuration files for each of the supported ORCHIDEE versions.
+    * `config.py` - Settings to configure the machine learning performance.
+    * `varlist.json` - Configure paths to ORCHIDEE forcing output and climate data.
+    * `varlist-explained.md` - Documentation of data sources used in SPINacc.
+* `Tools/*` - Modules called by `main.py`
+* `AuxilaryTools/SteadyState_checker.py` - Tool to assess the state of equilibration in ORCHIDEE simulations.
 * `tests/` - Reproducibility and regression tests
 * `ORCHIDEE_cecill.txt` - ORCHIDEE's license file
-* `job` - the job file for a bash environment
-* `job_tcsh` - the job file for a tcsh environment
+* `job` - Job file for a bash environment
+* `job_tcsh` - Job file for a tcsh environment
 
 ## Usage
 ### Running SPINacc

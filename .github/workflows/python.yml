@@ -39,7 +39,7 @@ jobs:
       - name: Get ZENODO data, packdata and DEF_Trunk config
         run: |
           git clone https://github.com/ma595/SPINacc-data.git
-          bash setup-data.sh ./SPINacc-data/run/
+          bash setup-data.sh ./SPINacc-data/run/DEF_Trunk/
       - name: Run first test
         run: |
           DEF_DIR=$(readlink -f SPINacc-data/run/DEF_Trunk/)

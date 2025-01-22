@@ -4,12 +4,15 @@ on:
   release:
     types:
       - created
+  push:
+    branches:
+      - "**"
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build and test
+    name: Build and run
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

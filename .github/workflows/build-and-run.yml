@@ -1,0 +1,31 @@
+name: SPINacc execution tests
+
+on:
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.12'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Get ZENODO data, packdata and DEF_Trunk config
+        run: |
+          git clone https://github.com/ma595/SPINacc-data.git
+          bash setup-data.sh ./SPINacc-data/run/DEF_Trunk/
+      - name: Run first test
+        run: |
+          DEF_DIR=$(readlink -f SPINacc-data/run/DEF_Trunk/)
+          # stomate files in varlist.json
+          python3 main.py $DEF_DIR
+          pytest .

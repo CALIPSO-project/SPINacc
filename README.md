@@ -134,7 +134,7 @@ These tests are useful to ensure that regressions have not been unexpectedly int
 
 6. The checks are as follows:
 
-    - `test_init.py`: Computes recursive compare of `packdata.nc` to reference `packdata.npy` and `auxil.npy`.
+    - `test_init.py`: Computes recursive compare of `packdata.nc` to reference `packdata.nc`.
     - `test_task1.py`: Checks `dist_all.npy` to the reference.
     - `test_task2.py`: Checks `IDloc.npy`, `IDSel.npy` and `IDx.npy` to the reference.
     - `test_task3.py`: Currently not checked.

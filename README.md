@@ -180,6 +180,8 @@ An overview of the tasks is provided as follows:
 
 ### Task 0: Initialisation
 
+Extracts climatic variables over 11 years and stores in a `packdata.nc` file. Subsequent steps are unable to proceed unless this step completes successfully.
+
 ### Task 1: Optional clustering step
 
 Evaluates the impact of varying the number of K-means clusters on model performance, setting a default of 4 clusters and producing a ‘dist_all.png’ graph.

@@ -1,11 +1,22 @@
 #! /bin/bash
 
-cd "$(dirname "$0")"
-
 # CHANGEME!
 MYTWODEG="twodeg"
-# CHANGEME!
+# Default is in the SPINacc home directory - CHANGEME if preferred.
 MYFORCING="ORCHIDEE_forcing_data"
+
+cd "$(dirname "$0")"
+
+# Check if a DEF_Trunk path is provided as an argument; otherwise, use the default
+if [ -n "$1" ]; then
+  DEF_TRUNK_PATH="$1"
+else
+  DEF_TRUNK_PATH="DEF_Trunk"
+fi
+
+# Resolve the full path for varlist_json
+varlist_json="$(readlink -f "$DEF_TRUNK_PATH")/varlist.json"
+
 
 TWODEG_DATA=$(readlink -f $MYTWODEG)
 
@@ -21,7 +32,6 @@ else
   unzip ORCHIDEE_forcing_data.zip -d $FORCING_DATA
 fi
 
-varlist_json="$(readlink -f DEF_Trunk)/varlist.json"
 
 sed -i "s@/home/surface5/vbastri/SPINacc_ref@$FORCING_DATA/vlad_files/vlad_files/@g" $varlist_json
 sed -i "s@/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/@$(readlink -f $TWODEG_DATA)/@g" $varlist_json

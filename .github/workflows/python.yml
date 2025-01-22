@@ -36,18 +36,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      - name: Get sample of reference data
+      - name: Get ZENODO data, packdata and DEF_Trunk config
         run: |
           git clone https://github.com/ma595/SPINacc-data.git
-
+          bash setup-data.sh ./SPINacc-data/run/
       - name: Run first test
         run: |
-          DEF_DIR=$(readlink -f SPINacc-data/reference/DEF_Trunk/)
+          DEF_DIR=$(readlink -f SPINacc-data/run/DEF_Trunk/)
           # stomate files in varlist.json
-          varlist_json="$DEF_DIR/varlist.json"
-          VLAD_DATA="$(readlink -f ./SPINacc-data)/vlad_files/vlad_files/"
-          sed -i "s@/home/surface5/vbastri/SPINacc_ref@$VLAD_DATA@g" $varlist_json
           python3 main.py $DEF_DIR
+
+          # VLAD_DATA="$(readlink -f ./SPINacc-data)/vlad_files/vlad_files/"
+          # sed -i "s@/home/surface5/vbastri/SPINacc_ref@$VLAD_DATA@g" $varlist_json
           # pytest -v --capture=sys ./tests/test_task1.py
 
       # - name: Run first test

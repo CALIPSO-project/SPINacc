@@ -89,12 +89,12 @@ These instructions are designed to get up and running with SPINacc quickly and t
 
 #### Set up baseline reproducibility checks
 
-It is possible to run a set of baseline checks that compare the code to the reference output. As of January 2025, the reference dataset has been updated and is now stored in `https://github.com/ma595/SPINacc-results` for CNP2 and Trunk.
+It is possible to run a set of baseline checks that compare the code to the reference output. As of January 2025, the reference dataset has been updated and is now stored in `https://github.com/ma595/SPINacc-results` for CNP2 and Trunk. We are working towards a new Zenodo release.
 These tests are useful to ensure that regressions have not been unexpectedly introduced during development.
 
 <!-- 1. From Zenodo, Download `Reproducibility_tests_reference.zip`, unzip and store it in a directory `/your/path/to/reference/`. If you have already executed the `setup-data.sh` script,  -->
 
-1. Begin by downloading the github repository above.
+1. Begin by downloading the reference output from GitHub.
 
     `git clone https://github.com/ma595/SPINacc-results`
 
@@ -116,7 +116,7 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     ```
 
 5. The configuration `config.py` in branch `main` should be configured correctly. But if not, ensure that
-    the following assignments have been made:
+    the following assignments have been made.
 
     ```
     alg = 'bt'
@@ -126,6 +126,7 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     max_kmeans_clusters = 9
     random_seed = 1000
     ```
+    The SPINacc-results repo also contains the [https://github.com/ma595/SPINacc-results/tree/main/jobs/DEF_Trunk](DEF_Trunk) settings used to obtain the reference output.
 
 6. The checks are as follows:
 

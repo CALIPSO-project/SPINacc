@@ -100,12 +100,11 @@ else:
     parallel = True
 
 # Create directory for model output if config has model_out
+model_out_dir = None
 if hasattr(config, "model_out"):
     model_out = config.model_out
     if model_out:
         model_out_dir = resultpath / "model_output"
-else:
-    model_out_dir = None
 
 # Read take_unique setting in config
 if hasattr(config, "take_unique"):

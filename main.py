@@ -94,7 +94,6 @@ loocv = config.leave_one_out_cv
 
 # Check if parallel exists in config
 # Evaluates to True by default
-
 parallel = True
 if hasattr(config, "parallel"):
     parallel = config.parallel

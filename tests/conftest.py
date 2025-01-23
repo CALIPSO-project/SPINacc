@@ -45,9 +45,6 @@ def add_config_dir_to_path(pytestconfig):
         )
 
 
-config_path = "DEF_Trunk/MLacc.def"
-
-
 @pytest.fixture
 def reference_path():
     """Path to reference data."""

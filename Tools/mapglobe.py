@@ -55,7 +55,6 @@ def extrp_global(packdata, ipft, PFTmask, XVarName, model, colum, Nm):
             global_X_map[ii] = arr.values
         else:
             global_X_map[ii] = arr[ipft - 1].values
-
         #    global_X_map=lc['global_X_map']
         das = global_X_map.transpose(1, 2, 0)
     for llat in range(packdata.nlat):

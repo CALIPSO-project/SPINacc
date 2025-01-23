@@ -18,7 +18,16 @@ from Tools import *
 
 
 def cluster_ana(
-    packdata, PFT_mask, ipft, var_pred_name, K, Nc, adict, sel_most_PFTs=True
+    packdata,
+    PFT_mask,
+    ipft,
+    var_pred_name,
+    K,
+    Nc,
+    adict,
+    sel_most_PFTs,
+    old_cluster,
+    seed=1000,
 ):
     """
     Perform clustering analysis on the data for a specific Plant Functional Type (PFT).
@@ -52,7 +61,8 @@ def cluster_ana(
     pp[laix < 0.01] = np.nan
     var_pred = packdata[var_pred_name] * pp
     df = var_pred.to_dataframe().dropna()
-    mod = KMeans(n_clusters=K)
+    np.random.seed(seed)
+    mod = KMeans(n_clusters=K, random_state=seed)
     CC = mod.fit_predict(df)
     distance = mod.inertia_
     Cluster_output = Series(CC, index=df.index)
@@ -64,16 +74,28 @@ def cluster_ana(
         locations = np.array(A.index.to_list())
         cluster_dic["clus_%.2i_loc" % (clus + 1)] = locations
         # 1.3 Randomly select Nc sites from each cluster
-        n = max(Nc, int(len(locations) * 0.2))
-        random.shuffle(locations)
-        if sel_most_PFTs:
-            ids = list(map(tuple, locations))
-            n_pft = (
-                packdata.PFT_counts.to_series().loc[ids].sort_values(ascending=False)
-            )
-            SelectedID = np.array(list(n_pft.index[:n]))
+        random.seed(seed)
+        # Use the old clustering approach instead.
+        if old_cluster:
+            if len(locations) > Nc:
+                n = random.sample(range(len(locations)), Nc)
+                SelectedID = locations[n]
+            else:
+                SelectedID = locations
         else:
-            SelectedID = locations[:n]
+            # otherwise use new approach
+            n = max(Nc, int(len(locations) * 0.2))
+            random.shuffle(locations)
+            if sel_most_PFTs:
+                ids = list(map(tuple, locations))
+                n_pft = (
+                    packdata.PFT_counts.to_series()
+                    .loc[ids]
+                    .sort_values(ascending=False)
+                )
+                SelectedID = np.array(list(n_pft.index[:n]))
+            else:
+                SelectedID = locations[:n]
 
         print(
             f"Selected {len(SelectedID)} ({len(SelectedID) / len(locations):.2%}) sites in cluster {clus}"
@@ -123,7 +145,9 @@ def cluster_test(packdata, varlist, logfile):
     return dis_all
 
 
-def cluster_all(packdata, varlist, KK, logfile, take_unique, sel_most_PFTs=True):
+def cluster_all(
+    packdata, varlist, KK, logfile, take_unique, sel_most_PFTs, old_cluster, seed
+):
     """
     Perform clustering for all specified PFTs with a chosen K value.
 
@@ -153,6 +177,7 @@ def cluster_all(packdata, varlist, KK, logfile, take_unique, sel_most_PFTs=True)
 
     # var_pred_name = varlist["pred"]["clustering"]
     var_pred_name = [k for k, v in packdata.items() if "veget" not in v.dims]
+    print(kpfts)
 
     with ThreadPoolExecutor() as pool:
         pool.map(
@@ -165,6 +190,7 @@ def cluster_all(packdata, varlist, KK, logfile, take_unique, sel_most_PFTs=True)
                 Ncc[kpfts.index(veg)],
                 adict,
                 sel_most_PFTs=sel_most_PFTs,
+                old_cluster=old_cluster,
             ),
             kpfts,
         )

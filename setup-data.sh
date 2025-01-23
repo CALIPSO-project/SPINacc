@@ -18,6 +18,7 @@ fi
 varlist_json="$(readlink -f "$DEF_TRUNK_PATH")/varlist.json"
 
 
+
 TWODEG_DATA=$(readlink -f $MYTWODEG)
 
 FORCING_DATA=$(readlink -f $MYFORCING)
@@ -31,7 +32,6 @@ else
   # will extract to ./ORCHIDEE_forcing_data/vlad_files/vlad_files
   unzip ORCHIDEE_forcing_data.zip -d $FORCING_DATA
 fi
-
 
 sed -i "s@/home/surface5/vbastri/SPINacc_ref@$FORCING_DATA/vlad_files/vlad_files/@g" $varlist_json
 sed -i "s@/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/@$(readlink -f $TWODEG_DATA)/@g" $varlist_json

@@ -94,12 +94,12 @@ loocv = config.leave_one_out_cv
 
 # Check if parallel exists in config
 # Evaluates to True by default
+
+parallel = True
 if hasattr(config, "parallel"):
     parallel = config.parallel
-else:
-    parallel = True
 
-# Create directory for model output if config has model_out
+# Create directory for model output if config has model_out (None by default)
 model_out_dir = None
 if hasattr(config, "model_out"):
     model_out = config.model_out
@@ -107,11 +107,24 @@ if hasattr(config, "model_out"):
         model_out_dir = resultpath / "model_output"
 
 # Read take_unique setting in config
+take_unique = True
 if hasattr(config, "take_unique"):
     take_unique = config.take_unique
-else:
-    take_unique = True
 
+# Read the set_most_PFT_sites from the config (False by default)
+sel_most_PFT_sites = False
+if hasattr(config, "sel_most_PFT_sites"):
+    sel_most_PFT_sites = config.sel_most_PFT_sites
+
+old_cluster = True
+if hasattr(config, "old_cluster"):
+    old_cluster = config.old_cluster
+
+# if sel_most_PFT_sites is set to True and old_cluster is set to False, raise an error
+if sel_most_PFT_sites and not old_cluster:
+    raise ValueError(
+        "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
+    )
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -152,10 +165,19 @@ if "1" in itask:
 
 # Task 2: Clustering
 if "2" in itask:
-    random.seed(config.random_seed)
+    np.random.seed(iseed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = cluster.cluster_all(packdata, varlist, K, logfile, take_unique)
+    IDx, IDloc, IDsel = cluster.cluster_all(
+        packdata,
+        varlist,
+        K,
+        logfile,
+        take_unique,
+        sel_most_PFT_sites,
+        old_cluster,
+        iseed,
+    )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")
     IDloc.dump(resultpath / "IDloc.npy")
@@ -324,18 +346,22 @@ if "5" in itask:
     Yvar = varlist["resp"]["variables"]
     for ipool in Yvar.keys():
         # if ipool!="litter":continue
-        subpool_name = varlist["resp"]["pool_name_" + ipool]
-        npfts = varlist["resp"]["npfts"]
         subLabel = varlist["resp"]["sub_item"]
+
+        # if varlist["resp"]["pool_name_"+ipool] does not exist, use ipool as subpool_name
+        if "pool_name_" + ipool not in varlist["resp"]:
+            subpool_name = [ipool]
+            subLabel = ["None"]
+        else:
+            subpool_name = varlist["resp"]["pool_name_" + ipool]
+        npfts = varlist["resp"]["npfts"]
         pp = varlist["resp"]["dim"][ipool]
         sect_n = varlist["resp"]["sect_n"][ipool]
         if pp[0] == "pft":
             dims = np.array([0, 1])
         else:
             dims = np.array([1, 0])
-        eval_plot_un.plot_metric(
-            resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
-        )
+        eval_plot_un.plot_metric(resultpath, npfts, ipool, subLabel, subpool_name)
         if loocv:
             eval_plot_loocv_un.plot_metric(
                 resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name

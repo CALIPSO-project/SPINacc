@@ -30,7 +30,7 @@ def training_bat(
     Args:
         XY_train (pandas.DataFrame): Training dataset.
         logfile (file): File object for logging.
-        config (module): module of config.
+        config (module): module of config. Get loocv and smote_bat from config.
         alg (str): ML algorithm to use (options: "nn", "bt", "rf", "gbm").
         bat (bool): Whether to augment the dataset with SMOTE.
 

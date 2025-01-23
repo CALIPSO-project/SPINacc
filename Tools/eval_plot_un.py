@@ -73,16 +73,12 @@ def plot_metric(data_path, npfts, ipool, subLabel, xTickLabel):
     if loop_n == 3:
         if ipool == "lignin":
             loop_n = 1
-            pass
         elif ipool == "som":
             df["discrim"] = df["varname"].str.split("_").str[0]
             df.set_index(["discrim"], append=True, inplace=True)
         elif ipool == "biomass" or ipool == "microbe" or ipool == "litter":
             df["discrim"] = df["varname"].apply(get_suffix_mapping)
             df.set_index(["discrim"], append=True, inplace=True)
-
-    if ipool == "lignin":
-        breakpoint()
 
     # (ipft, ivar) stacked by carbon, nitrogen, phosphorus
     # The sort_index() function only applies when the index is a MultiIndex - i.e. when C, N, P are stacked
@@ -119,7 +115,6 @@ def plot_metric(data_path, npfts, ipool, subLabel, xTickLabel):
     )
     mymap_rmse = mcolors.LinearSegmentedColormap.from_list("mylist", mycolor_rmse, N=5)
 
-    print(ipool)
     for n in range(0, loop_n):
         R22_n = R22[n * npfts : (n + 1) * npfts, :]
         slope_n = slope[n * npfts : (n + 1) * npfts, :]

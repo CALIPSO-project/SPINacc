@@ -41,6 +41,8 @@ def cluster_ana(
         Nc (int): Number of sites to select from each cluster.
         adict (dict): Dictionary of variables.
         sel_most_PFTs (bool): Whether to select sites with the most PFTs or randomly.
+        old_cluster (bool): Whether to use the old clustering approach.
+        seed (int): Set random seed. Default value (1000).
 
     Returns:
         tuple:
@@ -132,13 +134,23 @@ def cluster_test(packdata, varlist, logfile):
     var_pred_name = varlist["pred"]["clustering"]
 
     # 2. Use different K value and valuate the clustering results
+
+    adict = {}
     kvalues = list(packdata.Ks)
     kpfts = varlist["clustering"]["pfts"]
     dis_all = np.zeros(shape=(len(kvalues), len(kpfts)))
     for veg in kpfts:
         for kkk in kvalues:
             ClusD, disx, traID = cluster_ana(
-                packdata, PFT_mask, veg, var_pred_name, kkk, 10
+                packdata,
+                PFT_mask,
+                veg,
+                var_pred_name,
+                kkk,
+                10,
+                adict,
+                sel_most_PFTs=False,
+                old_cluster=True,
             )
             dis_all[kvalues.index(kkk), kpfts.index(veg)] = disx
 
@@ -177,7 +189,6 @@ def cluster_all(
 
     # var_pred_name = varlist["pred"]["clustering"]
     var_pred_name = [k for k, v in packdata.items() if "veget" not in v.dims]
-    print(kpfts)
 
     with ThreadPoolExecutor() as pool:
         pool.map(

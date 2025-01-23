@@ -1,4 +1,4 @@
-name: SPINacc CI
+name: SPINacc formatting checks
 
 on:
   push:

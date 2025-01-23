@@ -42,8 +42,6 @@ def test_visualisation():
             dims = np.array([0, 1])
         else:
             dims = np.array([1, 0])
-        eval_plot_un.plot_metric(
-            resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
-        )
+        eval_plot_un.plot_metric(resultpath, npfts, ipool, subLabel, subpool_name)
 
     assert True

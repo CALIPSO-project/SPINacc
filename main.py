@@ -117,7 +117,7 @@ if hasattr(config, "sel_most_PFT_sites"):
 
 old_cluster = True
 if hasattr(config, "old_cluster"):
-    sel_most_PFT_sites = config.old_cluster
+    old_cluster = config.old_cluster
 
 # if sel_most_PFT_sites is set to True and old_cluster is set to False, raise an error
 if sel_most_PFT_sites and not old_cluster:

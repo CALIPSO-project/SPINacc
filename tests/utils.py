@@ -3,6 +3,9 @@ import numpy as np
 
 
 def compare_npy_files(file1, file2):
+    """
+    Compare the contents of two .npy files.
+    """
     file1_npy = np.load(file1, allow_pickle=True)
     file2_npy = np.load(file2, allow_pickle=True)
 

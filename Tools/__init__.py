@@ -17,11 +17,12 @@
 import calendar
 
 # Ready-made
+import re
 import os
-
 import matplotlib
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 from netCDF4 import Dataset
 
 matplotlib.use("Agg")
@@ -30,18 +31,26 @@ import json
 import random
 import sys
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
 from mpl_toolkits.basemap import Basemap
 from pandas import DataFrame, Series
+from pathlib import Path
 from scipy import stats
 from sklearn.cluster import Birch, KMeans
 from sklearn.datasets import make_regression
-from sklearn.ensemble import BaggingRegressor, RandomForestRegressor
+from sklearn.ensemble import BaggingRegressor, RandomForestRegressor, StackingRegressor
+from sklearn.linear_model import Lasso, RidgeCV
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import LeaveOneOut
+from sklearn.model_selection import (
+    LeaveOneOut,
+    train_test_split,
+)
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neural_network import MLPRegressor
 from xgboost import XGBRegressor
@@ -53,15 +62,15 @@ sys.path.append(os.path.dirname(__file__))
 
 # Home-made
 import check
-import genMask
-import extract_X
+import genmask
+import extract_x
 import encode
 from readvar import readvar
-import Cluster
+import cluster
 import train
-import mapGlobe
-import MLeval
+import mapglobe
+import mleval
 import eval_plot_un
 import eval_plot_loocv_un
-import ML
+import ml
 import forcing

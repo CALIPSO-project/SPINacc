@@ -1,5 +1,6 @@
 import pytest
 from utils import compare_npy_files
+import os
 
 
 @pytest.mark.parametrize(
@@ -14,4 +15,6 @@ def test_compare_npy_files(reference_path, test_path, filename):
 
     See test_tast2.py for a more robust test of the clustering step.
     """
-    compare_npy_files(reference_path + filename, test_path + filename)
+    compare_npy_files(
+        os.path.join(reference_path, filename), os.path.join(test_path, filename)
+    )

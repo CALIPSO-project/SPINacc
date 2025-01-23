@@ -18,30 +18,65 @@ import os
 import sys
 
 
-##@param[in] sss string to be written
-##@param[in] logfile verbose file
 def verbose(sss, logfile):
-    logfile.write(sss + "\n")
+    """
+    Write a string to a file.
+
+    Args:
+        sss (str): String to be written.
+        logfile (file): File object for logging.
+
+    Returns:
+        None
+    """
+    if logfile:
+        logfile.write(sss + "\n")
 
 
-##@param[in] sss string to be written
-##@param[in] logfile verbose file
 def display(sss, logfile):
-    logfile.write(sss + "\n")
+    """
+    Print a string to the console and write it to a file.
+
+    Args:
+        sss (str): String to be printed.
+        logfile (file): File object for logging
+
+    Returns:
+        None
+
+    """
+    if logfile:
+        logfile.write(sss + "\n")
     print(sss)
 
 
-##@param[in] dirn directory name
-##@param[in] logfile verbose file
 def check_dir(dirn, logfile):
+    """
+    Check if a directory exists.
+
+    Args:
+        dirn (str): Directory name.
+        logfile (file): File object for logging.
+
+    Raises:
+        SystemExit: If the directory does not exist.
+    """
     if not os.path.isdir(dirn):
         display("Cannot find directory " + dirn, logfile)
         sys.exit()
 
 
-##@param[in] file file name
-##@param[in] logfile verbose file
 def check_file(file, logfile):
+    """
+    Check if a file exists.
+
+    Args:
+        file (str): File name.
+        logfile (file): File object for logging.
+
+    Raises:
+        SystemExit: If the file does not exist.
+    """
     if not os.path.isfile(file):
         display("Cannot find file " + file, logfile)
         sys.exit()

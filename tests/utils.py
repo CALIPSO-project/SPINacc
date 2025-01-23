@@ -34,18 +34,17 @@ def recursive_compare(arr1, arr2, tol=1e-8):
                     return False
             return True
         else:
-            # print("Compare the arrays element-wise for floating point numbers")
+            # Compare the arrays element-wise for floating point numbers
             if np.allclose(arr1, arr2, atol=tol, equal_nan=True) != True:
-                print("different values!!!")
+                print("Values are different!")
                 d = ~np.isclose(arr1, arr2, atol=tol, equal_nan=True)
                 print(len(d))
                 for i, mask in enumerate(d):
                     if False in mask:
                         print(arr1[i][mask], arr2[i][mask])
-            # this redundant line evaluates to True
+            # This redundant line evaluates to True
             return np.allclose(arr1, arr2, atol=tol, equal_nan=True)
     else:
-        # print("False")
         return False
 
 
@@ -59,22 +58,22 @@ def compare_nc_files(file1_path, file2_path):
     nc2 = nc.Dataset(file2_path)
 
     # Compare dimensions
-    assert set(nc1.dimensions.keys()) == set(
-        nc2.dimensions.keys()
-    ), "Dimensions are different."
+    assert set(nc1.dimensions.keys()) == set(nc2.dimensions.keys()), (
+        "Dimensions are different."
+    )
 
     # Compare variables
-    assert set(nc1.variables.keys()) == set(
-        nc2.variables.keys()
-    ), "Variables are different."
+    assert set(nc1.variables.keys()) == set(nc2.variables.keys()), (
+        "Variables are different."
+    )
 
     # Compare variable values
     for variable in set(nc1.variables.keys()) & set(nc2.variables.keys()):
         values1 = nc1[variable][:]
         values2 = nc2[variable][:]
-        assert np.allclose(
-            values1, values2
-        ), f"Variable '{variable}' values are different."
+        assert np.allclose(values1, values2), (
+            f"Variable '{variable}' values are different."
+        )
 
     # Close the netCDF files
     nc1.close()

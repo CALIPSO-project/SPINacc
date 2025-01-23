@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.9.12'
       - name: Install linting tools
-        run: pip install ruff
+        run: pip install ruff==0.9.1
       - name: ruff python interface checks
         run: |
           ruff format --check tests Tools

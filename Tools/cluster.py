@@ -134,13 +134,23 @@ def cluster_test(packdata, varlist, logfile):
     var_pred_name = varlist["pred"]["clustering"]
 
     # 2. Use different K value and valuate the clustering results
+
+    adict = {}
     kvalues = list(packdata.Ks)
     kpfts = varlist["clustering"]["pfts"]
     dis_all = np.zeros(shape=(len(kvalues), len(kpfts)))
     for veg in kpfts:
         for kkk in kvalues:
             ClusD, disx, traID = cluster_ana(
-                packdata, PFT_mask, veg, var_pred_name, kkk, 10
+                packdata,
+                PFT_mask,
+                veg,
+                var_pred_name,
+                kkk,
+                10,
+                adict,
+                sel_most_PFTs=False,
+                old_cluster=True,
             )
             dis_all[kvalues.index(kkk), kpfts.index(veg)] = disx
 

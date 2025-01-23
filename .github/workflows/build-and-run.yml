@@ -28,4 +28,4 @@ jobs:
           DEF_DIR=$(readlink -f SPINacc-data/run/DEF_Trunk/)
           # stomate files in varlist.json
           python3 main.py $DEF_DIR
-          pytest .
+          pytest --trunk=./SPINacc-data/run/DEF_Trunk/

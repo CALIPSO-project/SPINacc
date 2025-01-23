@@ -312,20 +312,20 @@ def evaluate(
     # we then use this index as part of a multiindex ensuring uniqueness.
     if varname.startswith("biomass"):
         ipft = ind[0]
-        index = int(varname.split("_")[1])
+        index = int(re.search(r"\d+", varname)[0])
     elif (
         varname.startswith("carbon")
         or varname.startswith("nitrogen")
         or varname.startswith("phosphorus")
     ):
-        ipft = int(varname.split("_")[1])
+        ipft = int(re.search(r"\d+", varname)[0])
         # cnp = varname.split("_")[0]
         index = ind[0]
     elif varname.startswith("microbe") or varname.startswith("litter"):
-        ipft = int(varname.split("_")[1])
+        ipft = int(re.search(r"\d+", varname)[0])
         postfix = varname.split("_")[2]
         index = ind[0]
-        j = ["ab", "be"].index(varname.split("_")[2])
+        j = ["ab", "be"].index(varname.split("_")[-1])
         # ivar is numbered as so : (0 = ab, 1 = be, 2 = ab, 3 = be, 4 = ab, 5 = be)
         # this then matches up to the varlist
         # there should be a more elegant way to do this
@@ -339,7 +339,6 @@ def evaluate(
         mat = ["struc", "wood"].index(varname.split("_")[1])
         index = 2 * index + mat  # [struc_ab, wood_ab, struc_be, wood_be]
 
-
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__
     else:
@@ -348,11 +347,9 @@ def evaluate(
     res["ipft"] = ipft
     res["pft"] = f"PFT{ipft:02d}"
     res["ivar"] = index
-    res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
 
     pools = ["som", "biomass", "litter", "microbe", "lignin"]
 
-    res["ivar"] = index
     if ipool in pools:
         # it would be good to eventually remove a dependency on the varlist
         # especially as is utilised for ordering purposes.

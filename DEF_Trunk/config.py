@@ -19,7 +19,6 @@ algorithms = [
     # "nn",
     # "ridge",
     # "best",
-    "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
 
 start_from_scratch = False
@@ -29,6 +28,7 @@ take_year_average = False  # Performance improved when set to True
 smote_bat = True
 model_out = False  # Optional
 parallel = True  # True by default
+sel_most_PFT_sites = False
 take_unique = False
 
 # Output and testing

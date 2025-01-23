@@ -17,6 +17,7 @@
 from Tools import *
 
 
+
 def encode(comXY, colum, Nm):
     """
     Encode the categorical variable.

@@ -98,7 +98,7 @@ parallel = True
 if hasattr(config, "parallel"):
     parallel = config.parallel
 
-# Create directory for model output if config has model_out
+# Create directory for model output if config has model_out (None by default)
 model_out_dir = None
 if hasattr(config, "model_out"):
     model_out = config.model_out
@@ -109,6 +109,11 @@ if hasattr(config, "model_out"):
 take_unique = True
 if hasattr(config, "take_unique"):
     take_unique = config.take_unique
+
+# Read the set_most_PFT_sites from the config (False by default)
+sel_most_PFT_sites = False
+if hasattr(config, "sel_most_PFT_sites"):
+    sel_most_PFT_sites = config.sel_most_PFT_sites
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -152,7 +157,14 @@ if "2" in itask:
     random.seed(config.random_seed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = cluster.cluster_all(packdata, varlist, K, logfile, take_unique)
+    IDx, IDloc, IDsel = cluster.cluster_all(
+        packdata,
+        varlist,
+        K,
+        logfile,
+        take_unique,
+        sel_most_PFT_sites,
+    )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")
     IDloc.dump(resultpath / "IDloc.npy")
@@ -322,6 +334,7 @@ if "5" in itask:
     for ipool in Yvar.keys():
         # if ipool!="litter":continue
         subLabel = varlist["resp"]["sub_item"]
+
         # if varlist["resp"]["pool_name_"+ipool] does not exist, use ipool as subpool_name
         if "pool_name_" + ipool not in varlist["resp"]:
             subpool_name = [ipool]
@@ -329,7 +342,6 @@ if "5" in itask:
         else:
             subpool_name = varlist["resp"]["pool_name_" + ipool]
         npfts = varlist["resp"]["npfts"]
-
         pp = varlist["resp"]["dim"][ipool]
         sect_n = varlist["resp"]["sect_n"][ipool]
         if pp[0] == "pft":

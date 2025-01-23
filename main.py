@@ -103,7 +103,7 @@ model_out_dir = None
 if hasattr(config, "model_out"):
     model_out = config.model_out
     if model_out:
-        model_out_dir = resultpath / "model_output"    
+        model_out_dir = resultpath / "model_output"
 
 # Read take_unique setting in config
 take_unique = True
@@ -114,6 +114,16 @@ if hasattr(config, "take_unique"):
 sel_most_PFT_sites = False
 if hasattr(config, "sel_most_PFT_sites"):
     sel_most_PFT_sites = config.sel_most_PFT_sites
+
+old_cluster = True
+if hasattr(config, "old_cluster"):
+    sel_most_PFT_sites = config.old_cluster
+
+# if sel_most_PFT_sites is set to True and old_cluster is set to False, raise an error
+if sel_most_PFT_sites and not old_cluster:
+    raise ValueError(
+        "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
+    )
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -154,7 +164,7 @@ if "1" in itask:
 
 # Task 2: Clustering
 if "2" in itask:
-    random.seed(config.random_seed)
+    np.random.seed(iseed)
     K = config.kmeans_clusters
     check.display("Kmean algorithm, K=%i" % K, logfile)
     IDx, IDloc, IDsel = cluster.cluster_all(
@@ -164,6 +174,8 @@ if "2" in itask:
         logfile,
         take_unique,
         sel_most_PFT_sites,
+        old_cluster,
+        iseed,
     )
     np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
     IDx.dump(resultpath / "IDx.npy")

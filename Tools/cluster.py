@@ -42,7 +42,7 @@ def cluster_ana(
         adict (dict): Dictionary of variables.
         sel_most_PFTs (bool): Whether to select sites with the most PFTs or randomly.
         old_cluster (bool): Whether to use the old clustering approach.
-        seed (int): Set random seed. Default value (1000). 
+        seed (int): Set random seed. Default value (1000).
 
     Returns:
         tuple:

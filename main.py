@@ -94,25 +94,21 @@ loocv = config.leave_one_out_cv
 
 # Check if parallel exists in config
 # Evaluates to True by default
+parallel = True
 if hasattr(config, "parallel"):
     parallel = config.parallel
-else:
-    parallel = True
 
 # Create directory for model output if config has model_out
+model_out_dir = None
 if hasattr(config, "model_out"):
     model_out = config.model_out
     if model_out:
-        model_out_dir = resultpath / "model_output"
-else:
-    model_out_dir = None
+        model_out_dir = resultpath / "model_output"    
 
 # Read take_unique setting in config
+take_unique = True
 if hasattr(config, "take_unique"):
     take_unique = config.take_unique
-else:
-    take_unique = True
-
 
 # Task 1: Test clustering (optional)
 if "1" in itask:
@@ -325,18 +321,22 @@ if "5" in itask:
     Yvar = varlist["resp"]["variables"]
     for ipool in Yvar.keys():
         # if ipool!="litter":continue
-        subpool_name = varlist["resp"]["pool_name_" + ipool]
-        npfts = varlist["resp"]["npfts"]
         subLabel = varlist["resp"]["sub_item"]
+        # if varlist["resp"]["pool_name_"+ipool] does not exist, use ipool as subpool_name
+        if "pool_name_" + ipool not in varlist["resp"]:
+            subpool_name = [ipool]
+            subLabel = ["None"]
+        else:
+            subpool_name = varlist["resp"]["pool_name_" + ipool]
+        npfts = varlist["resp"]["npfts"]
+
         pp = varlist["resp"]["dim"][ipool]
         sect_n = varlist["resp"]["sect_n"][ipool]
         if pp[0] == "pft":
             dims = np.array([0, 1])
         else:
             dims = np.array([1, 0])
-        eval_plot_un.plot_metric(
-            resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
-        )
+        eval_plot_un.plot_metric(resultpath, npfts, ipool, subLabel, subpool_name)
         if loocv:
             eval_plot_loocv_un.plot_metric(
                 resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name

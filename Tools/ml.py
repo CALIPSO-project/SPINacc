@@ -146,7 +146,6 @@ def mlmap_multidim(
             ind,
             ii,
             model,
-            combineXY,
             Global_Predicted_Y_map,
             pool_map,
             PFT_mask,
@@ -276,7 +275,6 @@ def evaluate(
     ind,
     ii,
     model,
-    combineXY,
     Global_Predicted_Y_map,
     pool_map,
     PFT_mask,
@@ -294,7 +292,6 @@ def evaluate(
         ind (tuple): Index tuple for multi-dimensional variables.
         ii (dict): Dictionary containing dimension information.
         model (sklearn.pipeline.Pipeline): Trained machine learning model.
-        combineXY: DataFrame of input variables.
         Global_Predicted_Y_map: Predicted map of target variables.
         pool_map: Map of target variables.
         PFT_mask: Mask for Plant Functional Types.
@@ -308,15 +305,41 @@ def evaluate(
     """
 
     res = mleval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
+
+    # In biomass the x-axis is the PFT, in the other pools it is the variable
+    # varname looks something like "litter_01_ab" - this is unique
+    # we need to assign a number to index based on (ipft) and (ind)
+    # we then use this index as part of a multiindex ensuring uniqueness.
     if varname.startswith("biomass"):
         ipft = ind[0]
-        ivar = int(re.search(r"\d+", varname)[0])
-    else:
-        ipft = int(re.search(r"\d+", varname)[0])
-        ivar = ind[0]
-        if varname.startswith("litter"):
-            j = ["ab", "be"].index(varname.split("_")[-1])
-            ivar = ivar * 2 + j - 1
+        index = int(varname.split("_")[1])
+    elif (
+        varname.startswith("carbon")
+        or varname.startswith("nitrogen")
+        or varname.startswith("phosphorus")
+    ):
+        ipft = int(varname.split("_")[1])
+        # cnp = varname.split("_")[0]
+        index = ind[0]
+    elif varname.startswith("microbe") or varname.startswith("litter"):
+        ipft = int(varname.split("_")[1])
+        postfix = varname.split("_")[2]
+        index = ind[0]
+        j = ["ab", "be"].index(varname.split("_")[2])
+        # ivar is numbered as so : (0 = ab, 1 = be, 2 = ab, 3 = be, 4 = ab, 5 = be)
+        # this then matches up to the varlist
+        # there should be a more elegant way to do this
+        index = index * 2 + j - 1
+    elif varname.startswith("npp") or varname.startswith("lai"):
+        ipft = ind[0]
+        index = None
+    elif varname.startswith("lignin"):
+        ipft = ind[0]
+        index = ["ab", "be"].index(varname.split("_")[2])
+        mat = ["struc", "wood"].index(varname.split("_")[1])
+        index = 2 * index + mat  # [struc_ab, wood_ab, struc_be, wood_be]
+
+
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__
     else:
@@ -324,15 +347,25 @@ def evaluate(
     res["varname"] = varname
     res["ipft"] = ipft
     res["pft"] = f"PFT{ipft:02d}"
-    res["ivar"] = ivar
-    res["var"] = varlist["resp"][f"pool_name_{ipool}"][ivar - 1]
+    res["ivar"] = index
+    res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
+
+    pools = ["som", "biomass", "litter", "microbe", "lignin"]
+
+    res["ivar"] = index
+    if ipool in pools:
+        # it would be good to eventually remove a dependency on the varlist
+        # especially as is utilised for ordering purposes.
+        res["var"] = varlist["resp"][f"pool_name_{ipool}"][index - 1]
+    else:
+        res["var"] = None
     res["dim"] = ii["dim_loop"][0]
     res["alg"] = alg
 
     if model_out_dir:
         os.makedirs(model_out_dir, exist_ok=True)
         np.save(
-            model_out_dir / f"{varname}_{ivar}_{ipft}.npy",
+            model_out_dir / f"{varname}_{index}_{ipft}.npy",
             dict(model=model, pred=Global_Predicted_Y_map),
             allow_pickle=True,
         )
@@ -388,6 +421,7 @@ def ml_loop(
     for ii in Yvar:
         for jj in ii["name_prefix"]:
             for kk in ii["loops"][ii["name_loop"]]:
+                # Get response
                 varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                 if ii["name_loop"] == "pft":
                     ipft = kk

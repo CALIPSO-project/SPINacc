@@ -13,12 +13,12 @@ kmeans_clusters = 4
 max_kmeans_clusters = 9
 random_seed = 1000
 algorithms = [
-    # "bt",
+    "bt",
     # "rf",
     # "gbm",
     # "nn",
     # "ridge",
-    "best",
+    # "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
 
 start_from_scratch = False
@@ -29,7 +29,7 @@ smote_bat = True
 model_out = False  # Optional
 parallel = True  # True by default
 sel_most_PFT_sites = True
-take_unique = True
+take_unique = False
 
 # Output and testing
 results_dir = "./EXE_DIR/"

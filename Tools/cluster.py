@@ -42,11 +42,11 @@ def cluster_ana(
     if "year" in packdata.dims:
         packdata = packdata.mean("year", keep_attrs=True)
     if "Ndep_nhx_pft" in var_pred_name:
-        packdata.Ndep_nhx_pft = packdata.Ndep_nhx[ipft - 1]
+        packdata["Ndep_nhx_pft"] = packdata.Ndep_nhx[ipft - 1]
     if "Ndep_noy_pft" in var_pred_name:
-        packdata.Ndep_noy_pft = packdata.Ndep_noy[ipft - 1]
+        packdata["Ndep_noy_pft"] = packdata.Ndep_noy[ipft - 1]
     if "Pdep_pft" in var_pred_name:
-        packdata.Pdep_pft = packdata.Pdep[ipft - 1]
+        packdata["Pdep_pft"] = packdata.Pdep[ipft - 1]
     pp = PFT_mask[ipft - 1]
     laix = packdata.LAI0[ipft - 1]
     pp[laix < 0.01] = np.nan
@@ -74,6 +74,7 @@ def cluster_ana(
             SelectedID = np.array(list(n_pft.index[:n]))
         else:
             SelectedID = locations[:n]
+
         print(
             f"Selected {len(SelectedID)} ({len(SelectedID) / len(locations):.2%}) sites in cluster {clus}"
         )

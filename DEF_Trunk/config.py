@@ -19,6 +19,7 @@ algorithms = [
     # "nn",
     # "ridge",
     # "best",
+    "best",
 ]  # bt: BaggingTrees, rf: RandomForest, nn: MLPRegressor, gbm: XGBRegressor, lasso: Lasso, best: SelectBestModel
 
 start_from_scratch = False

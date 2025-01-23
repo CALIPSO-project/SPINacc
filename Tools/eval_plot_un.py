@@ -45,7 +45,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, xTickLabel):
     Plot the evaluation metrics for the machine learning predictions.
 
     Args:
-        data_path (str): Path to the data directory.
+        data_path (Path): Path to the data directory.
         npfts (int): Number of Plant Functional Types (14).
         ipool (str): Pool name (e.g., 'som', 'biomass', 'litter', 'microbe').
         subLabel (list): List of sub-level item names (e.g., ['Cpool'] or ['Cpool', 'Npool', 'Ppool']).
@@ -65,7 +65,7 @@ def plot_metric(data_path, npfts, ipool, subLabel, xTickLabel):
     # Get length of ['Cpool'] (1) or ['Cpool', 'Npool', 'Ppool'] (3)
     loop_n = len(subLabel)
     # Read the csv output file as DataFrame and set multi-index containing ipft, ivar, and subpool
-    df = pd.read_csv(data_path + "MLacc_results.csv", index_col=[0, 1, 2])
+    df = pd.read_csv(data_path / "MLacc_results.csv", index_col=[0, 1, 2])
     df = df.loc[ipool].round(2)
 
     # Pre-processing for pools that have C, N and P components

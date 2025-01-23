@@ -306,9 +306,6 @@ def evaluate(
 
     res = mleval.evaluation_map(Global_Predicted_Y_map, pool_map, ipft, PFT_mask)
 
-    postfix = ""
-    cnp = ""
-
     # In biomass the x-axis is the PFT, in the other pools it is the variable
     # varname looks something like "litter_01_ab" - this is unique
     # we need to assign a number to index based on (ipft) and (ind)
@@ -341,6 +338,7 @@ def evaluate(
         index = ["ab", "be"].index(varname.split("_")[2])
         mat = ["struc", "wood"].index(varname.split("_")[1])
         index = 2 * index + mat  # [struc_ab, wood_ab, struc_be, wood_be]
+
 
     if type(model).__name__ == "Pipeline":
         alg = type(model.named_steps["estimator"]).__name__

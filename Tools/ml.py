@@ -433,7 +433,6 @@ def ml_loop(
                         *[ii["loops"][ll] for ll in ii["dim_loop"]]
                     )
                     for ind in index:
-                        dim_ind = tuple(zip(ii["dim_loop"], ind))
                         if "pft" in ii["dim_loop"]:
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:

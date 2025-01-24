@@ -52,7 +52,7 @@ It includes:
 * `ORCHIDEE_forcing_data` - Explained in [DEF_Trunk/varlist-explained.md](DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed).
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/). 
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 

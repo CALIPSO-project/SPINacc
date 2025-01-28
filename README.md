@@ -52,7 +52,7 @@ It includes:
 * `ORCHIDEE_forcing_data` - Explained in [DEF_Trunk/varlist-explained.md](DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/). 
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 
@@ -143,6 +143,13 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     - `test_task4.py`: Compares the new `MLacc_results.csv` across all components. Tolerance is 1e-2.
     - `test_task4_2.py`: Compares the updated restart file `SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc` to reference.
 
+## Automatic testing
+
+An automated test that runs the entire `DEF_Trunk`pipeline from end-to-end is executed when a release is tagged. It can be forced to run using GitHub's command line tool `gh`. See the the [official](https://github.com/cli/cli?tab=readme-ov-file#installation) documentation for how to install on your system. Then execute the remote test as follows:
+
+```
+gh run list --workflow=build-and-run.yml
+```
 
 <!-- * Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). -->
 <!-- * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__ -->

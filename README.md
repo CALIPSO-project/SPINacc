@@ -157,20 +157,41 @@ gh run list --workflow=build-and-run.yml
 <!-- * For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** -->
 <!-- * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt** -->
 
-## Obtaining 'best' performance
+## Configuration of SPINacc
 
 The following settings can change the performance of SPINacc:
 
-```
-# Machine learning performance controlled by:
-algorithms = ["bt", "best"]
-take_year_average = True
-take_unique = False
-smote_bat = True
-sel_most_PFTs = False
+* `algorithms`: ML algorithms. Multiple can be selected for any given run. The results will be stacked in the `MLacc_results.csv`. Options include:
+  * `bt`: Bagging tree
+  * `rf`: Random forest
+  * `nn`: Neural network
+  * `ridge` : Ridge regression
+  * `best` : A 'shotgun' approach that selects the best performing technique for the given target variable. This is assessed based on the performance on a subset of the data (see `select_best_model` in `train.py`), so worse performance may be exhibited on some variables compared to selecting `bt` directly.
+* `take_year_average` (required): If `True`, all annual data is averaged into a single year's worth of data. If `False`, all years are used - this has the effect of multiplying the quantity of training data, X, for a given target variable Y, by the number of years.
+* `smote_bat` (required): Synthetic minority oversampling.
+* `take_unique`(default - `True`): Take unique pixels only from output of Clustering step - will reduce the number of selected pixels, removing duplicates. This function was kept to gain correspondence with a previous implementation of SPINacc.
+* `sel_most_PFT_sites` (default - `False`): Selects
+* `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method. `old_cluster = True` and `sel_most_PFT_sites = True` are mutually exclusive.
 
-# Time to solution of SPINacc controlled by the following:
-parallel = True
+We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes.
+
+
+### Obtaining best performance.
+
+The following settings are recommended to obtain best machine learning performance with SPINacc. Note that training time will be longer with `take_year_average` set to `False`.
+
+```
+algorithms = ["best"]
+take_year_average = False # this will take much longer to finish.
+take_unique = True
+smote_bat = True
+```
+
+A new clustering performance is still being tested to see if improves performance. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
+
+```
+sel_most_PFTs = True
+old_cluster = False
 ```
 
 

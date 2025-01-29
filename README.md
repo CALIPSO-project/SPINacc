@@ -170,8 +170,8 @@ The following settings can change the performance of SPINacc:
 * `take_year_average` (required): If `True`, all annual data is averaged into a single year's worth of data. If `False`, all years are used - this has the effect of multiplying the quantity of training data, X, for a given target variable Y, by the number of years.
 * `smote_bat` (required): Synthetic minority oversampling.
 * `take_unique`(default - `True`): Take unique pixels only from output of Clustering step - will reduce the number of selected pixels, removing duplicates. This function was kept to gain correspondence with a previous implementation of SPINacc.
-* `sel_most_PFT_sites` (default - `False`): Selects
-* `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method. `old_cluster = True` and `sel_most_PFT_sites = True` are mutually exclusive.
+* `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method - i.e. Randomly samples Nc examples or takes all samples if number of samples is less than Nc. If `old_cluster = False`, the new clustering method will take the max(Nc, 20% subset of locations).
+* `sel_most_PFT_sites` (default - `False`): If `True` and `old_cluster = False`, it will preferentially select samples that contain more PFTs using the 20% rule detailed previously.  If `old_cluster = True` and `sel_most_PFT_sites = True`, an error is thrown.
 
 We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes.
 
@@ -187,7 +187,7 @@ take_unique = True
 smote_bat = True
 ```
 
-A new clustering performance is still being tested to see if improves performance. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
+A new clustering approach is still being tested to see if improves performance. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
 
 ```
 sel_most_PFTs = True

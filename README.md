@@ -166,7 +166,7 @@ The following settings can change the performance of SPINacc:
   * `rf`: Random forest
   * `nn`: Neural network
   * `ridge` : Ridge regression
-  * `best` : A 'shotgun' approach that selects the best performing technique for the given target variable. This is assessed based on the performance on a subset of the data (see `select_best_model` in `train.py`), so worse performance may be exhibited on some variables compared to selecting `bt` directly.
+  * `best` : A 'shotgun' approach that selects the best performing ml algorithm for the given target variable. This is assessed based on the performance on a subset of the data (see `select_best_model` in `train.py`), so worse performance may be exhibited on some variables compared to selecting `bt` directly.
 * `take_year_average` (required): If `True`, all annual data is averaged into a single year's worth of data. If `False`, all years are used - this has the effect of multiplying the quantity of training data, X, for a given target variable Y, by the number of years.
 * `smote_bat` (required): Synthetic minority oversampling.
 * `take_unique`(default - `True`): Take unique pixels only from output of Clustering step - will reduce the number of selected pixels, removing duplicates. This function was kept to gain correspondence with a previous implementation of SPINacc.
@@ -187,7 +187,7 @@ take_unique = True
 smote_bat = True
 ```
 
-A new clustering approach is still being tested to see if improves performance. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
+A new clustering approach is still being tested to see if performance is improved. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
 
 ```
 sel_most_PFTs = True

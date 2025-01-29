@@ -303,7 +303,9 @@ def training_bat(
 def select_best_model(X, Y, estimators, SW):
     """
     Select the best machine learning model based on the R2 score.
-
+    Uses a subset of the training data to make a judgement on the 'best'
+    performing algorithm. This means it may perform worse on some variables
+    compared to `bt` or other algorithms.
 
     Args:
         X (pandas.DataFrame): Features.

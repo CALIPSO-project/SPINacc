@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import pytest
+from pathlib import Path
 
 
 @pytest.mark.parametrize("metric", ["R2"])
@@ -17,7 +18,7 @@ def test_compare_mlacc_csv_files(reference_path, test_path, metric):
 
     Args:
         reference_path (str): Path to the reference directory.
-        test_path (str): Path to the test directory.
+        test_path (str): Path to the test output directory.
         metric (str): Metric to compare between the two files.
 
     Returns:
@@ -49,7 +50,7 @@ def compare_csv_files_filtered(
 
     Args:
         reference_path (str): Path to the reference directory.
-        test_path (str): Path to the test directory.
+        test_path (str): Path to the test output directory.
         metric (str): Metric to compare between the two files.
         numeric_tolerance (float): Tolerance for comparing numerical columns.
 
@@ -100,9 +101,11 @@ def compare_csv_files_filtered(
         assert True
 
 
-@pytest.mark.skip("Skipped for redundancy of tests.")
+@pytest.mark.skip("Left for reference - old comparison between .txt files")
 def test_compare_all_files(reference_path, test_path):
     """
+    DEPRECATED - originally used to compare .txt files
+
     This function compares all files in the reference_path to the test_path.
 
     This will compare .txt files against each other. No longer relevant
@@ -133,9 +136,12 @@ def test_compare_all_files(reference_path, test_path):
             )
 
 
-@pytest.mark.skip("Skipped for redundancy of tests.")
+@pytest.mark.skip(
+    "Left for reference - old comparison between .txt and new .csv format"
+)
 def test_compare_csv_to_txt(reference_path, test_path):
     """
+    DEPRECATED - originally used to process .txt files and compare to MLacc_results.csv
     Compare the old .txt files to the new MLacc_results.csv file.
 
     We construct a new DataFrame with the contents of the .txt files and compare.
@@ -143,6 +149,11 @@ def test_compare_csv_to_txt(reference_path, test_path):
 
     This function has been replaced by test_compare_csv_files_filtered.
     Output format has changed from .txt to .csv.
+
+    Args:
+        reference_path (str): Path to the reference directory.
+        test_path (str): Path to the test output directory.
+
     """
     comps = ["som", "biomass", "litter"]
     metrics = [
@@ -158,11 +169,12 @@ def test_compare_csv_to_txt(reference_path, test_path):
 
     reference_results = construct_reference_results(reference_path, comps, metrics)
 
-    mlacc_results = pd.read_csv(test_path + "/MLacc_results.csv")
+    mlacc_results = pd.read_csv(Path(test_path) / "MLacc_results.csv")
     mlacc_results = mlacc_results.sort_values(
         by=["comp", "ipft", "ivar"], ignore_index=True
     )
 
+    # loop over SOM, LITTER, BIOMASS
     for comp in comps:
         mlacc_results_comp = mlacc_results.loc[mlacc_results["comp"] == comp]
         mlacc_results_comp = process_component(mlacc_results_comp, comp)
@@ -176,8 +188,30 @@ def test_compare_csv_to_txt(reference_path, test_path):
     assert True
 
 
+def process_component(mlacc_results_comp, comp):
+    """
+    Process the component DataFrame to match the reference DataFrame.
+
+    Args:
+        mlacc_results_comp (pd.DataFrame): DataFrame containing the MLacc_results.csv data.
+        comp (str): Component name i.e. 'som', 'litter' or 'biomass'.
+
+    Returns:
+        pd.DataFrame: Processed DataFrame.
+    """
+
+    if comp == "biomass":
+        return mlacc_results_comp.sort_values(by=["ivar", "ipft"], ignore_index=True)
+    elif comp == "litter":
+        df_ab = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_ab")]
+        df_be = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_be")]
+        return pd.concat([df_ab, df_be], axis=0, ignore_index=True)
+    return mlacc_results_comp
+
+
 def get_df_comp(EXE_DIR, file_name, comp):
     """
+    DEPRECATED - originally used to process .txt files and compare to MLacc_results.csv
     Read the component i.e. 'som', 'litter' or 'biomass' .txt files and return a DataFrame
 
     Consider preprocessing all of the .txt files into a single DataFrame before comparing.
@@ -206,17 +240,20 @@ def get_df_comp(EXE_DIR, file_name, comp):
     return df
 
 
-def process_component(mlacc_results_comp, comp):
-    if comp == "biomass":
-        return mlacc_results_comp.sort_values(by=["ivar", "ipft"], ignore_index=True)
-    elif comp == "litter":
-        df_ab = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_ab")]
-        df_be = mlacc_results_comp[mlacc_results_comp["var"].str.endswith("_be")]
-        return pd.concat([df_ab, df_be], axis=0, ignore_index=True)
-    return mlacc_results_comp
-
-
 def construct_reference_results(reference_path, comps, metrics):
+    """
+    DEPRECATED - originally used to process .txt files and compare to MLacc_results.csv
+    Construct a DataFrame from the reference .txt files.
+
+    Args:
+        reference_path (str): Path to the reference directory.
+        comps (list): List of components to process.
+        metrics (list): List of metrics to process.
+
+    Returns:
+        pd.DataFrame: DataFrame containing the reference data.
+
+    """
     reference_results = pd.DataFrame()
     for comp in comps:
         reference_comp = pd.concat(
@@ -234,6 +271,17 @@ def construct_reference_results(reference_path, comps, metrics):
 
 
 def compare_metrics(mlacc_results_comp, reference_results_comp, metrics, atol=1e-2):
+    """
+    DEPRECATED - originally used to process .txt files and compare to MLacc_results.csv
+
+    Compare the metrics between the two DataFrames.
+
+    Args:
+        mlacc_results_comp (pd.DataFrame): DataFrame containing the MLacc_results.csv data.
+        reference_results_comp (pd.DataFrame): DataFrame containing the reference data.
+        metrics (list): List of metrics to compare.
+        atol (float): Absolute tolerance for comparing numerical columns.
+    """
     for metric in metrics:
         print(f"Comparing metric {metric}")
         comparison = np.isclose(

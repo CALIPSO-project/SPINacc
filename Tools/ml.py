@@ -39,10 +39,10 @@ def mlmap_multidim(
     Perform multi-dimensional machine learning mapping.
 
     This performs the following steps:
-    - Extract data from the dataset.
-    - Train a machine learning model.
-    - Extrapolate the model to all global pixels.
-    - Evaluate the model.
+    * Extract data from the dataset.
+    * Train a machine learning model.
+    * Extrapolate the model to all global pixels.
+    * Evaluate the model.
 
     Args:
         packdata (xarray.Dataset): Dataset containing input variables.
@@ -51,13 +51,13 @@ def mlmap_multidim(
         PFT_mask_lai (numpy.ndarray): Mask for Plant Functional Types based on LAI.
         ipool (str): Name of the current pool.
         ipft (int): Index of current Plant Functional Type.
-        logfile (file): File object for logging.
         varname (str): Name of the current variable.
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
         ind (tuple): Index tuple for multi-dimensional variables.
         ii (dict): Dictionary containing dimension information.
-        config (module): module of config.
+        leave_one_out_cv (bool): Whether to use leave-one-out cross-validation.
+        smote_bat (bool): Whether to use SMOTE balancing.
         restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         alg (str): ML algorithm to use.
@@ -294,7 +294,6 @@ def evaluate(
         pool_map: Map of target variables.
         PFT_mask: Mask for Plant Functional Types.
         varlist (dict): Dictionary of variable information.
-        logfile (file): File object for logging.
         model_out_dir (Path): Directory to save trained model output.
 
     Returns:

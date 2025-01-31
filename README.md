@@ -52,7 +52,7 @@ It includes:
 * `ORCHIDEE_forcing_data` - Explained in [DEF_Trunk/varlist-explained.md](DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/). 
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 
@@ -143,6 +143,13 @@ These tests are useful to ensure that regressions have not been unexpectedly int
     - `test_task4.py`: Compares the new `MLacc_results.csv` across all components. Tolerance is 1e-2.
     - `test_task4_2.py`: Compares the updated restart file `SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc` to reference.
 
+## Automatic testing
+
+An automated test that runs the entire `DEF_Trunk`pipeline from end-to-end is executed when a release is tagged. It can be forced to run using GitHub's command line tool `gh`. See the the [official](https://github.com/cli/cli?tab=readme-ov-file#installation) documentation for how to install on your system. Then execute the remote test as follows:
+
+```
+gh run list --workflow=build-and-run.yml
+```
 
 <!-- * Choose the task you want to launch. In **DEF_TRUNK/MLacc.def**: in __config[3]__ section put **1** (for __task 1__), in __config[5]__ section put your path to your EXE_DIR and in __config[7]__ put 0 for task 1 at least (for the following tasks you can use previous results). -->
 <!-- * In **tests/config.py** you have to modify: __test_path=/your/path/to/SPINacc/EXE_DIR/__ -->
@@ -150,20 +157,41 @@ These tests are useful to ensure that regressions have not been unexpectedly int
 <!-- * For following tasks (**2, 3, 4** and **5**) you just need to modify the **config[3]** and **config[7]** sections in **DEF_TRUNK/MLacc.def** -->
 <!-- * The results of reproducibility tests are stored in **EXE_DIR/tests_results.txt** -->
 
-## Obtaining 'best' performance
+## Configuration of SPINacc
 
 The following settings can change the performance of SPINacc:
 
-```
-# Machine learning performance controlled by:
-algorithms = ["bt", "best"]
-take_year_average = True
-take_unique = False
-smote_bat = True
-sel_most_PFTs = False
+* `algorithms`: ML algorithms. Multiple can be selected for any given run. The results will be stacked in the `MLacc_results.csv`. Options include:
+  * `bt`: Bagging tree
+  * `rf`: Random forest
+  * `nn`: Neural network
+  * `ridge` : Ridge regression
+  * `best` : A 'shotgun' approach that selects the best performing ml algorithm for the given target variable. This is assessed based on the performance on a subset of the data (see `select_best_model` in `train.py`), so worse performance may be exhibited on some variables compared to selecting `bt` directly.
+* `take_year_average` (required): If `True`, all annual data is averaged into a single year's worth of data. If `False`, all years are used - this has the effect of multiplying the quantity of training data, X, for a given target variable Y, by the number of years.
+* `smote_bat` (required): Synthetic minority oversampling.
+* `take_unique`(default - `True`): Take unique pixels only from output of Clustering step - will reduce the number of selected pixels, removing duplicates. This function was kept to gain correspondence with a previous implementation of SPINacc.
+* `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method - i.e. Randomly samples Nc examples or takes all samples if number of samples is less than Nc. If `old_cluster = False`, the new clustering method will take the max(Nc, 20% subset of locations).
+* `sel_most_PFT_sites` (default - `False`): If `True` and `old_cluster = False`, it will preferentially select samples that contain more PFTs using the 20% rule detailed previously.  If `old_cluster = True` and `sel_most_PFT_sites = True`, an error is thrown.
 
-# Time to solution of SPINacc controlled by the following:
-parallel = True
+We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes.
+
+
+### Obtaining best performance.
+
+The following settings are recommended to obtain best machine learning performance with SPINacc. Note that training time will be longer with `take_year_average` set to `False`.
+
+```
+algorithms = ["best"]
+take_year_average = False # this will take much longer to finish.
+take_unique = True
+smote_bat = True
+```
+
+A new clustering approach is still being tested to see if performance is improved. See [PR #93](https://github.com/CALIPSO-project/SPINacc/pull/93). To test the new implementation set the following:
+
+```
+sel_most_PFTs = True
+old_cluster = False
 ```
 
 

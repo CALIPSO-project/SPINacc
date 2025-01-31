@@ -323,7 +323,7 @@ def evaluate(
         ipft = int(re.search(r"\d+", varname)[0])
         postfix = varname.split("_")[2]
         index = ind[0]
-        j = ["ab", "be"].index(varname.split("_")[-1])
+        j = ["ab", "be"].index(varname.split("_")[2])
         # ivar is numbered as so : (0 = ab, 1 = be, 2 = ab, 3 = be, 4 = ab, 5 = be)
         # this then matches up to the varlist
         # there should be a more elegant way to do this

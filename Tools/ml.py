@@ -22,13 +22,13 @@ def mlmap_multidim(
     PFT_mask_lai,
     ipool,
     ipft,
-    logfile,
     varname,
     varlist,
     labx,
     ind,
     ii,
-    config,
+    leave_one_out_cv,
+    smote_bat,
     restvar,
     missVal,
     alg,
@@ -70,7 +70,7 @@ def mlmap_multidim(
 
     random.seed(seed)
     np.random.seed(seed)
-
+    logfile = None
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
         % (ipool, varname, ind, ii["dim_loop"]),
@@ -116,7 +116,7 @@ def mlmap_multidim(
         loocv_f_SB,
         loocv_f_SDSD,
         loocv_f_LSC,
-    ) = train.training_bat(combineXY, logfile, config, seed, alg)
+    ) = train.training_bat(combineXY, logfile, leave_one_out_cv, smote_bat, seed, alg)
 
     # 3. Extrapolate
     Global_Predicted_Y_map = extrapolate_globally(
@@ -150,7 +150,6 @@ def mlmap_multidim(
             pool_map,
             PFT_mask,
             varlist,
-            logfile,
             model_out_dir,
         )
     else:
@@ -279,7 +278,6 @@ def evaluate(
     pool_map,
     PFT_mask,
     varlist,
-    logfile,
     model_out_dir,
 ):
     """
@@ -360,6 +358,7 @@ def evaluate(
     res["alg"] = alg
 
     if model_out_dir:
+        model_out_dir = Path(model_out_dir)
         os.makedirs(model_out_dir, exist_ok=True)
         np.save(
             model_out_dir / f"{varname}_{index}_{ipft}.npy",
@@ -446,17 +445,17 @@ def ml_loop(
                                 PFT_mask_lai,
                                 ipool,
                                 ipft,
-                                None,  # logfile
                                 varname,
                                 varlist,
                                 labx,
                                 ind,
                                 ii,
-                                config,
+                                config.leave_one_out_cv,
+                                config.smote_bat,
                                 restvar[:],
                                 missVal,
                                 alg,
-                                model_out_dir,
+                                str(model_out_dir),
                                 seed,
                             )
                         )
@@ -469,7 +468,7 @@ def ml_loop(
 
     # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ThreadPoolExecutor() as executor:
+        with ProcessPoolExecutor() as executor:
             from functools import partial
 
             # Call the MLmap_multidim function with the arguments in inputs

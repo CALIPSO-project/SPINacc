@@ -22,13 +22,13 @@ def mlmap_multidim(
     PFT_mask_lai,
     ipool,
     ipft,
-    logfile,
     varname,
     varlist,
     labx,
     ind,
     ii,
-    config,
+    leave_one_out_cv,
+    smote_bat,
     restvar,
     missVal,
     alg,
@@ -39,10 +39,10 @@ def mlmap_multidim(
     Perform multi-dimensional machine learning mapping.
 
     This performs the following steps:
-    - Extract data from the dataset.
-    - Train a machine learning model.
-    - Extrapolate the model to all global pixels.
-    - Evaluate the model.
+    * Extract data from the dataset.
+    * Train a machine learning model.
+    * Extrapolate the model to all global pixels.
+    * Evaluate the model.
 
     Args:
         packdata (xarray.Dataset): Dataset containing input variables.
@@ -51,13 +51,13 @@ def mlmap_multidim(
         PFT_mask_lai (numpy.ndarray): Mask for Plant Functional Types based on LAI.
         ipool (str): Name of the current pool.
         ipft (int): Index of current Plant Functional Type.
-        logfile (file): File object for logging.
         varname (str): Name of the current variable.
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
         ind (tuple): Index tuple for multi-dimensional variables.
         ii (dict): Dictionary containing dimension information.
-        config (module): module of config.
+        leave_one_out_cv (bool): Whether to use leave-one-out cross-validation.
+        smote_bat (bool): Whether to use SMOTE balancing.
         restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         alg (str): ML algorithm to use.
@@ -70,7 +70,7 @@ def mlmap_multidim(
 
     random.seed(seed)
     np.random.seed(seed)
-
+    logfile = None
     check.display(
         "processing %s, variable %s, index %s (dim: %s)..."
         % (ipool, varname, ind, ii["dim_loop"]),
@@ -116,7 +116,7 @@ def mlmap_multidim(
         loocv_f_SB,
         loocv_f_SDSD,
         loocv_f_LSC,
-    ) = train.training_bat(combineXY, logfile, config, seed, alg)
+    ) = train.training_bat(combineXY, logfile, leave_one_out_cv, smote_bat, seed, alg)
 
     # 3. Extrapolate
     Global_Predicted_Y_map = extrapolate_globally(
@@ -150,7 +150,6 @@ def mlmap_multidim(
             pool_map,
             PFT_mask,
             varlist,
-            logfile,
             model_out_dir,
         )
     else:
@@ -279,7 +278,6 @@ def evaluate(
     pool_map,
     PFT_mask,
     varlist,
-    logfile,
     model_out_dir,
 ):
     """
@@ -296,7 +294,6 @@ def evaluate(
         pool_map: Map of target variables.
         PFT_mask: Mask for Plant Functional Types.
         varlist (dict): Dictionary of variable information.
-        logfile (file): File object for logging.
         model_out_dir (Path): Directory to save trained model output.
 
     Returns:
@@ -325,7 +322,7 @@ def evaluate(
         ipft = int(re.search(r"\d+", varname)[0])
         postfix = varname.split("_")[2]
         index = ind[0]
-        j = ["ab", "be"].index(varname.split("_")[-1])
+        j = ["ab", "be"].index(varname.split("_")[2])
         # ivar is numbered as so : (0 = ab, 1 = be, 2 = ab, 3 = be, 4 = ab, 5 = be)
         # this then matches up to the varlist
         # there should be a more elegant way to do this
@@ -360,6 +357,7 @@ def evaluate(
     res["alg"] = alg
 
     if model_out_dir:
+        model_out_dir = Path(model_out_dir)
         os.makedirs(model_out_dir, exist_ok=True)
         np.save(
             model_out_dir / f"{varname}_{index}_{ipft}.npy",
@@ -446,17 +444,17 @@ def ml_loop(
                                 PFT_mask_lai,
                                 ipool,
                                 ipft,
-                                None,  # logfile
                                 varname,
                                 varlist,
                                 labx,
                                 ind,
                                 ii,
-                                config,
+                                config.leave_one_out_cv,
+                                config.smote_bat,
                                 restvar[:],
                                 missVal,
                                 alg,
-                                model_out_dir,
+                                str(model_out_dir),
                                 seed,
                             )
                         )
@@ -469,7 +467,7 @@ def ml_loop(
 
     # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ThreadPoolExecutor() as executor:
+        with ProcessPoolExecutor() as executor:
             from functools import partial
 
             # Call the MLmap_multidim function with the arguments in inputs

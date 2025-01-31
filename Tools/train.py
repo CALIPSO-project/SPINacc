@@ -20,7 +20,8 @@ from Tools import *
 def training_bat(
     XY_train,
     logfile,
-    config,
+    leave_one_out_cv,
+    smote_bat,
     seed,
     alg="gbm",
 ):
@@ -81,7 +82,7 @@ def training_bat(
 
     # If the length of unique target variable is not 1,
     # run the KMeans algorithm to find the cluster centers, and resample the data
-    if config.smote_bat:
+    if smote_bat:
         try:
             mod = KMeans(n_clusters=3, random_state=seed)
             lab = mod.fit_predict(
@@ -250,7 +251,7 @@ def training_bat(
     loo = LeaveOneOut()
     ytests = []
     ypreds = []
-    if config.leave_one_out_cv:
+    if leave_one_out_cv:
         XM = Xtrain.values
         YM = Ytrain.values
         # check.display('weidu'+str(np.shape(Xtrain)),logfile)

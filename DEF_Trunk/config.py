@@ -29,6 +29,7 @@ smote_bat = True
 model_out = False  # Optional
 parallel = True  # True by default
 sel_most_PFT_sites = False
+old_cluster = True  # True by default
 take_unique = False
 
 # Output and testing

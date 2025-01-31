@@ -32,7 +32,11 @@ import json
 import random
 import sys
 from collections import Counter
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import (
+    ProcessPoolExecutor,
+    ThreadPoolExecutor,
+    ProcessPoolExecutor,
+)
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt

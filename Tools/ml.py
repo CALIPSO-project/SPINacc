@@ -470,7 +470,7 @@ def ml_loop(
         import multiprocessing
 
         # multiprocessing.set_start_method("spawn", force=True)
-        with ProcessPoolExecutor(max_workers=2) as executor:
+        with ProcessPoolExecutor(max_workers=1) as executor:
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in the result list

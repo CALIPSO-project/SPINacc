@@ -468,11 +468,10 @@ def ml_loop(
     # Run the MLmap_multidim function in parallel or serial
     if parallel:
         with ProcessPoolExecutor() as executor:
-            from functools import partial
-
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
-            # All inputs are collected in  the result list
+            # All inputs are collected in the result list
+            print("Number of workers ", executor._max_workers)
             result = list(filter(None, executor.map(mlmap_multidim, *zip(*inputs))))
     else:
         # Serial processing

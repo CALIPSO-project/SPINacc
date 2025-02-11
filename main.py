@@ -120,7 +120,7 @@ if hasattr(config, "old_cluster"):
     old_cluster = config.old_cluster
 
 # if sel_most_PFT_sites is set to True and old_cluster is set to True, raise an error
-if sel_most_PFT_sites and not old_cluster:
+if sel_most_PFT_sites and old_cluster:
     raise ValueError(
         "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
     )

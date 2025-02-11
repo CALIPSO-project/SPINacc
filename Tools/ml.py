@@ -467,7 +467,7 @@ def ml_loop(
 
     # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ProcessPoolExecutor(max_workers=1) as executor:
+        with ProcessPoolExecutor() as executor:
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in the result list

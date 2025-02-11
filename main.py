@@ -378,5 +378,5 @@ def main():
 
 
 if __name__ == "__main__":
-    multiprocessing.set_start_method("forkserver", force=True)  # Use "spawn" on Windows
+    # multiprocessing.set_start_method("forkserver", force=True)  # Use "spawn" on Windows
     main()

@@ -254,17 +254,59 @@ def extrapolate_globally(
             col_type,
             type_val,
         )
+        print("Global_Predicted_Y_map final after call:")
+        print("Global_Predicted_Y_map.shape : ", Global_Predicted_Y_map.shape)
+        print("Global_Predicted_Y_map.min() : ", Global_Predicted_Y_map.min())
+        valid_values_count = np.sum(
+                 (~np.isnan(Global_Predicted_Y_map)) & (Global_Predicted_Y_map != missVal)
+                    )
+        print(f"Total valid non-missing predictions after extrapolation: {valid_values_count}")
+
         # Modify restart file with extrapolated values
-        pmask = np.nansum(PFT_mask, axis=0)
+        pmask = np.nansum(PFT_mask, axis=0) #2D pmask
+        print("2D pmask shape : ", pmask.shape)
+        print("2D pmask debut : ", pmask[:10])
+        print("2D pmask unique : ",  np.unique(pmask))
+        #replace (the following line is unuseful)  
         pmask[np.isnan(pmask)] == 0
+        print("Total zero values (ocean):", np.sum(pmask == 0))
         # Set ocean pixel to missVal
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
+        print("Pred_Y_out  after the ocean to missval:")
+        print("Pred_Y_map.min() : ", Pred_Y_out.min())
+        print(f"Nombre total de NaN dans Pred_Y_out BEFORE replacement: {np.sum(np.isnan(Pred_Y_out))}")
+
         # some pixel with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
+        print("Pred_Y_out  after the remaining NANs where put to 0:")
+        print("Pred_Y_out.shape : ", Pred_Y_out.shape)
+        print("Pred_Y_map.min() : ", Pred_Y_out.min())
+        print(f"Total number of NANs in Pred_Y_out after replacement: {np.sum(np.isnan(Pred_Y_out))}")
+        print(f"Total number of Pred_Y_out == missVal after replacement: {np.sum(Pred_Y_out == missVal)}")
+        valid_values_count_2 = np.sum(Pred_Y_out != missVal)
+        print(f"Total number of non-missVal : {valid_values_count_2}")
+        zero_values_count = np.sum(Pred_Y_out == 0)
+        print(f"Nombre total de valeurs égales à 0 : {zero_values_count}")
+        
+        print(f"Missing values BEFORE extrapolation: {np.sum(np.isnan(Global_Predicted_Y_map))}")
+        print(f"Missing values AFTER extrapolation: {np.sum(np.isnan(Pred_Y_out))}")
         idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
-        restvar[idx] = Pred_Y_out
-        # command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
-        # exec(command % tuple(ind - 1))
+        print(f"Missing values in restvar BEFORE assignment: {np.sum(restvar[idx] == missVal)}") 
+        #print(f"Before modification: {np.unique(restvar)}")
+        #restvar[idx] = Pred_Y_out
+        #ensure rewritting in good format 
+        restvar[idx] = Pred_Y_out.astype(restvar.dtype)
+        print(f"Missing values in restvar AFTER assignment: {np.sum(restvar[idx] == missVal)}") 
+        #print(f"After modification: {np.unique(restvar)}")
+        #command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
+        #exec(command % tuple(ind - 1))
+        
+        #replacement 
+        #valid_mask = (Pred_Y_out != missVal)
+        #new_values = np.where(valid_mask, Pred_Y_out, restvar[idx])
+        # new values : if variable != missVal take Pred_Y_out, if variable = missVal keep restvar[idx]
+        #restvar[idx] = new_values
+
     return Global_Predicted_Y_map
 
 
@@ -366,6 +408,7 @@ def evaluate(
             dict(model=model, pred=Global_Predicted_Y_map),
             allow_pickle=True,
         )
+    print("results :", res)
     return res
 
 
@@ -405,41 +448,46 @@ def ml_loop(
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
-
-    missVal = varlist["resp"]["missing_value"]
-
-    inputs = []
-
+    # Convert user-supplied missing_value to ORCHIDEE-compatible float32-based float64
+    missVal = np.float64(np.float32(varlist["resp"]["missing_value"]))
+    # replace
+   # missVal = varlist["resp"]["missing_value"]
+    #replace
+    #inputs = []
+    result=[]
     # Open restart file and select variable
     # - old comment suggested that memory was exceeded outside loop
 
-    restnc = Dataset(restfile, "a")
+    #restnc = Dataset(restfile, "a")
     Yvar = varlist["resp"]["variables"][ipool]
-    for ii in Yvar:
-        for jj in ii["name_prefix"]:
-            for kk in ii["loops"][ii["name_loop"]]:
-                # Get response
-                varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
-                if ii["name_loop"] == "pft":
-                    ipft = kk
-                ivar = responseY[varname]
+    # Open the NetCDF file ONCE and keep it open
+    with Dataset(restfile, "a") as restnc:
+        for ii in Yvar:
+            for jj in ii["name_prefix"]:
+                for kk in ii["loops"][ii["name_loop"]]:
+                    # Get response
+                    varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
+                    if ii["name_loop"] == "pft":
+                       ipft = kk
+                    ivar = responseY[varname]
+                                
+                    # 🟢Access restvar while `restnc` is open
+                    restvar = restnc[varname]  # Reference, not a copy!
 
-                restvar = restnc[varname]
 
-                if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
-                    continue
-                else:
-                    index = itertools.product(
-                        *[ii["loops"][ll] for ll in ii["dim_loop"]]
-                    )
-                    for ind in index:
-                        dim_ind = tuple(zip(ii["dim_loop"], ind))
-                        if "pft" in ii["dim_loop"]:
-                            ipft = ind[ii["dim_loop"].index("pft")]
-                        if ipft in ii["skip_loop"]["pft"]:
-                            continue
-                        inputs.append(
-                            (
+                    if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
+                         continue
+                    else:
+                         index = itertools.product(
+                                *[ii["loops"][ll] for ll in ii["dim_loop"]]
+                                 )    
+                         for ind in index:
+                            dim_ind = tuple(zip(ii["dim_loop"], ind))
+                            if "pft" in ii["dim_loop"]:
+                                ipft = ind[ii["dim_loop"].index("pft")]
+                            if ipft in ii["skip_loop"]["pft"]:
+                                continue
+                            res=mlmap_multidim(
                                 packdata,
                                 ivar[:],
                                 PFT_mask,
@@ -453,24 +501,28 @@ def ml_loop(
                                 ind,
                                 ii,
                                 config,
-                                restvar[:],
+                                restvar, # 🟢Pass as reference
                                 missVal,
                                 alg,
                                 model_out_dir,
                                 seed,
-                            )
-                        )
+                                )
+                            if res:
+                                result.append(res)  # Store results
                     # Debugging
                     # if inputs:
                     #     break
 
                 # Close netCDF file
-    restnc.close()
-
-    # Run the MLmap_multidim function in parallel or serial
+                #restnc.close()
+    # ✅No need to manually close `restnc`, `with` statement handles it
+    return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()
+   
+'''
+ # Run the MLmap_multidim function in parallel or serial
     if parallel:
         with ThreadPoolExecutor() as executor:
-            from functools import partial
+           from functools import partial
 
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
@@ -484,5 +536,11 @@ def ml_loop(
                 output = mlmap_multidim(*input)
                 if output:  # Filter out None results
                     result.append(output)
+    # Ensure that the NetCDF file is closed after all updates
+    print(f"Synchronizing and closing NetCDF file: {restfile}")
+    restnc.sync()  # Force write changes to disk
+    restnc.close()  # Properly close the file
+    print(f"NetCDF file {restfile} successfully updated and closed.")
 
     return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()
+'''

@@ -42,6 +42,7 @@ def mlmap_multidim(
     * Extract data from the dataset.
     * Train a machine learning model.
     * Extrapolate the model to all global pixels.
+    * Write the extrapolated values to the restart file.
     * Evaluate the model.
 
     Args:
@@ -261,6 +262,7 @@ def extrapolate_globally(
         # some pixel with nan remain, so set them zero
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
         idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
+        # breakpoint()
         restvar[idx] = Pred_Y_out
         # command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
         # exec(command % tuple(ind - 1))
@@ -411,33 +413,36 @@ def ml_loop(
     # Open restart file and select variable
     # - old comment suggested that memory was exceeded outside loop
 
-    restnc = Dataset(restfile, "a")
-    Yvar = varlist["resp"]["variables"][ipool]
-    for ii in Yvar:
-        for jj in ii["name_prefix"]:
-            for kk in ii["loops"][ii["name_loop"]]:
-                # Get response
-                varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
-                if ii["name_loop"] == "pft":
-                    ipft = kk
-                ivar = responseY[varname]
+    # restnc = Dataset(restfile, "a")
+    result = []
 
-                restvar = restnc[varname]
+    with Dataset(restfile, "r") as restnc:
+        Yvar = varlist["resp"]["variables"][ipool]
+        for ii in Yvar:
+            for jj in ii["name_prefix"]:
+                for kk in ii["loops"][ii["name_loop"]]:
+                    # Get response
+                    varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
+                    if ii["name_loop"] == "pft":
+                        ipft = kk
+                    ivar = responseY[varname]
 
-                if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
-                    continue
-                else:
-                    index = itertools.product(
-                        *[ii["loops"][ll] for ll in ii["dim_loop"]]
-                    )
-                    for ind in index:
-                        dim_ind = tuple(zip(ii["dim_loop"], ind))
-                        if "pft" in ii["dim_loop"]:
-                            ipft = ind[ii["dim_loop"].index("pft")]
-                        if ipft in ii["skip_loop"]["pft"]:
-                            continue
-                        inputs.append(
-                            (
+                    restvar = restnc[varname]
+
+                    if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
+                        continue
+                    else:
+                        index = itertools.product(
+                            *[ii["loops"][ll] for ll in ii["dim_loop"]]
+                        )
+                        for ind in index:
+                            dim_ind = tuple(zip(ii["dim_loop"], ind))
+                            if "pft" in ii["dim_loop"]:
+                                ipft = ind[ii["dim_loop"].index("pft")]
+                            if ipft in ii["skip_loop"]["pft"]:
+                                continue
+                            # inputs.append(
+                            res = mlmap_multidim(
                                 packdata,
                                 ivar[:],
                                 PFT_mask,
@@ -451,35 +456,33 @@ def ml_loop(
                                 ii,
                                 config.leave_one_out_cv,
                                 config.smote_bat,
-                                restvar[:],
+                                restvar,
                                 missVal,
                                 alg,
                                 str(model_out_dir),
                                 seed,
                             )
-                        )
-                    # Debugging
-                    # if inputs:
-                    #     break
+                            # Debugging
+                            # if inputs:
+                            #     break
+                            if res:
+                                result.append(res)
 
-                # Close netCDF file
-    restnc.close()
-
-    # Run the MLmap_multidim function in parallel or serial
-    if parallel:
-        with ProcessPoolExecutor() as executor:
-            # Call the MLmap_multidim function with the arguments in inputs
-            # Inputs is a list of tuples, each tuple is the arguments for the function
-            # All inputs are collected in the result list
-            print("Number of workers ", executor._max_workers)
-            result = list(filter(None, executor.map(mlmap_multidim, *zip(*inputs))))
-    else:
-        # Serial processing
-        result = []
-        for input in inputs:
-            if input:
-                output = mlmap_multidim(*input)
-                if output:  # Filter out None results
-                    result.append(output)
+    # # Run the MLmap_multidim function in parallel or serial
+    # if parallel:
+    #     with ProcessPoolExecutor() as executor:
+    #         # Call the MLmap_multidim function with the arguments in inputs
+    #         # Inputs is a list of tuples, each tuple is the arguments for the function
+    #         # All inputs are collected in the result list
+    #         print("Number of workers ", executor._max_workers)
+    #         result = list(filter(None, executor.map(mlmap_multidim, *zip(*inputs))))
+    # else:
+    #     # Serial processing
+    #     result = []
+    #     for input in inputs:
+    #         if input:
+    #             output = mlmap_multidim(*input)
+    #             if output:  # Filter out None results
+    #                 result.append(output)
 
     return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()

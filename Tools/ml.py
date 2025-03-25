@@ -413,36 +413,36 @@ def ml_loop(
     # Open restart file and select variable
     # - old comment suggested that memory was exceeded outside loop
 
-    # restnc = Dataset(restfile, "a")
+    restnc = Dataset(restfile, "a")
     result = []
 
-    with Dataset(restfile, "r") as restnc:
-        Yvar = varlist["resp"]["variables"][ipool]
-        for ii in Yvar:
-            for jj in ii["name_prefix"]:
-                for kk in ii["loops"][ii["name_loop"]]:
-                    # Get response
-                    varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
-                    if ii["name_loop"] == "pft":
-                        ipft = kk
-                    ivar = responseY[varname]
+    Yvar = varlist["resp"]["variables"][ipool]
+    for ii in Yvar:
+        for jj in ii["name_prefix"]:
+            for kk in ii["loops"][ii["name_loop"]]:
+                # Get response
+                varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
+                if ii["name_loop"] == "pft":
+                    ipft = kk
+                ivar = responseY[varname]
 
-                    restvar = restnc[varname]
+                restvar = restnc[varname]
 
-                    if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
-                        continue
-                    else:
-                        index = itertools.product(
-                            *[ii["loops"][ll] for ll in ii["dim_loop"]]
-                        )
-                        for ind in index:
-                            dim_ind = tuple(zip(ii["dim_loop"], ind))
-                            if "pft" in ii["dim_loop"]:
-                                ipft = ind[ii["dim_loop"].index("pft")]
-                            if ipft in ii["skip_loop"]["pft"]:
-                                continue
-                            # inputs.append(
-                            res = mlmap_multidim(
+                if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
+                    continue
+                else:
+                    index = itertools.product(
+                        *[ii["loops"][ll] for ll in ii["dim_loop"]]
+                    )
+                    for ind in index:
+                        dim_ind = tuple(zip(ii["dim_loop"], ind))
+                        if "pft" in ii["dim_loop"]:
+                            ipft = ind[ii["dim_loop"].index("pft")]
+                        if ipft in ii["skip_loop"]["pft"]:
+                            continue
+                        # inputs.append(
+                        inputs.append(
+                            (
                                 packdata,
                                 ivar[:],
                                 PFT_mask,
@@ -456,17 +456,18 @@ def ml_loop(
                                 ii,
                                 config.leave_one_out_cv,
                                 config.smote_bat,
-                                restvar,
+                                restvar[:],
                                 missVal,
                                 alg,
                                 str(model_out_dir),
                                 seed,
                             )
-                            # Debugging
-                            # if inputs:
-                            #     break
-                            if res:
-                                result.append(res)
+                        )
+                        # Debugging
+                        # if res:
+                        #     result.append(res)
+                        # if inputs:
+                        #     break
 
     # # Run the MLmap_multidim function in parallel or serial
     # if parallel:
@@ -479,10 +480,10 @@ def ml_loop(
     # else:
     #     # Serial processing
     #     result = []
-    #     for input in inputs:
-    #         if input:
-    #             output = mlmap_multidim(*input)
-    #             if output:  # Filter out None results
-    #                 result.append(output)
+    for input in inputs:
+        if input:
+            output = mlmap_multidim(*input)
+            if output:  # Filter out None results
+                result.append(output)
 
     return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()

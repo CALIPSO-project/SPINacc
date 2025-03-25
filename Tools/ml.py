@@ -120,7 +120,7 @@ def mlmap_multidim(
     ) = train.training_bat(combineXY, logfile, leave_one_out_cv, smote_bat, seed, alg)
 
     # 3. Extrapolate
-    Global_Predicted_Y_map = extrapolate_globally(
+    Global_Predicted_Y_map, Pred_Y_out, idx = extrapolate_globally(
         model,
         predY_train,
         pool_map,
@@ -140,18 +140,23 @@ def mlmap_multidim(
 
     # 4. Evaluate
     if (PFT_mask[ipft - 1] > 0).any():
-        return evaluate(
-            ipool,
-            ipft,
+        return (
+            evaluate(
+                ipool,
+                ipft,
+                varname,
+                ind,
+                ii,
+                model,
+                Global_Predicted_Y_map,
+                pool_map,
+                PFT_mask,
+                varlist,
+                model_out_dir,
+            ),
+            Pred_Y_out,
+            idx,
             varname,
-            ind,
-            ii,
-            model,
-            Global_Predicted_Y_map,
-            pool_map,
-            PFT_mask,
-            varlist,
-            model_out_dir,
         )
     else:
         check.display(
@@ -263,10 +268,10 @@ def extrapolate_globally(
         Pred_Y_out = np.nan_to_num(Pred_Y_out)
         idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
         # breakpoint()
-        restvar[idx] = Pred_Y_out
+        # restvar[idx] = Pred_Y_out
         # command = "restvar[...," + "%s," * len(ind) + ":,:]=Pred_Y_out[:]"
         # exec(command % tuple(ind - 1))
-    return Global_Predicted_Y_map
+    return Global_Predicted_Y_map, Pred_Y_out, idx
 
 
 def evaluate(
@@ -466,24 +471,43 @@ def ml_loop(
                         # Debugging
                         # if res:
                         #     result.append(res)
-                        # if inputs:
-                        #     break
+                        if inputs:
+                            break
+
+    # Close files
+    responseY.close()
+    restnc.close()
 
     # # Run the MLmap_multidim function in parallel or serial
-    # if parallel:
-    #     with ProcessPoolExecutor() as executor:
-    #         # Call the MLmap_multidim function with the arguments in inputs
-    #         # Inputs is a list of tuples, each tuple is the arguments for the function
-    #         # All inputs are collected in the result list
-    #         print("Number of workers ", executor._max_workers)
-    #         result = list(filter(None, executor.map(mlmap_multidim, *zip(*inputs))))
-    # else:
-    #     # Serial processing
-    #     result = []
-    for input in inputs:
-        if input:
-            output = mlmap_multidim(*input)
-            if output:  # Filter out None results
-                result.append(output)
+    if parallel:
+        with ProcessPoolExecutor() as executor:
+            # Call the MLmap_multidim function with the arguments in inputs
+            # Inputs is a list of tuples, each tuple is the arguments for the function
+            # All inputs are collected in the result list
+            print("Number of workers ", executor._max_workers)
+            result, Pred_Y_out, idx, varname = zip(
+                *filter(None, executor.map(mlmap_multidim, *zip(*inputs)))
+            )
+            rest_state = list(zip(varname, idx, Pred_Y_out))
+            all_result = list(result)
 
-    return pd.DataFrame(result).set_index(["ivar", "ipft"]).sort_index()
+    else:
+        # Serial processing
+        all_result = []
+        rest_state = []
+        for input in inputs:
+            if input:
+                result, Pred_Y_out, idx, varname = mlmap_multidim(*input)
+                if result:  # Filter out None results
+                    all_result.append(result)
+                    rest_state.append((varname, idx, Pred_Y_out))
+
+    # Modify restart file
+
+    restnc = Dataset(restfile, "a")
+    if rest_state:
+        for varname, idx, Pred_Y_out in rest_state:
+            restnc[varname][idx] = Pred_Y_out
+    restnc.close()
+
+    return pd.DataFrame(all_result).set_index(["ivar", "ipft"]).sort_index()

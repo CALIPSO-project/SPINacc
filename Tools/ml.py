@@ -468,11 +468,6 @@ def ml_loop(
                                 seed,
                             )
                         )
-                        # Debugging
-                        # if res:
-                        #     result.append(res)
-                        if inputs:
-                            break
 
     # Close files
     responseY.close()

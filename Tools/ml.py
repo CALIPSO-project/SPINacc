@@ -244,7 +244,8 @@ def extrapolate_globally(
     Returns:
         Global_Predicted_Y_map: Predicted map of target variables.
     """
-
+    Pred_Y_out = None
+    idx = None
     if not model:
         # Only a single value
         predY = np.where(pool_map == pool_map, predY_train.iloc[0], np.nan)
@@ -502,7 +503,8 @@ def ml_loop(
     restnc = Dataset(restfile, "a")
     if rest_state:
         for varname, idx, Pred_Y_out in rest_state:
-            restnc[varname][idx] = Pred_Y_out
+            if Pred_Y_out is not None:
+                restnc[varname][idx] = Pred_Y_out
     restnc.close()
 
     return pd.DataFrame(all_result).set_index(["ivar", "ipft"]).sort_index()

@@ -288,8 +288,6 @@ def main():
                     seed=iseed,
                 )
                 result.append(res_df)
-                # Debugging
-                break
 
             res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
             scores = res_df.mean()[["R2", "slope"]].to_frame().T

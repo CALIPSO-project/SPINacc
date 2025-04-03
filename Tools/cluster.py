@@ -60,6 +60,8 @@ def cluster_ana(
         packdata["Pdep_pft"] = packdata.Pdep[ipft - 1]
     pp = PFT_mask[ipft - 1]
     laix = packdata.LAI0[ipft - 1]
+    print("laix.shape:", laix.shape)
+    print("pp.shape:", pp.shape)
     pp[laix < 0.01] = np.nan
     var_pred = packdata[var_pred_name] * pp
     df = var_pred.to_dataframe().dropna()

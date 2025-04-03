@@ -4,7 +4,7 @@ from Tools import *
 def write(varlist, resultpath, IDx):
     # select mode to build forcing and restart files
     # possible modes: compressed, regular, aligned
-    mode = "compressed"
+    mode = "regular"
 
     # define indices of selected pixels using the first forcing year
     nc = Dataset(
@@ -73,7 +73,8 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath + "forcing_compressed_" + str(year) + ".nc", "w")
+            #ncout = Dataset(resultpath + "forcing_compressed_" + str(year) + ".nc", "w")
+            ncout = Dataset(str(resultpath / f"forcing_compressed_{year}.nc"), "w")
             for dim in nc.dimensions:
                 newdim = (
                     "x"
@@ -155,7 +156,8 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath + "forcing_regular_" + str(year) + ".nc", "w")
+            #ncout = Dataset(resultpath + "forcing_regular_" + str(year) + ".nc", "w")
+            ncout = Dataset(str(resultpath / f"forcing_regular_{year}.nc"), "w")
             for dim in nc.dimensions:
                 if dim == "land":
                     continue
@@ -241,7 +243,8 @@ def write(varlist, resultpath, IDx):
         for path in varlist["restart"]:
             print("Building regular restart file for", path)
             nc = Dataset(path)
-            ncout = Dataset(resultpath + os.path.split(path)[-1], "w")
+            #ncout = Dataset(resultpath + os.path.split(path)[-1], "w")
+            ncout = Dataset(str(resultpath / f"{os.path.split(path)[-1]}"), "w")
             for dim in nc.dimensions:
                 ncout.createDimension(
                     dim,

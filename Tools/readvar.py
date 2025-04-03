@@ -129,6 +129,7 @@ def readvar(varlist, config, logfile):
                 check.display("reading %s..." % vname[ivar], logfile)
                 if (
                     vname[ivar] == "LAI"
+                    or vname[ivar] == "LAI_MEAN"
                     or vname[ivar] == "NPP"
                     or vname[ivar] == "P_DEPOSITION"
                 ) and len(f[vname[ivar]].shape) > 3:
@@ -160,7 +161,22 @@ def readvar(varlist, config, logfile):
                     da[da == predvar[ipred]["missing_value"]] = np.nan
                 if isinstance(da, np.ma.masked_array):
                     da = da.filled(np.nan)
-                packdata[rename[ivar]] = (["veget", "lat", "lon"][-da.ndim :], da)
+                #packdata[rename[ivar]] = (["veget", "lat", "lon"][-da.ndim :], da)
+                # Récupère les vraies dimensions
+                dims_nc = f[vname[ivar]].dimensions  # tuple du NetCDF, ex: ('time_counter', 'veget', 'lat', 'lon')
+                dims_used = dims_nc[-da.ndim:]       # match les dimensions selon shape de da
+
+               # DEBUG si ça foire
+                print(f"---> Ajout de {rename[ivar]}")
+                print(f"     dims NetCDF : {dims_nc}")
+                print(f"     dims utilisés : {dims_used}")
+                print(f"     da.shape : {da.shape}")
+                # Correction : remplacement standard des noms de dimensions
+                dims_used = list(dims_used)  # transforme en liste pour modification
+                dims_used = ["lat" if d in ["y", "latitude"] else d for d in dims_used]
+                dims_used = ["lon" if d in ["x", "longitude"] else d for d in dims_used]
+                # Assignation
+                packdata[rename[ivar]] = (dims_used, da)
 
     ds = xarray.Dataset(packdata)
 

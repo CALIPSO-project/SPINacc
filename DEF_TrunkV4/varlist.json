@@ -1,0 +1,128 @@
+{
+
+  "coord_ref":"/home/surface10/mrasolon/trunk_V4_varlist/SBG/Restart/PrerunAMD_17101231_stomate_rest_NEW.nc",
+  "lat_reso":2,
+  "lon_reso":2,
+  "climate":
+  {
+    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.4/twodeg/",
+    "filename":"crujra_twodeg_v2.4_",
+    "year_start":1901,
+    "year_end":1910,
+    "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
+  },
+  "PFTmask":
+  {
+    "sourcefile":"/home/surface10/mrasolon/trunk_V4_varlist/SBG/Output/YE/FGSPIN.10Y.PrerunAMD_17010101_17101231_1Y_stomate_history.nc",
+    "var":"VEGET_MAX",
+    "cluster_thres":0.001,
+    "pred_thres":0.1
+  },
+  "pred":
+  {
+    "var1":
+    {
+      "sourcefile":"/home/surface10/mrasolon/trunk_V4_varlist/SBG/Output/YE/FGSPIN.10Y.PrerunAMD_17010101_17101231_1Y_stomate_history.nc",
+      "variables":["NPP","LAI_MEAN"],
+      "rename":["NPP0","LAI0"]
+    },
+    "var2":
+    {
+      "sourcefile":"/home/surface10/mrasolon/trunk_V4_varlist/SRF/Restart/PrerunAMD_17101231_sechiba_rest.nc",
+      "variables":["clay_frac"],
+      "missing_value":1e20
+    },
+    "clustering":["Tamp","Tmax","Tmean","Tmin","Tstd","Rainf_mean","Rainf_std","Qair_mean",
+                  "PSurf_mean","SWdown_mean","LWdown_mean","clay_frac",
+                  "Pre_GS","Temp_GS","GS_length","interx1","interx2"],
+    "allname":["Tamp","Tmax","Tmean","Tmin","Tstd","Rainf_mean","Rainf_std","Qair_mean",
+            "PSurf_mean","SWdown_mean","LWdown_mean","clay_frac",
+            "Pre_GS","Temp_GS","GS_length","interx1","interx2"],
+    "allname_pft":["NPP0","LAI0"]
+  },
+  "clustering":
+  {
+    "test_K":[2,3,4,5,6,7,8,9],
+    "pfts":[2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    "Ncc": [10, 20, 10, 10, 10, 20, 20, 20, 10, 10, 10, 10, 10, 10]
+  },
+  "resp": {
+  "sourcefile": "/home/orchidee01/jghattas/SpinAcc/PRERUN1/IGCM_OUT_PrerunAMD/SBG/Restart/PrerunAMD_17101231_stomate_rest_NEW.nc",
+  "missing_value": 1e20,
+  "pool_name_som": ["Active", "Slow", "Passive", "Unclassified"],
+  "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],
+  "pool_name_litter": ["StructuralAB", "StructuralBE", "WoodyAB", "WoodyBE"],
+  "sub_item": ["Cpool"],
+  "cnp": 1,
+  "npfts": 15,
+  "dim": 
+  {
+    "som": ["pft", "element"],
+    "biomass": ["pft"],
+    "litter": ["str", "pft", "element"]
+  },
+  "sect_n": {
+    "som": 1,
+    "biomass": 0,
+    "litter": 2
+  },
+  "variables": {
+    "som": [
+      {
+        "name_prefix": ["soil_carbon"],
+        "name_loop": "pft",
+        "name_postfix": "",
+        "dim_loop": ["element"],
+        "loops": {
+          "pft": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+          "element": [1, 2, 3, 4],
+          "null": [""]
+        },
+        "skip_loop": {
+          "pft": []
+        },
+        "dim": ["pft", "element"]
+      }
+    ],
+    "biomass": [
+      {
+        "name_prefix": ["cc_biomass_c"],  
+        "name_loop": "pft",
+        "name_postfix": "",
+        "dim_loop": ["null"],
+        "loops": {
+          "pft": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+          "null": [""]
+        },
+        "skip_loop": {
+          "pft": []
+        },
+        "dim": ["pft"]
+      }
+    ],
+    "litter": [
+      {
+        "name_prefix": ["litter_c"],
+        "name_loop": "str",
+        "name_postfix": "",
+        "dim_loop": ["pft", "element"],
+        "loops": {
+          "str": [1, 2], 
+          "pft": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+          "element": [1, 2, 3, 4],
+          "null": [""]
+        },
+        "skip_loop": {
+          "pft": []
+        },
+        "dim": ["str", "pft", "element"]
+      }
+    ]
+  }
+},
+
+"restart": [
+            "/home/surface10/mrasolon/trunk_V4_varlist/SRF/Restart/PrerunAMD_17101231_sechiba_rest.nc",
+            "/home/surface10/mrasolon/trunk_V4_varlist/SBG/Restart/PrerunAMD_17101231_stomate_rest_NEW.nc"
+             ]
+}

@@ -28,343 +28,353 @@ from Tools import *
 import numpy as np
 import xarray
 import subprocess
+import multiprocessing
 
-# Print Python version
-print(sys.version)
 
-#
-# Read configuration file
-#
+def main():
+    # Print Python version
+    print(sys.version)
 
-if len(sys.argv) < 2:
-    dir_def = "DEF_Trunk/"
-else:
-    dir_def = sys.argv[1]
+    #
+    # Read configuration file
+    #
 
-sys.path.append(dir_def)
-import config
+    if len(sys.argv) < 2:
+        dir_def = "DEF_Trunk/"
+    else:
+        dir_def = sys.argv[1]
 
-# Define task
-itask = str(config.tasks)
+    sys.path.append(dir_def)
+    import config
 
-# Create Path to dir_def
-dir_def = Path(dir_def)
+    # Define task
+    itask = str(config.tasks)
 
-# Define result directory
-resultpath = Path(config.results_dir)
+    # Create Path to dir_def
+    dir_def = Path(dir_def)
 
-# Create results directory if it does not exist
-resultpath.mkdir(parents=True, exist_ok=True)
+    # Define result directory
+    resultpath = Path(config.results_dir)
 
-logfile = open(config.logfile, "w", buffering=1)
-check.display("Running task: %s" % itask, logfile)
-check.display("Results are stored at: " + str(resultpath), logfile)
+    # Create results directory if it does not exist
+    resultpath.mkdir(parents=True, exist_ok=True)
 
-# Write the configuration to the log file in the results directory
-with open(dir_def / "config.py", "r") as f:
-    check.display(f.read(), logfile)
+    logfile = open(config.logfile, "w", buffering=1)
+    check.display("Running task: %s" % itask, logfile)
+    check.display("Results are stored at: " + str(resultpath), logfile)
 
-check.display("DEF directory: " + str(dir_def), logfile)
+    # Write the configuration to the log file in the results directory
+    with open(dir_def / "config.py", "r") as f:
+        check.display(f.read(), logfile)
 
-# Read list of variables
-with open(dir_def / "varlist.json", "r") as f:
-    varlist = json.loads(f.read())
+    check.display("DEF directory: " + str(dir_def), logfile)
 
-# Load stored results or start from scratch
-if not config.start_from_scratch:
-    check.display("Read from previous results...", logfile)
-    packdata = xarray.load_dataset(resultpath / "packdata.nc")
-else:
-    check.display("MLacc start from scratch...", logfile)
-    # Initialize packaged data
-    packdata = readvar(varlist, config, logfile)
-    if os.path.exists(resultpath / "packdata.nc"):
-        refdata = xarray.load_dataset(resultpath / "packdata.nc")
-        assert (refdata == packdata).all()
-    packdata.to_netcdf(resultpath / "packdata.nc")
+    # Read list of variables
+    with open(dir_def / "varlist.json", "r") as f:
+        varlist = json.loads(f.read())
 
-# Define random seed
-iseed = config.random_seed
-random.seed(config.random_seed)
-np.random.seed(iseed)
-check.display("Random seed = %i" % iseed, logfile)
+    # Load stored results or start from scratch
+    if not config.start_from_scratch:
+        check.display("Read from previous results...", logfile)
+        packdata = xarray.load_dataset(resultpath / "packdata.nc")
+    else:
+        check.display("MLacc start from scratch...", logfile)
+        # Initialize packaged data
+        packdata = readvar(varlist, config, logfile)
+        if os.path.exists(resultpath / "packdata.nc"):
+            refdata = xarray.load_dataset(resultpath / "packdata.nc")
+            assert (refdata == packdata).all()
+        packdata.to_netcdf(resultpath / "packdata.nc")
 
-# Leave-one-out cross validation
-loocv = config.leave_one_out_cv
-
-# Check if parallel exists in config
-# Evaluates to True by default
-parallel = True
-if hasattr(config, "parallel"):
-    parallel = config.parallel
-
-# Create directory for model output if config has model_out (None by default)
-model_out_dir = None
-if hasattr(config, "model_out"):
-    model_out = config.model_out
-    if model_out:
-        model_out_dir = resultpath / "model_output"
-
-# Read take_unique setting in config
-take_unique = True
-if hasattr(config, "take_unique"):
-    take_unique = config.take_unique
-
-# Read the set_most_PFT_sites from the config (False by default)
-sel_most_PFT_sites = False
-if hasattr(config, "sel_most_PFT_sites"):
-    sel_most_PFT_sites = config.sel_most_PFT_sites
-
-old_cluster = True
-if hasattr(config, "old_cluster"):
-    old_cluster = config.old_cluster
-
-# if sel_most_PFT_sites is set to True and old_cluster is set to True, raise an error
-if sel_most_PFT_sites and not old_cluster:
-    raise ValueError(
-        "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
-    )
-
-# Task 1: Test clustering (optional)
-if "1" in itask:
-    dis_all = cluster.cluster_test(packdata, varlist, logfile)
-    # added line
-    np.random.seed(iseed)
-    dis_all.dump(resultpath / "dist_all.npy")
-    check.display(
-        "Test clustering done!\nResults have been stored as dist_all.npy", logfile
-    )
-
-    # Plot clustering results
-    fig, ax = plt.subplots()
-    lns = []
-    for ipft in range(dis_all.shape[1]):
-        lns += ax.plot(packdata.Ks, dis_all[:, ipft])
-    plt.legend(lns, varlist["clustering"]["pfts"], title="PFT")
-    ax.set_ylabel(
-        "Sum of squared distances of samples to\ntheir closest cluster center"
-    )
-    ax.set_xlabel("K-value (cluster size)")
-    fig.savefig(resultpath / "dist_all.png")
-    plt.close("all")
-    check.display(
-        "Test clustering results plotted!\nResults have been stored as dist_all.png",
-        logfile,
-    )
-    # Run test of reproducibility for the task if yes
-    if config.repro_test_task_1:
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task1.py", "--trunk", dir_def]
-        )
-        check.display(
-            "Task 1 reproducibility test results have been stored in tests_results.txt",
-            logfile,
-        )
-    check.display("Task 1: done", logfile)
-
-# Task 2: Clustering
-if "2" in itask:
-    np.random.seed(iseed)
-    K = config.kmeans_clusters
-    check.display("Kmean algorithm, K=%i" % K, logfile)
-    IDx, IDloc, IDsel = cluster.cluster_all(
-        packdata,
-        varlist,
-        K,
-        logfile,
-        take_unique,
-        sel_most_PFT_sites,
-        old_cluster,
-        iseed,
-    )
-    np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
-    IDx.dump(resultpath / "IDx.npy")
-    IDloc.dump(resultpath / "IDloc.npy")
-    IDsel.dump(resultpath / "IDsel.npy")
-    check.display("Clustering done!\nResults have been stored as IDx.npy", logfile)
-
-    # Plot clustering results
-    kpfts = varlist["clustering"]["pfts"]
-    for ipft in range(len(kpfts)):
-        fig, ax = plt.subplots()
-        m = Basemap()
-        m.drawcoastlines()
-        m.scatter(IDloc[ipft][:, 1], IDloc[ipft][:, 0], s=10, marker="o", c="gray")
-        m.scatter(IDsel[ipft][:, 1], IDsel[ipft][:, 0], s=10, marker="o", c="red")
-        fig.savefig(resultpath / f"ClustRes_PFT{kpfts[ipft]}.png")
-        plt.close("all")
-    check.display(
-        "Clustering results plotted!\nResults have been stored as ClustRes_PFT*.png",
-        logfile,
-    )
-    # Run reproducibility tests for task 2
-    if config.repro_test_task_2:
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task2.py", "--trunk", dir_def]
-        )
-        check.display(
-            "Task 2 reproducibility test results have been stored in tests_results.txt",
-            logfile,
-        )
-    check.display("Task 2: done", logfile)
-
-# Task 3: Build aligned forcing and aligned restart files (optional)
-if "3" in itask:
-    check.check_file(resultpath / "IDx.npy", logfile)
-    IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
-    forcing.write(varlist, resultpath, IDx)
-    # Run test of reproducibility for task 3
-    if config.repro_test_task_3:
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task3.py", "--trunk", dir_def]
-        )
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task3_2.py", "--trunk", dir_def]
-        )
-        check.display(
-            "Task 3 reproducibility test results have been stored in tests_results.txt",
-            logfile,
-        )
-    check.display("Task 3: done", logfile)
-
-# Task 4: Machine learning and extrapolation
-if "4" in itask:
+    # Define random seed
+    iseed = config.random_seed
     random.seed(config.random_seed)
     np.random.seed(iseed)
+    check.display("Random seed = %i" % iseed, logfile)
 
-    # All predictor variable names (X)
-    var_pred_name1 = varlist["pred"]["allname"]
+    # Leave-one-out cross validation
+    loocv = config.leave_one_out_cv
 
-    # LAI and NPP predictor variable names (X)
-    var_pred_name2 = varlist["pred"]["allname_pft"]
+    # Check if parallel exists in config
+    # Evaluates to True by default
+    parallel = True
+    if hasattr(config, "parallel"):
+        parallel = config.parallel
 
-    # All feature names (X)
-    var_pred_name = var_pred_name1 + var_pred_name2
+    # Create directory for model output if config has model_out (None by default)
+    model_out_dir = None
+    if hasattr(config, "model_out"):
+        model_out = config.model_out
+        if model_out:
+            model_out_dir = resultpath / "model_output"
 
-    # Response variable names (Y)
-    Yvar = varlist["resp"]["variables"]
+    # Read take_unique setting in config
+    take_unique = True
+    if hasattr(config, "take_unique"):
+        take_unique = config.take_unique
 
-    check.check_file(resultpath / "IDx.npy", logfile)
-    IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
+    # Read the set_most_PFT_sites from the config (False by default)
+    sel_most_PFT_sites = False
+    if hasattr(config, "sel_most_PFT_sites"):
+        sel_most_PFT_sites = config.sel_most_PFT_sites
 
-    packdata.attrs.update(
-        Nv_nopft=len(var_pred_name1),
-        Nv_total=len(var_pred_name),
-        var_pred_name=var_pred_name,
-        Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),
-        Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
-    )
-    labx = ["Y"] + list(packdata.data_vars) + ["pft"]
-    # labx = ["Y"] + var_pred_name + ["pft"]
-    # Copy the restart file to be modified
-    targetfile = (
-        varlist["resp"]["targetfile"]
-        if "targetfile" in varlist["resp"]
-        else varlist["resp"]["sourcefile"]
-    )
-    restfile = resultpath / targetfile.split("/")[-1]
-    os.system("cp -f %s %s" % (targetfile, restfile))
-    # Add rights to manipulate file:
-    os.chmod(restfile, 0o644)
+    old_cluster = True
+    if hasattr(config, "old_cluster"):
+        old_cluster = config.old_cluster
 
-    for alg in config.algorithms:
-        result = []
-        for ipool in Yvar.keys():
-            check.display("processing %s..." % ipool, logfile)
-            res_df = ml.ml_loop(
-                packdata,
-                ipool,
-                logfile,
-                varlist,
-                labx,
-                config,
-                restfile,
-                alg,
-                parallel,
-                model_out_dir,
-                seed=iseed,
-            )
-            result.append(res_df)
-            # Debugging
-            # break
-
-        res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
-        scores = res_df.mean()[["R2", "slope"]].to_frame().T
-        scores = scores.assign(alg=alg).set_index("alg")
-        path = resultpath / "ML_log.csv"
-        scores.to_csv(path, mode="a", header=not path.exists())
-
-        res_path = resultpath / "MLacc_results.csv"
-        # if res_path.exists():
-        #     ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
-        #     perf_diff = res_df["slope"] - ref_df["slope"]
-        #     if perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5:
-        #         res_df.to_csv(res_path)
-        #     else:
-        #         print("Degraded performance:", perf_diff.mean(), (perf_diff > 0).mean())
-        # else:
-        res_df.to_csv(res_path)
-
-    # Additional variables need to be handled in the restart files which are not state variables of ORCHIDEE
-    if "additional_vars" not in varlist["resp"]:
-        # Handle the case where 'additional_vars' is not present
-        print("We only modify true state variables of ORCHIDEE")
-    else:
-        additional_vars = varlist["resp"]["additional_vars"]
-
-        for var in additional_vars:
-            check.display("processing %s..." % var, logfile)
-            restnc = Dataset(restfile, "a")
-            # All variables derive from npp longterm prediction
-            restvar = restnc["npp_longterm"]
-            restvar1 = restnc[var]
-
-            if var == "gpp_week" or var == "maxgppweek_lastyear" or var == "gpp_daily":
-                tmpvar = restvar[:] * 2.0
-            else:
-                tmpvar = restvar[:]
-
-            restvar1[:] = tmpvar
-            restnc.close()
-        # Run reproducibility tests for task 4
-    if config.repro_test_task_4:
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task4.py", "--trunk", dir_def]
+    # if sel_most_PFT_sites is set to True and old_cluster is set to True, raise an error
+    if sel_most_PFT_sites and not old_cluster:
+        raise ValueError(
+            "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
         )
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/test_task4_2.py", "--trunk", dir_def]
-        )
+
+    # Task 1: Test clustering (optional)
+    if "1" in itask:
+        dis_all = cluster.cluster_test(packdata, varlist, logfile)
+        # added line
+        np.random.seed(iseed)
+        dis_all.dump(resultpath / "dist_all.npy")
         check.display(
-            "Task 4 reproducibility test results have been stored in tests_results.txt",
+            "Test clustering done!\nResults have been stored as dist_all.npy", logfile
+        )
+
+        # Plot clustering results
+        fig, ax = plt.subplots()
+        lns = []
+        for ipft in range(dis_all.shape[1]):
+            lns += ax.plot(packdata.Ks, dis_all[:, ipft])
+        plt.legend(lns, varlist["clustering"]["pfts"], title="PFT")
+        ax.set_ylabel(
+            "Sum of squared distances of samples to\ntheir closest cluster center"
+        )
+        ax.set_xlabel("K-value (cluster size)")
+        fig.savefig(resultpath / "dist_all.png")
+        plt.close("all")
+        check.display(
+            "Test clustering results plotted!\nResults have been stored as dist_all.png",
             logfile,
         )
-    check.display("Task 4: done", logfile)
-
-# Task 5: Evaluation
-if "5" in itask:
-    Yvar = varlist["resp"]["variables"]
-    for ipool in Yvar.keys():
-        # if ipool!="litter":continue
-        subLabel = varlist["resp"]["sub_item"]
-
-        # if varlist["resp"]["pool_name_"+ipool] does not exist, use ipool as subpool_name
-        if "pool_name_" + ipool not in varlist["resp"]:
-            subpool_name = [ipool]
-            subLabel = ["None"]
-        else:
-            subpool_name = varlist["resp"]["pool_name_" + ipool]
-        npfts = varlist["resp"]["npfts"]
-        pp = varlist["resp"]["dim"][ipool]
-        sect_n = varlist["resp"]["sect_n"][ipool]
-        if pp[0] == "pft":
-            dims = np.array([0, 1])
-        else:
-            dims = np.array([1, 0])
-        eval_plot_un.plot_metric(resultpath, npfts, ipool, subLabel, subpool_name)
-        if loocv:
-            eval_plot_loocv_un.plot_metric(
-                resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
+        # Run test of reproducibility for the task if yes
+        if config.repro_test_task_1:
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task1.py", "--trunk", dir_def]
             )
+            check.display(
+                "Task 1 reproducibility test results have been stored in tests_results.txt",
+                logfile,
+            )
+        check.display("Task 1: done", logfile)
+
+    # Task 2: Clustering
+    if "2" in itask:
+        np.random.seed(iseed)
+        K = config.kmeans_clusters
+        check.display("Kmean algorithm, K=%i" % K, logfile)
+        IDx, IDloc, IDsel = cluster.cluster_all(
+            packdata,
+            varlist,
+            K,
+            logfile,
+            take_unique,
+            sel_most_PFT_sites,
+            old_cluster,
+            iseed,
+        )
+        np.savetxt(resultpath / "IDx.txt", IDx, fmt="%.2f")
+        IDx.dump(resultpath / "IDx.npy")
+        IDloc.dump(resultpath / "IDloc.npy")
+        IDsel.dump(resultpath / "IDsel.npy")
+        check.display("Clustering done!\nResults have been stored as IDx.npy", logfile)
+
+        # Plot clustering results
+        kpfts = varlist["clustering"]["pfts"]
+        for ipft in range(len(kpfts)):
+            fig, ax = plt.subplots()
+            m = Basemap()
+            m.drawcoastlines()
+            m.scatter(IDloc[ipft][:, 1], IDloc[ipft][:, 0], s=10, marker="o", c="gray")
+            m.scatter(IDsel[ipft][:, 1], IDsel[ipft][:, 0], s=10, marker="o", c="red")
+            fig.savefig(resultpath / f"ClustRes_PFT{kpfts[ipft]}.png")
+            plt.close("all")
+        check.display(
+            "Clustering results plotted!\nResults have been stored as ClustRes_PFT*.png",
+            logfile,
+        )
+        # Run reproducibility tests for task 2
+        if config.repro_test_task_2:
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task2.py", "--trunk", dir_def]
+            )
+            check.display(
+                "Task 2 reproducibility test results have been stored in tests_results.txt",
+                logfile,
+            )
+        check.display("Task 2: done", logfile)
+
+    # Task 3: Build aligned forcing and aligned restart files (optional)
+    if "3" in itask:
+        check.check_file(resultpath / "IDx.npy", logfile)
+        IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
+        forcing.write(varlist, resultpath, IDx)
+        # Run test of reproducibility for task 3
+        if config.repro_test_task_3:
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task3.py", "--trunk", dir_def]
+            )
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task3_2.py", "--trunk", dir_def]
+            )
+            check.display(
+                "Task 3 reproducibility test results have been stored in tests_results.txt",
+                logfile,
+            )
+        check.display("Task 3: done", logfile)
+
+    # Task 4: Machine learning and extrapolation
+    if "4" in itask:
+        random.seed(config.random_seed)
+        np.random.seed(iseed)
+
+        # All predictor variable names (X)
+        var_pred_name1 = varlist["pred"]["allname"]
+
+        # LAI and NPP predictor variable names (X)
+        var_pred_name2 = varlist["pred"]["allname_pft"]
+
+        # All feature names (X)
+        var_pred_name = var_pred_name1 + var_pred_name2
+
+        # Response variable names (Y)
+        Yvar = varlist["resp"]["variables"]
+
+        check.check_file(resultpath / "IDx.npy", logfile)
+        IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
+
+        packdata.attrs.update(
+            Nv_nopft=len(var_pred_name1),
+            Nv_total=len(var_pred_name),
+            var_pred_name=var_pred_name,
+            Nlat=np.trunc((90 - IDx[:, 0]) / packdata.lat_reso).astype(int),
+            Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
+        )
+        labx = ["Y"] + list(packdata.data_vars) + ["pft"]
+        # labx = ["Y"] + var_pred_name + ["pft"]
+        # Copy the restart file to be modified
+        targetfile = (
+            varlist["resp"]["targetfile"]
+            if "targetfile" in varlist["resp"]
+            else varlist["resp"]["sourcefile"]
+        )
+        restfile = resultpath / targetfile.split("/")[-1]
+        os.system("cp -f %s %s" % (targetfile, restfile))
+        # Add rights to manipulate file:
+        os.chmod(restfile, 0o644)
+
+        for alg in config.algorithms:
+            result = []
+            for ipool in Yvar.keys():
+                check.display("processing %s..." % ipool, logfile)
+                res_df = ml.ml_loop(
+                    packdata,
+                    ipool,
+                    logfile,
+                    varlist,
+                    labx,
+                    config,
+                    restfile,
+                    alg,
+                    parallel,
+                    model_out_dir,
+                    seed=iseed,
+                )
+                result.append(res_df)
+
+            res_df = pd.concat(result, keys=Yvar.keys(), names=["comp"])
+            scores = res_df.mean()[["R2", "slope"]].to_frame().T
+            scores = scores.assign(alg=alg).set_index("alg")
+            path = resultpath / "ML_log.csv"
+            scores.to_csv(path, mode="a", header=not path.exists())
+
+            res_path = resultpath / "MLacc_results.csv"
+            # if res_path.exists():
+            #     ref_df = pd.read_csv(res_path, index_col=[0, 1, 2])
+            #     perf_diff = res_df["slope"] - ref_df["slope"]
+            #     if perf_diff.mean() > 0 and (perf_diff > 0).mean() > 0.5:
+            #         res_df.to_csv(res_path)
+            #     else:
+            #         print("Degraded performance:", perf_diff.mean(), (perf_diff > 0).mean())
+            # else:
+            res_df.to_csv(res_path)
+
+        # Additional variables need to be handled in the restart files which are not state variables of ORCHIDEE
+        if "additional_vars" not in varlist["resp"]:
+            # Handle the case where 'additional_vars' is not present
+            print("We only modify true state variables of ORCHIDEE")
         else:
-            continue
-    check.display("Task 5: done", logfile)
+            additional_vars = varlist["resp"]["additional_vars"]
+
+            for var in additional_vars:
+                check.display("processing %s..." % var, logfile)
+                restnc = Dataset(restfile, "a")
+                # All variables derive from npp longterm prediction
+                restvar = restnc["npp_longterm"]
+                restvar1 = restnc[var]
+
+                if (
+                    var == "gpp_week"
+                    or var == "maxgppweek_lastyear"
+                    or var == "gpp_daily"
+                ):
+                    tmpvar = restvar[:] * 2.0
+                else:
+                    tmpvar = restvar[:]
+
+                restvar1[:] = tmpvar
+                restnc.close()
+            # Run reproducibility tests for task 4
+        if config.repro_test_task_4:
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task4.py", "--trunk", dir_def]
+            )
+            subprocess.run(
+                ["python", "-m", "pytest", "tests/test_task4_2.py", "--trunk", dir_def]
+            )
+            check.display(
+                "Task 4 reproducibility test results have been stored in tests_results.txt",
+                logfile,
+            )
+        check.display("Task 4: done", logfile)
+
+    # Task 5: Evaluation
+    if "5" in itask:
+        Yvar = varlist["resp"]["variables"]
+        for ipool in Yvar.keys():
+            # if ipool!="litter":continue
+            subLabel = varlist["resp"]["sub_item"]
+
+            # if varlist["resp"]["pool_name_"+ipool] does not exist, use ipool as subpool_name
+            if "pool_name_" + ipool not in varlist["resp"]:
+                subpool_name = [ipool]
+                subLabel = ["None"]
+            else:
+                subpool_name = varlist["resp"]["pool_name_" + ipool]
+            npfts = varlist["resp"]["npfts"]
+            pp = varlist["resp"]["dim"][ipool]
+            sect_n = varlist["resp"]["sect_n"][ipool]
+            if pp[0] == "pft":
+                dims = np.array([0, 1])
+            else:
+                dims = np.array([1, 0])
+            eval_plot_un.plot_metric(resultpath, npfts, ipool, subLabel, subpool_name)
+            if loocv:
+                eval_plot_loocv_un.plot_metric(
+                    resultpath, npfts, ipool, subLabel, dims, sect_n, subpool_name
+                )
+            else:
+                continue
+        check.display("Task 5: done", logfile)
+
+
+if __name__ == "__main__":
+    multiprocessing.set_start_method("forkserver", force=True)  # Use "spawn" on Windows
+    main()

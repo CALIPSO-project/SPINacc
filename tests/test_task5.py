@@ -27,7 +27,7 @@ def test_visualisation():
 
     resultpath = Path("tests/data/")
 
-    with open(resultpath / "varlist.json", "r") as f:
+    with open("DEF_Trunk/varlist.json", "r") as f:
         varlist = json.loads(f.read())
 
     Yvar = varlist["resp"]["variables"]

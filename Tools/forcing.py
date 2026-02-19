@@ -291,7 +291,7 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath / f"forcing_aligned_{year}.nc", "w")
+            taset(resultpath / os.path.split(path)[-1], "w")
 
             for dim in nc.dimensions:
                 if dim == "land":
@@ -392,7 +392,7 @@ def write(varlist, resultpath, IDx):
         for path in varlist["restart"]:
             print("Building aligned restart file for", path)
             nc = Dataset(path)
-            ncout = Dataset(resultpath + os.path.split(path)[-1], "w")
+            ncout = Dataset(resultpath / os.path.split(path)[-1], "w")
             for dim in nc.dimensions:
                 newsize = (
                     len(plat)

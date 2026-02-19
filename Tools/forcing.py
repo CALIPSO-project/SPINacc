@@ -241,7 +241,7 @@ def write(varlist, resultpath, IDx):
         for path in varlist["restart"]:
             print("Building regular restart file for", path)
             nc = Dataset(path)
-            ncout = Dataset(resultpath + os.path.split(path)[-1], "w")
+            ncout = Dataset(resultpath / os.path.split(path)[-1], "w")
             for dim in nc.dimensions:
                 ncout.createDimension(
                     dim,
@@ -291,7 +291,8 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath + "forcing_aligned_" + str(year) + ".nc", "w")
+            ncout = Dataset(resultpath / f"forcing_aligned_{year}.nc", "w")
+
             for dim in nc.dimensions:
                 if dim == "land":
                     continue

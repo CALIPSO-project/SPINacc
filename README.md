@@ -52,7 +52,7 @@ It includes:
 * `ORCHIDEE_forcing_data` - Explained in [jobs/DEF_Trunk/varlist-explained.md](jobs/DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `jobs/DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `jobs/DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (i.e. ORCHIDEE climate forcing files) (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data is stored on obelix cluster on orchideeshare will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 
@@ -173,7 +173,7 @@ The following settings can change the performance of SPINacc:
 * `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method - i.e. Randomly samples Nc examples or takes all samples if number of samples is less than Nc. If `old_cluster = False`, the new clustering method will take the max(Nc, 20% subset of locations).
 * `sel_most_PFT_sites` (default - `False`): If `True` and `old_cluster = False`, it will preferentially select samples that contain more PFTs using the 20% rule detailed previously.  If `old_cluster = True` and `sel_most_PFT_sites = True`, an error is thrown.
 
-We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes.
+We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes. If parallel execution is used, request the respective number of processors in the `jobs/obelix/job` by adding `#PBS -l ncpus=4`
 
 
 ### Obtaining best performance.
@@ -199,9 +199,9 @@ old_cluster = False
 
 If you are already using the obelix supercomputer is likely that SPINacc will work without much adjustment to the `varlist.json` file.
 
-Jobs can be submitted using the provided pbs scripts, [job](job):
-* In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
-* Then launch your first job using  **qsub -q short job**, for task 1
+Jobs can be submitted using the provided pbs scripts, [jobs/obelix/job](jobs/obelix/job):
+* In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'jobs/DEF_Trunk/'__
+* Then launch your first job using  **qsub -q short jobs/obelix/job**, for task 1
 * For tasks 3 and 4, it is better to use **qsub -q medium job**
 
 ## Overview of the individual tasks

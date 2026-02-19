@@ -73,7 +73,7 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath + "forcing_compressed_" + str(year) + ".nc", "w")
+            ncout = Dataset(str(resultpath / f"forcing_compressed_{year}.nc"), "w")
             for dim in nc.dimensions:
                 newdim = (
                     "x"
@@ -155,7 +155,7 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            ncout = Dataset(resultpath + "forcing_regular_" + str(year) + ".nc", "w")
+            ncout = Dataset(str(resultpath / f"forcing_regular_{year}.nc"), "w")
             for dim in nc.dimensions:
                 if dim == "land":
                     continue

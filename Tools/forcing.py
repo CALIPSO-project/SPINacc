@@ -291,7 +291,7 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            taset(resultpath / os.path.split(path)[-1], "w")
+            ncout = Dataset(resultpath / f"forcing_aligned_{year}.nc", "w")
 
             for dim in nc.dimensions:
                 if dim == "land":

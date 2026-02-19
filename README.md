@@ -20,7 +20,6 @@ The SPINacc package includes:
 * `ORCHIDEE_cecill.txt` - ORCHIDEE's license file
 * `job` - Job file for a bash environment
 * `job_tcsh` - Job file for a tcsh environment
-
 ## Usage
 ### Running SPINacc
 Here are the steps to launch SPINacc end-to-end, including the optional tests.
@@ -33,12 +32,16 @@ Here are the steps to launch SPINacc end-to-end, including the optional tests.
     ```
     git clone git@github.com:CALIPSO-project/SPINacc.git
     ```
-2. Create a virtual environment and activate:
+    Alternatively, clone the repo using http
+    ```
+    git clone https://github.com/CALIPSO-project/SPINacc.git
+    ```   
+3. Create a virtual environment and activate:
     ```
     python3 -m venv ./venv3
     source ./venv3/bin/activate
     ```
-3. Build all relevant dependencies:
+4. Build all relevant dependencies:
     ```
     cd SPINacc
     pip install -r requirements.txt

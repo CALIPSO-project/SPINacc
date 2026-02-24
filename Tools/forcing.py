@@ -3,7 +3,8 @@ from Tools import *
 def write(varlist, resultpath, IDx):
     # select mode to build forcing and restart files
     # possible modes: compressed, regular, aligned
-    mode = "unstructured"
+    #mode = "unstructured"
+    mode = varlist["resp"]["mode"]
 
     # define indices of selected pixels using the first forcing year
     nc = Dataset(

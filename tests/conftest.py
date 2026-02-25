@@ -1,7 +1,9 @@
+import json
 import numpy as np
 import pytest
 import sys
 import os
+from pathlib import Path
 
 
 def pytest_addoption(parser):
@@ -63,3 +65,12 @@ def output_file(test_path):
     Logging file for reproducibility test results.
     """
     return os.path.join(test_path, "tests_results.txt")
+
+
+@pytest.fixture(scope="session")
+def varlist(pytestconfig):
+    """Load varlist.json from the trunk directory."""
+    trunk_dir = pytestconfig.getoption("trunk")
+    varlist_path = Path(trunk_dir) / "varlist.json"
+    with open(varlist_path, "r") as f:
+        return json.loads(f.read())

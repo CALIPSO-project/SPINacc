@@ -211,7 +211,7 @@ def main():
             )
         check.display("Task 2: done", logfile)
 
-    # Task 3: Build aligned forcing and aligned restart files (optional)
+    # Task 3: Build forcing and restart files
     if "3" in itask:
         check.check_file(resultpath / "IDx.npy", logfile)
         IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
@@ -258,22 +258,28 @@ def main():
             Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
         )
         labx = ["Y"] + list(packdata.data_vars) + ["pft"]
-        # labx = ["Y"] + var_pred_name + ["pft"]
-        # Copy the restart file to be modified
-        targetfile = (
-            varlist["resp"]["targetfile"]
-            if "targetfile" in varlist["resp"]
-            else varlist["resp"]["sourcefile"]
-        )
+
+        #if varlist["resp"].get("mode") == "unstructured":
+        #    if "targetfile" in varlist["resp"]:
+        #        targetfile = varlist["resp"]["targetfile"]
+        #    else:
+        #        raise KeyError("Mode is 'unstructured' but 'targetfile' is missing in varlist['resp']")
+        #else:
+        #    raise ValueError(f"Unsupported mode: {varlist['resp'].get('mode')}")
+
+        targetfile = varlist["resp"]["targetfile"]
         restfile = resultpath / targetfile.split("/")[-1]
         os.system("cp -f %s %s" % (targetfile, restfile))
+
+        #
         # Add rights to manipulate file:
         os.chmod(restfile, 0o644)
 
         for alg in config.algorithms:
             result = []
             for ipool in Yvar.keys():
-                check.display("processing %s..." % ipool, logfile)
+                check.display("main.py: processing %s..." % ipool, logfile)
+
                 res_df = ml.ml_loop(
                     packdata,
                     ipool,

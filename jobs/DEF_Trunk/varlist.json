@@ -48,9 +48,9 @@
   },
   "resp":
   {
-    "sourcefile":"/home/surface11/dgoll/20260220/SPINacc/EXE_DIR/SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest_unstructured.nc_INPUTSTP4",
+    "sourcefile":"/home/surface11/dgoll/20260220/SPINacc/EXE_DIR/SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest_unstructured.nc",
     "targetfile":"/home/surface11/dgoll/20260220/SPINacc/ORCHIDEE_forcing_data/vlad_files/vlad_files//10Y/SBG_FGSPIN.10Y.ORC22v8034_19101231_stomate_rest.nc",
-    "mode":"unstructured",
+    "format":"unstructured",
     "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],

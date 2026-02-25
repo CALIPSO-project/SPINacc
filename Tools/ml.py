@@ -15,37 +15,38 @@
 from Tools import *
 
 
-def detect_restart_type(restfile):
+def detect_grid_type(ncfile):
     """
-    Detect whether a restart file is structured (lat/lon grid) or unstructured (cell-based).
+    Detect whether a netCDF file is on a structured (lat/lon grid) or unstructured
+    (cell-based) grid.
 
     Args:
-        restfile (str): Path to the restart file.
+        ncfile (str): Path to the netCDF file.
 
     Returns:
         str: "unstructured" if the file has a 'cell' dimension, otherwise "structured".
     """
-    with Dataset(restfile, "r") as nc:
+    with Dataset(ncfile, "r") as nc:
         if "cell" in nc.dimensions:
             return "unstructured"
     return "structured"
 
 
-def get_unstructured_cell_indices(restfile, packdata):
+def get_unstructured_cell_indices(ncfile, packdata):
     """
-    Get global lat/lon grid indices for each cell in an unstructured restart file.
+    Get global lat/lon grid indices for each cell in an unstructured netCDF file.
 
     The lat/lon coordinates of each cell are read from the file and mapped to
     integer row/column indices in packdata's global regular grid.
 
     Args:
-        restfile (str): Path to unstructured restart file.
+        ncfile (str): Path to unstructured netCDF file.
         packdata (xarray.Dataset): Dataset with lat_reso and lon_reso attributes.
 
     Returns:
         tuple: (Nlat, Nlon) integer arrays of global grid indices for each cell.
     """
-    with Dataset(restfile, "r") as nc:
+    with Dataset(ncfile, "r") as nc:
         lat_var = next(
             (v for v in ["nav_lat", "lat", "latitude"] if v in nc.variables), None
         )
@@ -54,7 +55,7 @@ def get_unstructured_cell_indices(restfile, packdata):
         )
         if lat_var is None or lon_var is None:
             raise ValueError(
-                f"Cannot find lat/lon variables in unstructured restart file: {restfile}"
+                f"Cannot find lat/lon variables in unstructured file: {ncfile}"
             )
         cell_lats = np.asarray(nc.variables[lat_var][:])
         cell_lons = np.asarray(nc.variables[lon_var][:])
@@ -82,8 +83,6 @@ def mlmap_multidim(
     alg,
     model_out_dir,
     seed,
-    rest_Nlat=None,
-    rest_Nlon=None,
 ):
     """
     Perform multi-dimensional machine learning mapping.
@@ -114,8 +113,6 @@ def mlmap_multidim(
         alg (str): ML algorithm to use.
         model_out_dir (Path): Directory to save trained model output.
         seed (int): Random seed to ensure reproducibility.
-        rest_Nlat (numpy.ndarray or None): Global lat indices for unstructured restart cells.
-        rest_Nlon (numpy.ndarray or None): Global lon indices for unstructured restart cells.
 
     Returns:
         result (dict): Dictionary of evaluation results.
@@ -185,15 +182,14 @@ def mlmap_multidim(
         ind,
         col_type,
         type_val,
-        rest_Nlat,
-        rest_Nlon,
     )
 
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
         return None
 
-    # For unstructured format: predictions are written back but global evaluation is skipped
-    # because pool_map contains only the training cells, not the full global grid.
+    # For unstructured sourcefile format: predictions are written back to the
+    # structured restfile, but global evaluation is skipped because pool_map
+    # contains only the training cells, not laid out on a global grid.
     if "format" in varlist["resp"] and varlist["resp"]["format"] == "unstructured":
         return (None, Pred_Y_out, idx, varname)
 
@@ -282,11 +278,12 @@ def extrapolate_globally(
     ind,
     col_type,
     type_val,
-    rest_Nlat=None,
-    rest_Nlon=None,
 ):
     """
     Extrapolate predictions globally using the trained model.
+
+    The restfile is always a global structured (lat/lon) grid, so predictions
+    are always written as a full lat/lon map regardless of the sourcefile format.
 
     Args:
         model (sklearn.pipeline.Pipeline): Trained machine learning model.
@@ -301,13 +298,10 @@ def extrapolate_globally(
         ind (tuple): Index tuple for multi-dimensional variables.
         col_type (str): Column name for encoding, or "None".
         type_val (int): Number of categories for encoding.
-        rest_Nlat (numpy.ndarray or None): Global lat indices for unstructured restart cells.
-            If provided (unstructured restart), predictions are extracted at these positions.
-        rest_Nlon (numpy.ndarray or None): Global lon indices for unstructured restart cells.
 
     Returns:
-        Global_Predicted_Y_map: Predicted map of target variables (always global nlat x nlon).
-        Pred_Y_out: Values to write back to the restart file.
+        Global_Predicted_Y_map: Predicted map of target variables (global nlat x nlon).
+        Pred_Y_out: Values to write back to the structured restfile.
         idx: Index tuple for writing into the restart variable.
     """
     Pred_Y_out = None
@@ -326,21 +320,15 @@ def extrapolate_globally(
             col_type,
             type_val,
         )
-        if rest_Nlat is not None:
-            # Unstructured restart: extract predictions at each cell's global position.
-            # The global extrapolation (nlat x nlon) is indexed by the cell coordinates.
-            Pred_Y_out = np.nan_to_num(Global_Predicted_Y_map[rest_Nlat, rest_Nlon])
-            idx = (..., *[i - 1 for i in ind], slice(None))
-        else:
-            # Structured restart: write the full global lat/lon prediction map.
-            # Modify restart file with extrapolated values
-            pmask = np.nansum(PFT_mask, axis=0)
-            pmask[np.isnan(pmask)] == 0
-            # Set ocean pixel to missVal
-            Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
-            # some pixel with nan remain, so set them zero
-            Pred_Y_out = np.nan_to_num(Pred_Y_out)
-            idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
+        # The restfile is always a global structured (lat/lon) grid.
+        # Write the full global lat/lon prediction map.
+        pmask = np.nansum(PFT_mask, axis=0)
+        pmask[np.isnan(pmask)] == 0
+        # Set ocean pixel to missVal
+        Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
+        # some pixel with nan remain, so set them zero
+        Pred_Y_out = np.nan_to_num(Pred_Y_out)
+        idx = (..., *[i - 1 for i in ind], slice(None), slice(None))
     return Global_Predicted_Y_map, Pred_Y_out, idx
 
 
@@ -467,7 +455,7 @@ def ml_loop(
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
         config (module): module of config.
-        restfile (str): Path to restart file.
+        restfile (str): Path to the global structured restart file (template for output).
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
         save_model (bool): Option to save trained model output.
@@ -476,7 +464,10 @@ def ml_loop(
     Returns:
         pandas.DataFrame: Results of machine learning evaluations.
     """
-    responseY = Dataset(varlist["resp"]["sourcefile"], "r")
+    # sourcefile contains the training data and may be on a structured or unstructured grid.
+    # Its filename is taken from varlist and resolved to the local results directory.
+    sourcefile = varlist["resp"]["sourcefile"]
+    responseY = Dataset(sourcefile, "r")
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
@@ -484,16 +475,6 @@ def ml_loop(
     missVal = varlist["resp"]["missing_value"]
 
     inputs = []
-
-    # Detect restart file type once and get cell indices for unstructured files.
-    # For unstructured restart files (cell dimension), rest_Nlat/rest_Nlon map each
-    # cell to its position in the global regular grid used for feature extrapolation.
-    # For structured restart files (lat/lon grid), these are None and the full global
-    # prediction map is written back directly.
-    rest_type = detect_restart_type(restfile)
-    rest_Nlat, rest_Nlon = None, None
-    if rest_type == "unstructured":
-        rest_Nlat, rest_Nlon = get_unstructured_cell_indices(restfile, packdata)
 
     # Open restart file and select variable
     # - old comment suggested that memory was exceeded outside loop
@@ -546,8 +527,6 @@ def ml_loop(
                                 alg,
                                 str(model_out_dir),
                                 seed,
-                                rest_Nlat,
-                                rest_Nlon,
                             )
                         )
 

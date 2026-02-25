@@ -259,17 +259,14 @@ def main():
         )
         labx = ["Y"] + list(packdata.data_vars) + ["pft"]
 
-        #if varlist["resp"].get("mode") == "unstructured":
-        #    if "targetfile" in varlist["resp"]:
-        #        targetfile = varlist["resp"]["targetfile"]
-        #    else:
-        #        raise KeyError("Mode is 'unstructured' but 'targetfile' is missing in varlist['resp']")
-        #else:
-        #    raise ValueError(f"Unsupported mode: {varlist['resp'].get('mode')}")
-
         targetfile = varlist["resp"]["targetfile"]
         restfile = resultpath / targetfile.split("/")[-1]
         os.system("cp -f %s %s" % (targetfile, restfile))
+
+        # Resolve sourcefile (training data) to its local copy in the results directory.
+        # sourcefile may be on a structured or unstructured grid depending on the run mode.
+        sourcefile = varlist["resp"]["sourcefile"]
+        varlist["resp"]["sourcefile"] = str(resultpath / sourcefile.split("/")[-1])
 
         #
         # Add rights to manipulate file:

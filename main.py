@@ -271,6 +271,10 @@ def main():
         restfile = resultpath / targetfile.split("/")[-1]
         os.system("cp -f %s %s" % (targetfile, restfile))
 
+        sourcefile = varlist["resp"]["sourcefile"]
+        sourcefile = resultpath / targetfile.split("/")[-1]
+
+
         #
         # Add rights to manipulate file:
         os.chmod(restfile, 0o644)
@@ -288,6 +292,7 @@ def main():
                     labx,
                     config,
                     restfile,
+                    sourcefile,
                     alg,
                     parallel,
                     model_out_dir,

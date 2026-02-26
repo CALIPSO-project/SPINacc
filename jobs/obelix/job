@@ -1,7 +1,8 @@
 #PBS -eo
-#PBS -l ncpus=4
 #PBS -S /bin/tcsh
-#
+##PBS -l ncpus=4
+##PBS -l walltime=01:00:00
+##PBS -N my_job
 
 # Set the dirpython environment variable to the directory in which this script is located
 setenv dirpython '/home/surface11/dgoll/20260220/SPINacc'

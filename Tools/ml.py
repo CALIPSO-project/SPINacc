@@ -14,6 +14,22 @@
 
 from Tools import *
 
+def detect_grid_type(ncfile):
+    """
+    Detect whether a netCDF file is on a structured (lat/lon grid) or unstructured
+    (cell-based) grid.
+
+    Args:
+        ncfile (str): Path to the netCDF file.
+
+    Returns:
+        str: "unstructured" if the file has a 'cell' dimension, otherwise "structured".
+    """
+    with Dataset(ncfile, "r") as nc:
+        if "cell" in nc.dimensions:
+            return "unstructured"
+    return "structured"
+
 
 def mlmap_multidim(
     packdata,
@@ -29,7 +45,6 @@ def mlmap_multidim(
     ii,
     leave_one_out_cv,
     smote_bat,
-    restvar,
     missVal,
     alg,
     model_out_dir,
@@ -128,7 +143,6 @@ def mlmap_multidim(
         ipft,
         PFT_mask,
         combine_XY,
-        restvar,
         missVal,
         ind,
         col_type,
@@ -218,7 +232,6 @@ def extrapolate_globally(
     ipft,
     PFT_mask,
     combine_XY,
-    restvar,
     missVal,
     ind,
     col_type,
@@ -262,7 +275,7 @@ def extrapolate_globally(
         )
         # Modify restart file with extrapolated values
         pmask = np.nansum(PFT_mask, axis=0)
-        pmask[np.isnan(pmask)] == 0
+        pmask[np.isnan(pmask)] = 0
         # Set ocean pixel to missVal
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
         # some pixel with nan remain, so set them zero
@@ -383,6 +396,7 @@ def ml_loop(
     labx,
     config,
     restfile,
+    sourcefile,
     alg,
     parallel,
     model_out_dir,
@@ -398,7 +412,8 @@ def ml_loop(
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
         config (module): module of config.
-        restfile (str): Path to restart file.
+        restfile (str): Path to restart file ( global structured grid )
+        sourcefile (str): Path to restart file with training data ( grid type can vary )
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
         save_model (bool): Option to save trained model output.
@@ -407,7 +422,16 @@ def ml_loop(
     Returns:
         pandas.DataFrame: Results of machine learning evaluations.
     """
-    responseY = Dataset(varlist["resp"]["sourcefile"], "r")
+
+    # check for grid type in source file
+    rest_type = detect_grid_type(sourcefile)
+    if varlist["resp"]["format"] == rest_type:
+        raise RuntimeError("source file does not correspond to expected grid format %f" % rest_type)
+    print(rest_type)
+
+    responseY = Dataset(sourcefile, "r")
+    print(responseY)
+
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
@@ -416,10 +440,9 @@ def ml_loop(
 
     inputs = []
 
-    # Open restart file and select variable
+    # Open restart file with the training data and select variables
     # - old comment suggested that memory was exceeded outside loop
 
-    restnc = Dataset(restfile, "a")
     result = []
 
     Yvar = varlist["resp"]["variables"][ipool]
@@ -432,7 +455,6 @@ def ml_loop(
                     ipft = kk
                 ivar = responseY[varname]
 
-                restvar = restnc[varname]
 
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
                     continue
@@ -446,7 +468,6 @@ def ml_loop(
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
-                        # inputs.append(
                         inputs.append(
                             (
                                 packdata,
@@ -462,7 +483,6 @@ def ml_loop(
                                 ii,
                                 config.leave_one_out_cv,
                                 config.smote_bat,
-                                restvar[:],
                                 missVal,
                                 alg,
                                 str(model_out_dir),
@@ -472,7 +492,6 @@ def ml_loop(
 
     # Close files
     responseY.close()
-    restnc.close()
 
     # # Run the MLmap_multidim function in parallel or serial
     if parallel:
@@ -498,7 +517,14 @@ def ml_loop(
                     all_result.append(result)
                     rest_state.append((varname, idx, Pred_Y_out))
 
-    # Modify restart file
+    # Modify restart file ( global structured grid )
+
+
+    # check for grid type in source file
+    rest_type = detect_grid_type(restfile)
+    if rest_type != 'structured':
+        raise RuntimeError("target file does not correspond to expected grid format 'structured' but is %f" % rest_type)
+    print(rest_type)
 
     restnc = Dataset(restfile, "a")
     if rest_state:

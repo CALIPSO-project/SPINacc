@@ -430,7 +430,7 @@ def ml_loop(
     print(rest_type)
 
     responseY = Dataset(sourcefile, "r")
-    print(responseY)
+    #print(responseY)
 
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -524,7 +524,7 @@ def ml_loop(
     rest_type = detect_grid_type(restfile)
     if rest_type != 'structured':
         raise RuntimeError("target file does not correspond to expected grid format 'structured' but is %f" % rest_type)
-    print(rest_type)
+    #print(rest_type)
 
     restnc = Dataset(restfile, "a")
     if rest_state:

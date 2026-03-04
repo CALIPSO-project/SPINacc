@@ -414,7 +414,7 @@ def write(varlist, resultpath, IDx):
             ncout.close()
 
     # ------------------------------
-    # Unstructured restart files
+    # Build pseudo-unstructured restart files (y, x=1 layout)
     # ------------------------------
     if mode == "unstructured":
         for path in varlist["restart"]:
@@ -424,88 +424,123 @@ def write(varlist, resultpath, IDx):
             outfile = str(resultpath / f"{os.path.basename(path).replace('.nc', '_unstructured.nc')}")
             ncout = Dataset(outfile, "w")
     
+            # ------------------------------
             # Create dimensions
+            # ------------------------------
+            #for dim in nc.dimensions:
+            #    if dim == "y":
+            #        ncout.createDimension("y", len(ilats))  # number of selected pixels
+            #    elif dim in ["x", "x_a"] :
+            #         if "x" not in created_dims:
+            #             ncout.createDimension("x", 1)  # singleton x dimension
+            #             created_dims.add("x")
+            #    else:
+            #        ncout.createDimension(
+            #            dim,
+            #            None if nc.dimensions[dim].isunlimited()
+            #            else len(nc.dimensions[dim])
+            #        )
+            # Track which new dimensions we already created
+            created_dims = set()
+            
             for dim in nc.dimensions:
                 if dim == "y":
-                    ncout.createDimension("cell", len(ilats))  # single cell dimension
-                    # NOTE: do NOT create "x" dimension
-                elif dim == "x":
-                    continue  # Skip x dimension entirely for unstructured
+                    if "y" not in created_dims:
+                        ncout.createDimension("y", len(ilats))
+                        created_dims.add("y")
+                elif dim in ["x", "x_a"]:
+                    if "x" not in created_dims:
+                        ncout.createDimension("x", 1)  # singleton x dimension
+                        created_dims.add("x")
                 else:
-                    ncout.createDimension(dim, len(nc.dimensions[dim]) if not nc.dimensions[dim].isunlimited() else None)
+                    if dim not in created_dims:
+                        ncout.createDimension(
+                            dim,
+                            None if nc.dimensions[dim].isunlimited() else len(nc.dimensions[dim])
+                        )
+                        created_dims.add(dim)
     
-            # Create and assign variables
+            # ------------------------------
+            # Create variables with correct fill values
+            # ------------------------------
             for var in nc.variables:
-                dims = list(nc.variables[var].dimensions)
-                dtype = nc.variables[var].dtype
-                fill_value = nc.variables[var]._FillValue if "_FillValue" in nc.variables[var].ncattrs() else None
+                dims = nc.variables[var].dimensions
+                new_dims = tuple('y' if d == 'y' else 'x' if d in ['x', 'x_a'] else d for d in dims)
+
+                var_dtype = nc.variables[var].dtype
     
-                # Replace 'y' with 'cell', and DROP 'x' entirely
-                new_dims = []
-                for d in dims:
-                    if d == "y":
-                        new_dims.append("cell")
-                    elif d == "x":
-                        continue  # Skip x - do NOT include it in new_dims
-                    else:
-                        new_dims.append(d)
-    
-                if fill_value is not None:
-                    ncout.createVariable(var, dtype, tuple(new_dims), fill_value=fill_value)
+                # Determine fill value
+                if np.issubdtype(var_dtype, np.floating):
+                    fill_value = 1.e20
+                elif np.issubdtype(var_dtype, np.integer):
+                    fill_value = np.iinfo(var_dtype).max
                 else:
-                    ncout.createVariable(var, dtype, tuple(new_dims))
+                    fill_value = None
     
-                # Copy variable attributes
+                # Create variable
+                if fill_value is not None:
+                    ncout.createVariable(var, var_dtype, new_dims, fill_value=fill_value)
+                else:
+                    ncout.createVariable(var, var_dtype, new_dims)
+    
+                # Copy attributes except _FillValue and missing_value
                 ncout.variables[var].setncatts({
-                    k: v for k, v in nc.variables[var].__dict__.items() if k not in ["_FillValue", "missing_value"]
+                    k: v for k, v in nc.variables[var].__dict__.items()
+                    if k not in ["_FillValue", "missing_value"]
                 })
     
-                # Assign data - SQUEEZE out the x dimension (which has size 1)
+                # ------------------------------
+                # Copy data with proper pixel selection
+                # ------------------------------
                 data = nc.variables[var][:]
-                if "y" in dims and "x" in dims:
-                    # Find positions of y and x
-                    y_pos = dims.index("y")
-                    x_pos = dims.index("x")
     
-                    # Prepare new array WITHOUT the x dimension
+                if "y" in new_dims and "x" in new_dims:
+                    # multi-dimensional spatial variables
+                    y_pos = new_dims.index("y")
+                    x_pos = new_dims.index("x")
                     new_shape = list(data.shape)
                     new_shape[y_pos] = len(ilats)
-                    # Remove x_pos dimension size
-                    new_shape.pop(x_pos)
-                    new_data = np.ma.masked_all(new_shape, dtype=dtype)
+                    new_shape[x_pos] = 1
+                    new_data = np.ma.masked_all(new_shape, dtype=data.dtype)
     
-                    # Copy selected pixels (iterate over the cell dimension)
                     for i, (ilat, ilon) in enumerate(zip(ilats, ilons)):
-                        # Source indices: ilat at y_pos, ilon at x_pos
-                        idx_src = [slice(None)] * len(data.shape)
-                        idx_src[y_pos] = ilat
-                        idx_src[x_pos] = ilon
-                        
-                        # Destination indices: i at y_pos (now renamed to cell), NO x dimension
-                        idx_dst = [slice(None)] * len(new_shape)
-                        idx_dst[y_pos] = i
+                        src_idx = [slice(None)] * data.ndim
+                        src_idx[y_pos] = ilat
+                        src_idx[x_pos] = ilon
     
-                        new_data[tuple(idx_dst)] = data[tuple(idx_src)]
+                        dst_idx = [slice(None)] * len(new_shape)
+                        dst_idx[y_pos] = i
+                        dst_idx[x_pos] = 0
     
-                    # Squeeze to remove any singleton dimensions (optional, but recommended)
-                    new_data = np.squeeze(new_data)
+                        new_data[tuple(dst_idx)] = data[tuple(src_idx)]
+    
                     ncout.variables[var][:] = new_data
-                elif "y" in dims:
-                    # Only y dimension (no x) - just copy by selecting ilats
-                    data_selected = np.ma.masked_all((len(ilats),) + data.shape[1:], dtype=dtype)
+    
+                elif "y" in new_dims and "x" not in new_dims:
+                    # 1D spatial variables (y only)
+                    y_pos = new_dims.index("y")
+                    new_shape = list(data.shape)
+                    new_shape[y_pos] = len(ilats)
+                    new_data = np.ma.masked_all(new_shape, dtype=data.dtype)
+    
                     for i, ilat in enumerate(ilats):
-                        idx_src = [slice(None)] * len(data.shape)
-                        idx_src[dims.index("y")] = ilat
-                        idx_dst = [slice(None)] * len(data_selected.shape)
-                        idx_dst[0] = i
-                        data_selected[tuple(idx_dst)] = data[tuple(idx_src)]
-                    ncout.variables[var][:] = data_selected
+                        src_idx = [slice(None)] * data.ndim
+                        src_idx[y_pos] = ilat
+    
+                        dst_idx = [slice(None)] * len(new_shape)
+                        dst_idx[y_pos] = i
+    
+                        new_data[tuple(dst_idx)] = data[tuple(src_idx)]
+    
+                    ncout.variables[var][:] = new_data
+    
                 else:
-                    # Non-spatial or already compatible
+                    # Non-spatial variables, copy directly
                     ncout.variables[var][:] = data
     
             nc.close()
             ncout.close()
+            print(f"Saved unstructured restart file: {outfile}")
    
 #    # build aligned forcing
 #    if mode == "aligned":

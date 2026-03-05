@@ -202,7 +202,7 @@ If you are already using the obelix supercomputer is likely that SPINacc will wo
 Jobs can be submitted using the provided pbs scripts, [jobs/obelix/job](jobs/obelix/job):
 * In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'jobs/DEF_Trunk/'__
 * Then launch your first job using  **qsub -q short jobs/obelix/job**, for task 1
-* For tasks 3 and 4, it is better to use **qsub -q medium job**
+* For tasks 3 and 4, it is better to use **qsub -q medium jobs/obelix/job**
 
 ## Overview of the individual tasks
 

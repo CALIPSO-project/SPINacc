@@ -20,16 +20,107 @@ def detect_grid_type(ncfile):
     Detect whether a netCDF file is on a structured (lat/lon grid) or unstructured
     (cell-based) grid.
 
+    A file is considered unstructured if it has:
+    - a 'cell' dimension (true unstructured), OR
+    - a 'y' dimension with multiple cells and an 'x' dimension of size 1
+      (pseudo-unstructured, as produced by Step 3).
+
     Args:
         ncfile (str): Path to the netCDF file.
 
     Returns:
-        str: "unstructured" if the file has a 'cell' dimension, otherwise "structured".
+        str: "unstructured" if the file is in unstructured or pseudo-unstructured
+             format, otherwise "structured".
     """
     with Dataset(ncfile, "r") as nc:
         if "cell" in nc.dimensions:
             return "unstructured"
+        # Pseudo-unstructured: y dimension with multiple cells, x dimension of size 1
+        if (
+            "y" in nc.dimensions
+            and "x" in nc.dimensions
+            and len(nc.dimensions["x"]) == 1
+            and len(nc.dimensions["y"]) > 1
+        ):
+            return "unstructured"
     return "structured"
+
+
+def _build_cell_idx_map(sourcefile, packdata):
+    """
+    Build a mapping from training-pixel global-grid indices (Nlat, Nlon) to the
+    cell position in an unstructured source file.
+
+    The unstructured source file stores only a subset of pixels (the ones selected
+    during clustering).  This function reads the lat/lon coordinates stored in that
+    file, converts them to global-grid indices using the same formula used in
+    main.py for packdata.Nlat/Nlon, and returns an index array so that
+
+        pool_map.ravel()[cell_idx[j]]
+
+    gives the value that belongs to training pixel j (identified by
+    packdata.Nlat[j] / packdata.Nlon[j]).
+
+    Args:
+        sourcefile (str): Path to the unstructured source file.
+        packdata (xarray.Dataset): Dataset with attrs Nlat, Nlon, lat_reso, lon_reso.
+
+    Returns:
+        numpy.ndarray: Integer array of shape (len(packdata.Nlat),) with the cell
+            index in the source file for each training pixel.
+
+    Raises:
+        RuntimeError: If lat/lon coordinate variables cannot be found in the source
+            file, or if a training pixel is absent from the source file.
+    """
+    lat_names = ["nav_lat", "lat", "latitude"]
+    lon_names = ["nav_lon", "lon", "longitude"]
+
+    with Dataset(sourcefile, "r") as nc:
+        cell_lats = None
+        cell_lons = None
+        for name in lat_names:
+            if name in nc.variables:
+                cell_lats = np.squeeze(nc.variables[name][:])
+                break
+        for name in lon_names:
+            if name in nc.variables:
+                cell_lons = np.squeeze(nc.variables[name][:])
+                break
+
+    if cell_lats is None or cell_lons is None:
+        raise RuntimeError(
+            "Could not find lat/lon coordinate variables in unstructured source file"
+        )
+
+    # Convert cell lat/lon to global grid indices (same formula as in main.py)
+    cell_ilats = np.trunc((90 - cell_lats) / packdata.lat_reso).astype(int)
+    cell_ilons = np.trunc((180 + cell_lons) / packdata.lon_reso).astype(int)
+
+    # Build reverse mapping: (ilat, ilon) -> cell index in the source file
+    cell_map = {
+        (int(ilat), int(ilon)): i
+        for i, (ilat, ilon) in enumerate(
+            zip(cell_ilats.ravel(), cell_ilons.ravel())
+        )
+    }
+
+    # For each training pixel, look up its cell index in the source file
+    try:
+        cell_idx = np.array(
+            [
+                cell_map[(int(nlat), int(nlon))]
+                for nlat, nlon in zip(packdata.Nlat, packdata.Nlon)
+            ]
+        )
+    except KeyError as e:
+        raise RuntimeError(
+            f"Training pixel with global-grid index {e} was not found in the "
+            "unstructured source file. The source file may not contain all "
+            "training pixels."
+        ) from e
+
+    return cell_idx
 
 
 def mlmap_multidim(
@@ -212,9 +303,15 @@ def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
     pool_map[pool_map == 1e20] = np.nan
     # Y_map[ind[0]] = pool_map
 
-    if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
+    resp_format = varlist["resp"].get("format", "regular")
+    if resp_format == "compressed":
         pool_arr = pool_map.flatten()
+    elif resp_format == "unstructured":
+        # pool_map is a flat 1-D array (n_cells,) from the unstructured source file.
+        # packdata.cell_idx maps each training pixel to its position in that array.
+        pool_arr = pool_map.ravel()[packdata.cell_idx]
     else:
+        # "regular" or any other structured format
         pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
 
     extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
@@ -425,10 +522,23 @@ def ml_loop(
 
     # check for grid type in source file
     rest_type = detect_grid_type(sourcefile)
-    if varlist["resp"]["format"] != rest_type:
+    # Map the varlist format name to the expected detected type.
+    # "regular" and "compressed" both correspond to a structured global grid;
+    # "unstructured" corresponds to either a true unstructured grid (cell dimension)
+    # or a pseudo-unstructured grid (y × x=1 layout produced by Step 3).
+    resp_format = varlist["resp"].get("format", "regular")
+    expected_type = "unstructured" if resp_format == "unstructured" else "structured"
+    if rest_type != expected_type:
         raise RuntimeError(
             f"source file does not correspond to expected grid format, but is {rest_type}"
         )
+
+    # For unstructured source files, build a mapping from the training-pixel
+    # global-grid indices (Nlat, Nlon) to the cell position in the source file,
+    # and store it as a packdata attribute so that extract_data can use it.
+    if rest_type == "unstructured":
+        cell_idx = _build_cell_idx_map(sourcefile, packdata)
+        packdata = packdata.assign_attrs(cell_idx=cell_idx)
 
     responseY = Dataset(sourcefile, "r")
     # print(responseY)

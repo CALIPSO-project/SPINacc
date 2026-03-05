@@ -14,6 +14,7 @@
 
 from Tools import *
 
+
 def detect_grid_type(ncfile):
     """
     Detect whether a netCDF file is on a structured (lat/lon grid) or unstructured
@@ -426,11 +427,13 @@ def ml_loop(
     # check for grid type in source file
     rest_type = detect_grid_type(sourcefile)
     if varlist["resp"]["format"] == rest_type:
-        raise RuntimeError("source file does not correspond to expected grid format %f" % rest_type)
+        raise RuntimeError(
+            "source file does not correspond to expected grid format %f" % rest_type
+        )
     print(rest_type)
 
     responseY = Dataset(sourcefile, "r")
-    #print(responseY)
+    # print(responseY)
 
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -454,7 +457,6 @@ def ml_loop(
                 if ii["name_loop"] == "pft":
                     ipft = kk
                 ivar = responseY[varname]
-
 
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
                     continue
@@ -519,12 +521,14 @@ def ml_loop(
 
     # Modify restart file ( global structured grid )
 
-
     # check for grid type in source file
     rest_type = detect_grid_type(restfile)
-    if rest_type != 'structured':
-        raise RuntimeError("target file does not correspond to expected grid format 'structured' but is %f" % rest_type)
-    #print(rest_type)
+    if rest_type != "structured":
+        raise RuntimeError(
+            "target file does not correspond to expected grid format 'structured' but is %f"
+            % rest_type
+        )
+    # print(rest_type)
 
     restnc = Dataset(restfile, "a")
     if rest_state:

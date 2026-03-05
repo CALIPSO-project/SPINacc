@@ -429,7 +429,6 @@ def ml_loop(
         raise RuntimeError(
             f"source file does not correspond to expected grid format, but is {rest_type}"
         )
-    print(rest_type)
 
     responseY = Dataset(sourcefile, "r")
     # print(responseY)

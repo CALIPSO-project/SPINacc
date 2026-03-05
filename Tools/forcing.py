@@ -325,7 +325,6 @@ def write(varlist, resultpath, IDx):
                 + str(year)
                 + ".nc"
             )
-            # ncout = Dataset(resultpath + "forcing_regular_" + str(year) + ".nc", "w")
             ncout = Dataset(str(resultpath / f"forcing_regular_{year}.nc"), "w")
 
             for dim in nc.dimensions:
@@ -456,19 +455,7 @@ def write(varlist, resultpath, IDx):
             # ------------------------------
             # Create dimensions
             # ------------------------------
-            # for dim in nc.dimensions:
-            #    if dim == "y":
-            #        ncout.createDimension("y", len(ilats))  # number of selected pixels
-            #    elif dim in ["x", "x_a"] :
-            #         if "x" not in created_dims:
-            #             ncout.createDimension("x", 1)  # singleton x dimension
-            #             created_dims.add("x")
-            #    else:
-            #        ncout.createDimension(
-            #            dim,
-            #            None if nc.dimensions[dim].isunlimited()
-            #            else len(nc.dimensions[dim])
-            #        )
+
             # Track which new dimensions we already created
             created_dims = set()
 

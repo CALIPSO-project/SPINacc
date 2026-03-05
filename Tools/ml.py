@@ -425,9 +425,9 @@ def ml_loop(
 
     # check for grid type in source file
     rest_type = detect_grid_type(sourcefile)
-    if varlist["resp"]["format"] == rest_type:
+    if varlist["resp"]["format"] != rest_type:
         raise RuntimeError(
-            "source file does not correspond to expected grid format %f" % rest_type
+            f"source file does not correspond to expected grid format, but is {rest_type}"
         )
     print(rest_type)
 
@@ -524,8 +524,7 @@ def ml_loop(
     rest_type = detect_grid_type(restfile)
     if rest_type != "structured":
         raise RuntimeError(
-            "target file does not correspond to expected grid format 'structured' but is %f"
-            % rest_type
+            f"target file does not correspond to expected grid format, but is {rest_type}"
         )
     # print(rest_type)
 

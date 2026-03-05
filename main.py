@@ -272,7 +272,7 @@ def main():
         os.system("cp -f %s %s" % (targetfile, restfile))
 
         sourcefile = varlist["resp"]["sourcefile"]
-        sourcefile = resultpath / targetfile.split("/")[-1]
+        sourcefile = resultpath / sourcefile.split("/")[-1]
 
 
         #

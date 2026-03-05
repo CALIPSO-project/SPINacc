@@ -264,8 +264,6 @@ def main():
         os.system("cp -f %s %s" % (targetfile, restfile))
 
         sourcefile = varlist["resp"]["sourcefile"]
-        sourcefile = resultpath / sourcefile.split("/")[-1]
-
 
         #
         # Add rights to manipulate file:

@@ -249,7 +249,6 @@ def extrapolate_globally(
         ipft (int): Index of current Plant Functional Type.
         PFT_mask (numpy.ndarray): Mask for Plant Functional Types.
         combine_XY (pandas.DataFrame): DataFrame of input variables.
-        restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         ind (tuple): Index tuple for multi-dimensional variables.
         col_type (str): Column name for encoding, or "None".

@@ -416,7 +416,7 @@ def ml_loop(
         sourcefile (str): Path to restart file with training data ( grid type can vary )
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
-        save_model (bool): Option to save trained model output.
+        model_out_dir (Path): Directory in which to save trained model output.
         seed (int): Random seed to ensure reproducibility.
 
     Returns:

@@ -3,7 +3,7 @@ from Tools import *
 
 def write(varlist, resultpath, IDx):
     # select mode to build forcing and restart files
-    # possible modes: compressed, regular, aligned
+    # possible modes: unstructured, regular
     # mode = "unstructured"
     mode = varlist["resp"]["format"]
 

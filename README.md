@@ -173,7 +173,7 @@ The following settings can change the performance of SPINacc:
 * `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method - i.e. Randomly samples Nc examples or takes all samples if number of samples is less than Nc. If `old_cluster = False`, the new clustering method will take the max(Nc, 20% subset of locations).
 * `sel_most_PFT_sites` (default - `False`): If `True` and `old_cluster = False`, it will preferentially select samples that contain more PFTs using the 20% rule detailed previously.  If `old_cluster = True` and `sel_most_PFT_sites = True`, an error is thrown.
 
-We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes. If parallel execution is used, request the respective number of processors in the `jobs/obelix/job` by adding `#PBS -l ncpus=4`
+We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes. If parallel execution is used, request the respective number of processors in the `jobs/obelix/job` script by activating (uncommenting, i.e. changing `##PBS -l ncpus=4` to `#PBS -l ncpus=4`) or adding the appropriate `#PBS -l ncpus=<N>` directive.
 
 
 ### Obtaining best performance.

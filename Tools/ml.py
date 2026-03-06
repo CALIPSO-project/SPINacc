@@ -25,15 +25,13 @@ def remap_unstructured_to_structured(source_var, packdata, missVal=np.nan):
     print(n_cells)
 
     # Find axis corresponding to the cell dimension
-    cell_axis = None
-    for ax, size in enumerate(source_var.shape):
-        if size == n_cells:
-            cell_axis = ax
-            break
-    if cell_axis is None:
+    # Prefer the last dimension matching n_cells, as cell dimensions typically appear last.
+    matching_axes = [ax for ax, size in enumerate(source_var.shape) if size == n_cells]
+    if not matching_axes:
         raise RuntimeError(
             f"Cannot find dimension matching n_cells={n_cells} in source_var.shape={source_var.shape}"
         )
+    cell_axis = matching_axes[-1]
 
     # Move the cell axis to the last position
     if cell_axis != len(source_var.shape) - 1:

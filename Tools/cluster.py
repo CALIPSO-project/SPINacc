@@ -210,8 +210,10 @@ def cluster_all(
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
 
     # 6. If take_unique is False, we are equivalent to the original implementation
-    if take_unique:
-        IDx = np.unique(IDx, axis=0)
+    #if take_unique:
+    #    IDx = np.unique(IDx, axis=0)
+    IDx = np.unique(IDx, axis=0)
+
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])
     IDsel = np.array([adict["PFT%iClusD" % ii]["clus_01_loc_select"] for ii in kpfts])
     return IDx, IDloc, IDsel

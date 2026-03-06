@@ -157,9 +157,7 @@ def cluster_test(packdata, varlist, logfile):
     return dis_all
 
 
-def cluster_all(
-    packdata, varlist, KK, logfile, sel_most_PFTs, old_cluster, seed
-):
+def cluster_all(packdata, varlist, KK, logfile, sel_most_PFTs, old_cluster, seed):
     """
     Perform clustering for all specified PFTs with a chosen K value.
 

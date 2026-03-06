@@ -14,6 +14,7 @@
 
 from Tools import *
 
+
 def remap_unstructured_to_structured(source_var, packdata, missVal=np.nan):
     """
     Remap pseudo-unstructured variable to structured grid,
@@ -137,9 +138,7 @@ def _build_cell_idx_map(sourcefile, packdata):
     # Build reverse mapping: (ilat, ilon) -> cell index in the source file
     cell_map = {
         (int(ilat), int(ilon)): i
-        for i, (ilat, ilon) in enumerate(
-            zip(cell_ilats.ravel(), cell_ilons.ravel())
-        )
+        for i, (ilat, ilon) in enumerate(zip(cell_ilats.ravel(), cell_ilons.ravel()))
     }
 
     # For each training pixel, look up its cell index in the source file
@@ -344,11 +343,6 @@ def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
     if resp_format == "compressed":
         pool_arr = pool_map.flatten()
     elif resp_format == "unstructured":
-    #    # pool_map is a flat 1-D array (n_cells,) from the unstructured source file.
-    #    # packdata.cell_idx maps each training pixel to its position in that array.
-    #    pool_arr = pool_map.ravel()[packdata.cell_idx]
-    #else:
-    #    # "regular" or any other structured format
         pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
 
     extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
@@ -602,11 +596,12 @@ def ml_loop(
                     ipft = kk
 
                 if rest_type == "unstructured":
-                    ivar = remap_unstructured_to_structured(responseY[varname][:], packdata, missVal)
+                    ivar = remap_unstructured_to_structured(
+                        responseY[varname][:], packdata, missVal
+                    )
                 else:
                     ivar = responseY[varname]
 
-                
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
                     continue
                 else:

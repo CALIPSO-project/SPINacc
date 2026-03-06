@@ -34,4 +34,4 @@ else
 fi
 
 sed -i "s@/home/surface5/vbastri/SPINacc_ref@$FORCING_DATA/vlad_files/vlad_files/@g" $varlist_json
-sed -i "s@/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/@$(readlink -f $TWODEG_DATA)/@g" $varlist_json
+sed -i "s@/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2.2/twodeg/@$(readlink -f $TWODEG_DATA)/@g" $varlist_json

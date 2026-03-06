@@ -50,7 +50,7 @@
   {
     "sourcefile":"/home/surface5/vbastri/SPINacc_ref/GLOBAL340Y/SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc",
     "targetfile":"/home/surface5/vbastri/SPINacc_ref/GLOBAL340Y/SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc",
-    "format":"structured",
+    "format":"regular",
     "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],

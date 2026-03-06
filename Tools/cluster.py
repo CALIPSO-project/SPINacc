@@ -158,7 +158,7 @@ def cluster_test(packdata, varlist, logfile):
 
 
 def cluster_all(
-    packdata, varlist, KK, logfile, take_unique, sel_most_PFTs, old_cluster, seed
+    packdata, varlist, KK, logfile, sel_most_PFTs, old_cluster, seed
 ):
     """
     Perform clustering for all specified PFTs with a chosen K value.
@@ -208,10 +208,7 @@ def cluster_all(
 
     # 5. Output the ID
     IDx = np.concatenate([adict["PFT%itrainingID" % ii] for ii in kpfts])
-
-    # 6. If take_unique is False, we are equivalent to the original implementation
-    #if take_unique:
-    #    IDx = np.unique(IDx, axis=0)
+    # ensure unique locations
     IDx = np.unique(IDx, axis=0)
 
     IDloc = np.array([adict["PFT%iClusD" % ii]["clus_01_loc"] for ii in kpfts])

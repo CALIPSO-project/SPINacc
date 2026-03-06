@@ -108,11 +108,6 @@ def main():
         if model_out:
             model_out_dir = resultpath / "model_output"
 
-    # Read take_unique setting in config
-    take_unique = True
-    if hasattr(config, "take_unique"):
-        take_unique = config.take_unique
-
     # Read the set_most_PFT_sites from the config (False by default)
     sel_most_PFT_sites = False
     if hasattr(config, "sel_most_PFT_sites"):
@@ -175,7 +170,6 @@ def main():
             varlist,
             K,
             logfile,
-            take_unique,
             sel_most_PFT_sites,
             old_cluster,
             iseed,

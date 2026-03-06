@@ -1,12 +1,12 @@
 """Configuration file for the MLacc tasks."""
 
-logfile = "log.MLacc_Trunk"
+logfile = "log.MLacc_Trunk.ORCv22"
 tasks = [
-    1,
-    2,
-    # 3,
+#    1,
+#    2,
+#    3,
     4,
-    5,
+#    5,
 ]  # 1=test clustering, 2=clustering, 3=compress forcing, 4=ML, 5=evaluation
 
 kmeans_clusters = 4
@@ -27,10 +27,9 @@ start_from_scratch = False
 take_year_average = False  # Performance improved when set to True
 smote_bat = True
 model_out = False  # Optional
-parallel = True  # True by default
+parallel = True # True by default
 sel_most_PFT_sites = False
 old_cluster = True  # True by default
-take_unique = False
 
 # Output and testing
 results_dir = "./EXE_DIR/"

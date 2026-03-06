@@ -11,7 +11,7 @@ cd "$(dirname "$0")"
 if [ -n "$1" ]; then
   DEF_TRUNK_PATH="$1"
 else
-  DEF_TRUNK_PATH="DEF_Trunk"
+  DEF_TRUNK_PATH="jobs/DEF_Trunk"
 fi
 
 # Resolve the full path for varlist_json

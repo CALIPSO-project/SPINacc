@@ -317,3 +317,23 @@ class TestExtractDataUnstructured:
         expected_Y = pool_vals[cell_idx]  # [40, 10, 30]
         actual_Y = df_data["Y"].values[: len(cell_idx)]
         np.testing.assert_array_almost_equal(actual_Y, expected_Y)
+
+        # pool_map must be 2D (nlat, nlon) for mleval.evaluation_map to work
+        assert pool_map.shape == (90, 180), (
+            f"pool_map must be 2D (nlat, nlon), got shape {pool_map.shape}"
+        )
+
+        # Training pixel locations should have the correct values
+        for j, (ilat, ilon) in enumerate(zip(nlats, nlons)):
+            expected_val = pool_vals[cell_idx[j]]
+            np.testing.assert_almost_equal(
+                pool_map[ilat, ilon],
+                expected_val,
+                err_msg=f"pool_map[{ilat},{ilon}] should be {expected_val}",
+            )
+
+        # Non-training pixels should be NaN
+        n_valid = np.sum(~np.isnan(pool_map))
+        assert n_valid == len(cell_idx), (
+            f"Expected {len(cell_idx)} non-NaN pixels, got {n_valid}"
+        )

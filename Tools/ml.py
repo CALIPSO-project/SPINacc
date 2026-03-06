@@ -310,6 +310,12 @@ def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
         # pool_map is a flat 1-D array (n_cells,) from the unstructured source file.
         # packdata.cell_idx maps each training pixel to its position in that array.
         pool_arr = pool_map.ravel()[packdata.cell_idx]
+        # Reconstruct a 2-D (nlat, nlon) pool_map for evaluation.  Pixels not
+        # present as training pixels remain NaN so that mleval only scores the
+        # training locations.
+        pool_map_2d = np.full((packdata.nlat, packdata.nlon), np.nan)
+        pool_map_2d[packdata.Nlat, packdata.Nlon] = np.ma.filled(pool_arr, np.nan)
+        pool_map = pool_map_2d
     else:
         # "regular" or any other structured format
         pool_arr = pool_map[packdata.Nlat, packdata.Nlon]

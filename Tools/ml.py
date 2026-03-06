@@ -22,7 +22,6 @@ def remap_unstructured_to_structured(source_var, packdata, missVal=np.nan):
 
     source_var = np.asarray(source_var)
     n_cells = packdata.Nlat.size
-    print(n_cells)
 
     # Find axis corresponding to the cell dimension
     # Prefer the last dimension matching n_cells, as cell dimensions typically appear last.
@@ -579,7 +578,6 @@ def ml_loop(
         packdata = packdata.assign_attrs(cell_idx=cell_idx)
 
     responseY = Dataset(sourcefile, "r")
-    # print(responseY)
 
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
@@ -602,15 +600,12 @@ def ml_loop(
                 varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                 if ii["name_loop"] == "pft":
                     ipft = kk
-                #ivar = responseY[varname]
-                #ivar = responseY[varname][:].squeeze()
 
                 if rest_type == "unstructured":
                     ivar = remap_unstructured_to_structured(responseY[varname][:], packdata, missVal)
                 else:
                     ivar = responseY[varname]
 
-                print(varname, np.shape(ivar))
                 
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
                     continue
@@ -681,7 +676,6 @@ def ml_loop(
         raise RuntimeError(
             f"target file does not correspond to expected grid format, but is {rest_type}"
         )
-    # print(rest_type)
 
     restnc = Dataset(restfile, "a")
     if rest_state:

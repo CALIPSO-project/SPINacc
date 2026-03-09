@@ -23,13 +23,33 @@ This software is governed by the XXX license
 XXXX <License content>
 """
 
+## tested on obelix architecture 
+import os
+# Force 1 thread per worker
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+
+# Determine CPUs allocated by PBS
+if 'PBS_NODEFILE' in os.environ:
+    with open(os.environ['PBS_NODEFILE']) as f:
+        total_cpus = len(f.readlines())
+else:
+    total_cpus = 1
+# Use all allocated CPUs
+n_workers = total_cpus
+print("PBS allocated CPUs:", total_cpus)
+print("Number of maximum workers (processes):", n_workers)
+## obelix 
+
+
 from Tools import *
 
 import numpy as np
 import xarray
 import subprocess
 import multiprocessing
-
 
 def main():
     # Print Python version
@@ -280,6 +300,7 @@ def main():
                     alg,
                     parallel,
                     model_out_dir,
+                    n_workers,
                     seed=iseed,
                 )
                 result.append(res_df)

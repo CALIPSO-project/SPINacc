@@ -528,6 +528,7 @@ def ml_loop(
     alg,
     parallel,
     model_out_dir,
+    n_workers,
     seed,
 ):
     """
@@ -545,6 +546,7 @@ def ml_loop(
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
         model_out_dir (Path): Directory in which to save trained model output.
+        n_workers(int): Maximum CPUs available 
         seed (int): Random seed to ensure reproducibility.
 
     Returns:
@@ -641,7 +643,7 @@ def ml_loop(
 
     # # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ProcessPoolExecutor() as executor:
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in the result list

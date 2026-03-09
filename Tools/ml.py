@@ -546,7 +546,7 @@ def ml_loop(
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
         model_out_dir (Path): Directory in which to save trained model output.
-        n_workers(int): Maximum CPUs available 
+        n_workers(int): Maximum CPUs available
         seed (int): Random seed to ensure reproducibility.
 
     Returns:

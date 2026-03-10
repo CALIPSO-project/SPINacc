@@ -241,7 +241,7 @@ def training_bat(
 
     try:
         model.fit(Xtrain, Ytrain, estimator__sample_weight=SW)
-    except TypeError:
+    except (TypeError, ValueError):
         model.fit(Xtrain, Ytrain)
 
     # predict
@@ -261,7 +261,12 @@ def training_bat(
             X_train, X_test = XM[train_idx, :], XM[test_idx, :]
             y_train, y_test = YM[train_idx], YM[test_idx]
             SW_train = SW[train_idx]
-            model.fit(X_train, y_train, sample_weight=SW_train)
+
+            try:
+                model.fit(X_train, y_train, estimator__sample_weight=SW_train)
+            except (TypeError, ValueError):
+                model.fit(X_train, y_train)
+
             y_pred = model.predict(X_test)
             ytests += list(y_test)
             ypreds += list(y_pred)
@@ -331,7 +336,7 @@ def select_best_model(X, Y, estimators, SW):
         )
         try:
             model.fit(Xtrain, Ytrain, estimator__sample_weight=SWtrain)
-        except TypeError:
+        except (TypeError, ValueError):
             model.fit(Xtrain, Ytrain)
         Ypred = model.predict(Xval)
         scores.append(r2_score(Yval, Ypred))

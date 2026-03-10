@@ -10,7 +10,7 @@ Documentation of aims, concepts, workflows are described in [Sun et al (2022)](h
 ## Contents
 The SPINacc package includes:
 * `main.py` - The main python module that steers the execution of SPINacc.
-* `DEF_*/`  - Directories with configuration files for each of the supported ORCHIDEE versions.
+* `jobs/*`  - Directories with configuration files for each of the supported ORCHIDEE versions.
     * `config.py` - Settings to configure the machine learning performance.
     * `varlist.json` - Configure paths to ORCHIDEE forcing output and climate data.
     * `varlist-explained.md` - Documentation of data sources used in SPINacc.
@@ -49,21 +49,21 @@ Here are the steps to launch SPINacc end-to-end, including the optional tests.
 These instructions are applicable regardless of the system you work on, however if you already have access to datasets on the Obelix supercomputer it is likely that SPINacc will run with minimal modification (see [Running on Obelix](#running-on-the-obelix-supercomputer) if you believe this is the case). We provide a ZENODO repository that contains forcing data [here](https://doi.org/10.5281/zenodo.10514124) as well as reference output for reproducibility testing.
 
 It includes:
-* `ORCHIDEE_forcing_data` - Explained in [DEF_Trunk/varlist-explained.md](DEF_Trunk/varlist_explained.md)
+* `ORCHIDEE_forcing_data` - Explained in [jobs/DEF_Trunk/varlist-explained.md](jobs/DEF_Trunk/varlist_explained.md)
 * `reference` data - necessary to run the reproducibility checks (Now OUTDATED see [Reproducibility tests](#set-up-baseline-reproducibility-checks)).
 
-The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
+The [setup-data.sh](setup-data.sh) script has been provided to automate the download of the associated ZENODO repository and set paths to the forcing data and climate data in `jobs/DEF_Trunk/varlist.json`. The ZENODO repository does not include climate data files (i.e. ORCHIDEE climate forcing files) (variable name `twodeg`, without this, initialisation will fail and SPINacc will be unable to proceed). The climate data is stored on the Obelix cluster (orchideeshare) and will be made available upon request to Daniel Goll (https://www.lsce.ipsl.fr/en/pisp/daniel-goll/).
 
 To ensure the script works without error, set the `MYTWODEG` and `MYFORCING` paths appropriately. The `MYFORCING` path points to where you want the forcing data to be extracted to. The default location is `ORCHIDEE_forcing_data` in the project root.
 
-The script runs the `sed` command to replace all occurences of `/home/surface5/vbastri/` with the downloaded and extracted `ORCHIDEE_forcing_data` in `/your/path/to/forcing/vlad_files/vlad_files/` in `DEF_Trunk/varlist.json`. This can be done manually if desired.
+The script runs the `sed` command to replace all occurences of `/home/surface5/vbastri/` with the downloaded and extracted `ORCHIDEE_forcing_data` in `/your/path/to/forcing/vlad_files/vlad_files/` in `jobs/DEF_Trunk/varlist.json`. This can be done manually if desired.
 
 
 #### Running SPINacc
 
 These instructions are designed to get up and running with SPINacc quickly and then run the accompanying tests. See the section below on [Obtaining 'best' performance](#obtaining-best-performance) for a more detailed overview of how to optimally adjust ML performance.
 
-1. In `DEF_Trunk/config.py` modify the `results_dir` variable to point to a different path if desired. To run SPINacc from end-to-end, ensure that the steps are set as follows:
+1. In `jobs/DEF_Trunk/config.py` modify the `results_dir` variable to point to a different path if desired. To run SPINacc from end-to-end, ensure that the steps are set as follows:
     ```
     tasks = [
         1,
@@ -81,9 +81,9 @@ These instructions are designed to get up and running with SPINacc quickly and t
 
 2. Then run:
     ```
-    python main.py DEF_Trunk/
+    python main.py jobs/DEF_Trunk/
     ```
-    By default, `main.py` will look for the `DEF_Trunk` directory. SPINacc supports passing other configuration / job directories as arguments to `main.py` (i.e. `python main.py DEF_CNP2/`. It is helpful to create copies of the default configurations and then modify for your own purposes to avoid continuously stashing work. )
+    By default, `main.py` will look for the `jobs/DEF_Trunk` directory. SPINacc supports passing other configuration / job directories as arguments to `main.py` (i.e. `python main.py jobs/DEF_CNP2/`. It is helpful to create copies of the default configurations and then modify for your own purposes to avoid continuously stashing work. )
 
     Results are located in your output directory under `MLacc_results.csv`. Visualisations of R2, Slope and dNRMSE are can be found each component in `Eval_all_biomassCpool.png`, `Eval_all_litterCpool.png` and `Eval_all_somCpool.png`.
 
@@ -100,21 +100,21 @@ These tests are useful to ensure that regressions have not been unexpectedly int
 
     `git clone https://github.com/ma595/SPINacc-results`
 
-2. In `DEF_Trunk/config.py` set the `reference_dir` variable to point to `SPINacc-results/Trunk`.
+2. In `jobs/DEF_Trunk/config.py` set the `reference_dir` variable to point to `SPINacc-results/Trunk`.
 
-3. \[Optional\] To execute the reproducibility checks at runtime ensure that `True` values are set in all relevant steps in `DEF_Trunk/config.py`.
+3. \[Optional\] To execute the reproducibility checks at runtime ensure that `True` values are set in all relevant steps in `jobs/DEF_Trunk/config.py`.
 
 4. Alternatively, the tests can be executed after the successful completion of a run by doing the following:
 
     ```
-    pytest --trunk=DEF_Trunk/ -v --capture=sys
+    pytest --trunk=jobs/DEF_Trunk/ -v --capture=sys
     ```
     Above it is possible to point to different output directories with the `--trunk` flag.
 
     To run a single test do:
 
     ```
-    pytest --trunk=DEF_Trunk -v --capture=sys ./tests/test_task4.py
+    pytest --trunk=jobs/DEF_Trunk -v --capture=sys ./tests/test_task4.py
     ```
     The command line arguments `-v` and `--capture=sys` makes test output more visible to users.
 
@@ -173,7 +173,7 @@ The following settings can change the performance of SPINacc:
 * `old_cluster` (default - `True`): If `True`, the clustering step will use the old clustering method - i.e. Randomly samples Nc examples or takes all samples if number of samples is less than Nc. If `old_cluster = False`, the new clustering method will take the max(Nc, 20% subset of locations).
 * `sel_most_PFT_sites` (default - `False`): If `True` and `old_cluster = False`, it will preferentially select samples that contain more PFTs using the 20% rule detailed previously.  If `old_cluster = True` and `sel_most_PFT_sites = True`, an error is thrown.
 
-We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes.
+We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes. If parallel execution is used, request the respective number of processors in the `jobs/obelix/job` script by activating (uncommenting, i.e. changing `##PBS -l ncpus=4` to `#PBS -l ncpus=4`) or adding the appropriate `#PBS -l ncpus=<N>` directive.
 
 
 ### Obtaining best performance.
@@ -199,10 +199,10 @@ old_cluster = False
 
 If you are already using the obelix supercomputer is likely that SPINacc will work without much adjustment to the `varlist.json` file.
 
-Jobs can be submitted using the provided pbs scripts, [job](job):
-* In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'DEF_Trunk/'__
-* Then launch your first job using  **qsub -q short job**, for task 1
-* For tasks 3 and 4, it is better to use **qsub -q medium job**
+Jobs can be submitted using the provided pbs scripts, [jobs/obelix/job](jobs/obelix/job):
+* In __job__ : __setenv dirpython '/your/path/to/SPINacc/'__ and __setenv dirdef 'jobs/DEF_Trunk/'__
+* Then launch your first job using  **qsub -q short jobs/obelix/job**, for task 1
+* For tasks 3 and 4, it is better to use **qsub -q medium jobs/obelix/job**
 
 ## Overview of the individual tasks
 

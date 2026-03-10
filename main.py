@@ -23,13 +23,33 @@ This software is governed by the XXX license
 XXXX <License content>
 """
 
+## tested on obelix architecture 
+import os
+# Force 1 thread per worker
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+
+# Determine CPUs allocated by PBS
+if 'PBS_NODEFILE' in os.environ:
+    with open(os.environ['PBS_NODEFILE']) as f:
+        total_cpus = len(f.readlines())
+else:
+    total_cpus = 1
+# Use all allocated CPUs
+n_workers = total_cpus
+print("PBS allocated CPUs:", total_cpus)
+print("Number of maximum workers (processes):", n_workers)
+## obelix 
+
+
 from Tools import *
 
 import numpy as np
 import xarray
 import subprocess
 import multiprocessing
-
 
 def main():
     # Print Python version
@@ -108,11 +128,6 @@ def main():
         if model_out:
             model_out_dir = resultpath / "model_output"
 
-    # Read take_unique setting in config
-    take_unique = True
-    if hasattr(config, "take_unique"):
-        take_unique = config.take_unique
-
     # Read the set_most_PFT_sites from the config (False by default)
     sel_most_PFT_sites = False
     if hasattr(config, "sel_most_PFT_sites"):
@@ -175,7 +190,6 @@ def main():
             varlist,
             K,
             logfile,
-            take_unique,
             sel_most_PFT_sites,
             old_cluster,
             iseed,
@@ -211,7 +225,7 @@ def main():
             )
         check.display("Task 2: done", logfile)
 
-    # Task 3: Build aligned forcing and aligned restart files (optional)
+    # Task 3: Build forcing and restart files
     if "3" in itask:
         check.check_file(resultpath / "IDx.npy", logfile)
         IDx = np.load(resultpath / "IDx.npy", allow_pickle=True)
@@ -258,22 +272,22 @@ def main():
             Nlon=np.trunc((180 + IDx[:, 1]) / packdata.lon_reso).astype(int),
         )
         labx = ["Y"] + list(packdata.data_vars) + ["pft"]
-        # labx = ["Y"] + var_pred_name + ["pft"]
-        # Copy the restart file to be modified
-        targetfile = (
-            varlist["resp"]["targetfile"]
-            if "targetfile" in varlist["resp"]
-            else varlist["resp"]["sourcefile"]
-        )
+
+        targetfile = varlist["resp"]["targetfile"]
         restfile = resultpath / targetfile.split("/")[-1]
         os.system("cp -f %s %s" % (targetfile, restfile))
+
+        sourcefile = varlist["resp"]["sourcefile"]
+
+        #
         # Add rights to manipulate file:
         os.chmod(restfile, 0o644)
 
         for alg in config.algorithms:
             result = []
             for ipool in Yvar.keys():
-                check.display("processing %s..." % ipool, logfile)
+                check.display("main.py: processing %s..." % ipool, logfile)
+
                 res_df = ml.ml_loop(
                     packdata,
                     ipool,
@@ -282,9 +296,11 @@ def main():
                     labx,
                     config,
                     restfile,
+                    sourcefile,
                     alg,
                     parallel,
                     model_out_dir,
+                    n_workers,
                     seed=iseed,
                 )
                 result.append(res_df)

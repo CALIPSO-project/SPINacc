@@ -1,6 +1,6 @@
 """Configuration file for the MLacc tasks."""
 
-logfile = "log.MLacc_Trunk.ORCv22"
+logfile = "log.MLacc_CNP2"
 tasks = [
 #    1,
 #    2,
@@ -27,13 +27,13 @@ start_from_scratch = False
 take_year_average = False  # Performance improved when set to True
 smote_bat = True
 model_out = False  # Optional
-parallel = True # True by default
+parallel = False  # True by default
 sel_most_PFT_sites = False
 old_cluster = True  # True by default
 
 # Output and testing
-results_dir = "./EXE_DIR/"
-reference_dir = "/home/surface10/mrasolon/files_for_zenodo/reference/EXE_DIR/"
+results_dir = "./EXE_DIR_CNP2.TEST.UNIQUE/"
+reference_dir = "./SPINacc-results/"
 leave_one_out_cv = False
 repro_test_task_1 = False
 repro_test_task_2 = False

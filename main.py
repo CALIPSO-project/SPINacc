@@ -73,6 +73,9 @@ def main():
     with open(dir_def / "varlist.json", "r") as f:
         varlist = json.loads(f.read())
 
+    # Check for incompatible configuration options before running any tasks
+    check.check_config_consistency(config, varlist)
+
     # Load stored results or start from scratch
     if not config.start_from_scratch:
         check.display("Read from previous results...", logfile)
@@ -121,12 +124,6 @@ def main():
     old_cluster = True
     if hasattr(config, "old_cluster"):
         old_cluster = config.old_cluster
-
-    # if sel_most_PFT_sites is set to True and old_cluster is set to True, raise an error
-    if sel_most_PFT_sites and old_cluster:
-        raise ValueError(
-            "sel_most_PFT_sites and old_cluster cannot be set to True at the same time"
-        )
 
     # Task 1: Test clustering (optional)
     if "1" in itask:

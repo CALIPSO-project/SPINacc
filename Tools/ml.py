@@ -15,6 +15,150 @@
 from Tools import *
 
 
+def remap_unstructured_to_structured(source_var, packdata, missVal=np.nan):
+    """
+    Remap pseudo-unstructured variable to structured grid,
+    handling extra dimensions and cell dimension not at the last axis.
+    """
+
+    source_var = np.asarray(source_var)
+    n_cells = packdata.Nlat.size
+
+    # Find axis corresponding to the cell dimension
+    # Prefer the last dimension matching n_cells, as cell dimensions typically appear last.
+    matching_axes = [ax for ax, size in enumerate(source_var.shape) if size == n_cells]
+    if not matching_axes:
+        raise RuntimeError(
+            f"Cannot find dimension matching n_cells={n_cells} in source_var.shape={source_var.shape}"
+        )
+    cell_axis = matching_axes[-1]
+
+    # Move the cell axis to the last position
+    if cell_axis != len(source_var.shape) - 1:
+        source_var = np.moveaxis(source_var, cell_axis, -1)
+
+    # Now the last dimension is the spatial cell dimension
+    structured_shape = source_var.shape[:-1] + (packdata.nlat, packdata.nlon)
+    structured = np.full(structured_shape, missVal, dtype=source_var.dtype)
+
+    # Flatten spatial indices
+    flat_idx = packdata.Nlat * packdata.nlon + packdata.Nlon
+    structured_flat = structured.reshape(*source_var.shape[:-1], -1)
+
+    # Assign cell values to global structured grid
+    structured_flat[..., flat_idx] = source_var[..., packdata.cell_idx]
+
+    # Reshape back to final structured shape
+    structured = structured_flat.reshape(structured_shape)
+    return structured
+
+
+def detect_grid_type(ncfile):
+    """
+    Detect whether a netCDF file is on a structured (lat/lon grid) or unstructured
+    (cell-based) grid.
+
+    A file is considered unstructured if it has:
+    - a 'cell' dimension (true unstructured), OR
+    - a 'y' dimension with multiple cells and an 'x' dimension of size 1
+      (pseudo-unstructured, as produced by Step 3).
+
+    Args:
+        ncfile (str): Path to the netCDF file.
+
+    Returns:
+        str: "unstructured" if the file is in unstructured or pseudo-unstructured
+             format, otherwise "structured".
+    """
+    with Dataset(ncfile, "r") as nc:
+        if "cell" in nc.dimensions:
+            return "unstructured"
+        # Pseudo-unstructured: y dimension with multiple cells, x dimension of size 1
+        if (
+            "y" in nc.dimensions
+            and "x" in nc.dimensions
+            and len(nc.dimensions["x"]) == 1
+            and len(nc.dimensions["y"]) > 1
+        ):
+            return "unstructured"
+    return "structured"
+
+
+def _build_cell_idx_map(sourcefile, packdata):
+    """
+    Build a mapping from training-pixel global-grid indices (Nlat, Nlon) to the
+    cell position in an unstructured source file.
+
+    The unstructured source file stores only a subset of pixels (the ones selected
+    during clustering).  This function reads the lat/lon coordinates stored in that
+    file, converts them to global-grid indices using the same formula used in
+    main.py for packdata.Nlat/Nlon, and returns an index array so that
+
+        pool_map.ravel()[cell_idx[j]]
+
+    gives the value that belongs to training pixel j (identified by
+    packdata.Nlat[j] / packdata.Nlon[j]).
+
+    Args:
+        sourcefile (str): Path to the unstructured source file.
+        packdata (xarray.Dataset): Dataset with attrs Nlat, Nlon, lat_reso, lon_reso.
+
+    Returns:
+        numpy.ndarray: Integer array of shape (len(packdata.Nlat),) with the cell
+            index in the source file for each training pixel.
+
+    Raises:
+        RuntimeError: If lat/lon coordinate variables cannot be found in the source
+            file, or if a training pixel is absent from the source file.
+    """
+    lat_names = ["nav_lat", "lat", "latitude"]
+    lon_names = ["nav_lon", "lon", "longitude"]
+
+    with Dataset(sourcefile, "r") as nc:
+        cell_lats = None
+        cell_lons = None
+        for name in lat_names:
+            if name in nc.variables:
+                cell_lats = np.squeeze(nc.variables[name][:])
+                break
+        for name in lon_names:
+            if name in nc.variables:
+                cell_lons = np.squeeze(nc.variables[name][:])
+                break
+
+    if cell_lats is None or cell_lons is None:
+        raise RuntimeError(
+            "Could not find lat/lon coordinate variables in unstructured source file"
+        )
+
+    # Convert cell lat/lon to global grid indices (same formula as in main.py)
+    cell_ilats = np.trunc((90 - cell_lats) / packdata.lat_reso).astype(int)
+    cell_ilons = np.trunc((180 + cell_lons) / packdata.lon_reso).astype(int)
+
+    # Build reverse mapping: (ilat, ilon) -> cell index in the source file
+    cell_map = {
+        (int(ilat), int(ilon)): i
+        for i, (ilat, ilon) in enumerate(zip(cell_ilats.ravel(), cell_ilons.ravel()))
+    }
+
+    # For each training pixel, look up its cell index in the source file
+    try:
+        cell_idx = np.array(
+            [
+                cell_map[(int(nlat), int(nlon))]
+                for nlat, nlon in zip(packdata.Nlat, packdata.Nlon)
+            ]
+        )
+    except KeyError as e:
+        raise RuntimeError(
+            f"Training pixel with global-grid index {e} was not found in the "
+            "unstructured source file. The source file may not contain all "
+            "training pixels."
+        ) from e
+
+    return cell_idx
+
+
 def mlmap_multidim(
     packdata,
     ivar,
@@ -29,7 +173,6 @@ def mlmap_multidim(
     ii,
     leave_one_out_cv,
     smote_bat,
-    restvar,
     missVal,
     alg,
     model_out_dir,
@@ -128,7 +271,6 @@ def mlmap_multidim(
         ipft,
         PFT_mask,
         combine_XY,
-        restvar,
         missVal,
         ind,
         col_type,
@@ -197,9 +339,10 @@ def extract_data(packdata, ivar, ipft, PFT_mask_lai, varlist, labx, ind):
     pool_map[pool_map == 1e20] = np.nan
     # Y_map[ind[0]] = pool_map
 
-    if "format" in varlist["resp"] and varlist["resp"]["format"] == "compressed":
+    resp_format = varlist["resp"].get("format", "regular")
+    if resp_format == "compressed":
         pool_arr = pool_map.flatten()
-    else:
+    elif resp_format == "unstructured":
         pool_arr = pool_map[packdata.Nlat, packdata.Nlon]
 
     extracted_Y = np.resize(pool_arr, (*extr_var.shape[:-1], 1))
@@ -218,7 +361,6 @@ def extrapolate_globally(
     ipft,
     PFT_mask,
     combine_XY,
-    restvar,
     missVal,
     ind,
     col_type,
@@ -235,7 +377,6 @@ def extrapolate_globally(
         ipft (int): Index of current Plant Functional Type.
         PFT_mask (numpy.ndarray): Mask for Plant Functional Types.
         combine_XY (pandas.DataFrame): DataFrame of input variables.
-        restvar (numpy.ndarray): Restart variable.
         missVal (float): Missing value to use.
         ind (tuple): Index tuple for multi-dimensional variables.
         col_type (str): Column name for encoding, or "None".
@@ -262,7 +403,7 @@ def extrapolate_globally(
         )
         # Modify restart file with extrapolated values
         pmask = np.nansum(PFT_mask, axis=0)
-        pmask[np.isnan(pmask)] == 0
+        pmask[np.isnan(pmask)] = 0
         # Set ocean pixel to missVal
         Pred_Y_out = np.where(pmask == 0, missVal, Global_Predicted_Y_map[:])
         # some pixel with nan remain, so set them zero
@@ -383,9 +524,11 @@ def ml_loop(
     labx,
     config,
     restfile,
+    sourcefile,
     alg,
     parallel,
     model_out_dir,
+    n_workers,
     seed,
 ):
     """
@@ -398,16 +541,40 @@ def ml_loop(
         varlist (dict): Dictionary of variable information.
         labx (list): List of column labels.
         config (module): module of config.
-        restfile (str): Path to restart file.
+        restfile (str): Path to restart file ( global structured grid )
+        sourcefile (str): Path to restart file with training data ( grid type can vary )
         alg (str): ML algorithm to use.
         parallel (bool): Whether to run in parallel.
-        save_model (bool): Option to save trained model output.
+        model_out_dir (Path): Directory in which to save trained model output.
+        n_workers(int): Maximum CPUs available
         seed (int): Random seed to ensure reproducibility.
 
     Returns:
         pandas.DataFrame: Results of machine learning evaluations.
     """
-    responseY = Dataset(varlist["resp"]["sourcefile"], "r")
+
+    # check for grid type in source file
+    rest_type = detect_grid_type(sourcefile)
+    # Map the varlist format name to the expected detected type.
+    # "regular" and "compressed" both correspond to a structured global grid;
+    # "unstructured" corresponds to either a true unstructured grid (cell dimension)
+    # or a pseudo-unstructured grid (y × x=1 layout produced by Step 3).
+    resp_format = varlist["resp"].get("format", "regular")
+    expected_type = "unstructured" if resp_format == "unstructured" else "structured"
+    if rest_type != expected_type:
+        raise RuntimeError(
+            f"source file does not correspond to expected grid format, but is {rest_type}"
+        )
+
+    # For unstructured source files, build a mapping from the training-pixel
+    # global-grid indices (Nlat, Nlon) to the cell position in the source file,
+    # and store it as a packdata attribute so that extract_data can use it.
+    if rest_type == "unstructured":
+        cell_idx = _build_cell_idx_map(sourcefile, packdata)
+        packdata = packdata.assign_attrs(cell_idx=cell_idx)
+
+    responseY = Dataset(sourcefile, "r")
+
     PFT_mask, PFT_mask_lai = genmask.PFT(
         packdata, varlist, varlist["PFTmask"]["pred_thres"]
     )
@@ -416,10 +583,9 @@ def ml_loop(
 
     inputs = []
 
-    # Open restart file and select variable
+    # Open restart file with the training data and select variables
     # - old comment suggested that memory was exceeded outside loop
 
-    restnc = Dataset(restfile, "a")
     result = []
 
     Yvar = varlist["resp"]["variables"][ipool]
@@ -430,9 +596,13 @@ def ml_loop(
                 varname = jj + ("_%2.2i" % kk if kk else "") + ii["name_postfix"]
                 if ii["name_loop"] == "pft":
                     ipft = kk
-                ivar = responseY[varname]
 
-                restvar = restnc[varname]
+                if rest_type == "unstructured":
+                    ivar = remap_unstructured_to_structured(
+                        responseY[varname][:], packdata, missVal
+                    )
+                else:
+                    ivar = responseY[varname]
 
                 if ii["dim_loop"] == ["null"] and ipft in ii["skip_loop"]["pft"]:
                     continue
@@ -446,7 +616,6 @@ def ml_loop(
                             ipft = ind[ii["dim_loop"].index("pft")]
                         if ipft in ii["skip_loop"]["pft"]:
                             continue
-                        # inputs.append(
                         inputs.append(
                             (
                                 packdata,
@@ -462,7 +631,6 @@ def ml_loop(
                                 ii,
                                 config.leave_one_out_cv,
                                 config.smote_bat,
-                                restvar[:],
                                 missVal,
                                 alg,
                                 str(model_out_dir),
@@ -472,11 +640,10 @@ def ml_loop(
 
     # Close files
     responseY.close()
-    restnc.close()
 
     # # Run the MLmap_multidim function in parallel or serial
     if parallel:
-        with ProcessPoolExecutor() as executor:
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
             # Call the MLmap_multidim function with the arguments in inputs
             # Inputs is a list of tuples, each tuple is the arguments for the function
             # All inputs are collected in the result list
@@ -498,7 +665,14 @@ def ml_loop(
                     all_result.append(result)
                     rest_state.append((varname, idx, Pred_Y_out))
 
-    # Modify restart file
+    # Modify restart file ( global structured grid )
+
+    # check for grid type in source file
+    rest_type = detect_grid_type(restfile)
+    if rest_type != "structured":
+        raise RuntimeError(
+            f"target file does not correspond to expected grid format, but is {rest_type}"
+        )
 
     restnc = Dataset(restfile, "a")
     if rest_state:

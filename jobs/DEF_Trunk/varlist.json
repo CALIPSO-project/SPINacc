@@ -5,8 +5,8 @@
   "lon_reso":2,
   "climate":
   {
-    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/",
-    "filename":"crujra_twodeg_v2.2_",
+    "sourcepath":"/home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2.2/twodeg/",
+    "filename":"crujra_twodeg_v2.2.2_",
     "year_start":1901,
     "year_end":1910,
     "variables":["Tair","Rainf","Snowf","Qair","PSurf","SWdown","LWdown"]
@@ -49,6 +49,8 @@
   "resp":
   {
     "sourcefile":"/home/surface5/vbastri/SPINacc_ref/GLOBAL340Y/SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc",
+    "targetfile":"/home/surface5/vbastri/SPINacc_ref/GLOBAL340Y/SBG_FGSPIN.340Y.ORC22v8034_22501231_stomate_rest.nc",
+    "format":"regular",
     "missing_value":1e20,
     "pool_name_som":["Active","Passive","Slow"],
     "pool_name_biomass":["Leaf","SapAB","SapBE","HeartAB","HeartBE","Root","Fruit","Labile"],

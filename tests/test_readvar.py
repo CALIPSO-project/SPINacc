@@ -223,6 +223,7 @@ def test_readvar_supports_daily_tmax_tmin_and_scalar_wind(tmp_path):
     assert np.isclose(_scalar(ds, "Tmax"), 13.85)
     assert np.isclose(_scalar(ds, "Tamp"), 11.0)
     assert np.isclose(_scalar(ds, "Wind_mean"), 7.5)
+    # mean(month=1..12) = 0.0065 kg m-2 s-1, scaled to annual units.
     assert np.isclose(_scalar(ds, "precip_mean"), 204984.0)
     assert np.isclose(_scalar(ds, "Pre_GS"), 202176.0)
     assert np.isclose(
@@ -271,6 +272,7 @@ def test_readvar_supports_legacy_6hourly_tair_and_wind_components(tmp_path):
     )
 
     assert np.isclose(_scalar(ds, "Tmean"), 3.35)
+    # mean(month=1..12) of Rainf + Snowf = 0.0039 kg m-2 s-1, scaled to annual units.
     assert np.isclose(_scalar(ds, "precip_mean"), 122990.4)
     assert np.isclose(_scalar(ds, "Wind_mean"), 5.0)
     assert np.isclose(

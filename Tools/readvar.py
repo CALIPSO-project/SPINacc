@@ -172,10 +172,11 @@ def readvar(varlist, config, logfile):
     if "Wind" not in ds.data_vars and {"Wind_E", "Wind_N"}.issubset(ds.data_vars):
         ds["Wind"] = np.hypot(ds["Wind_E"], ds["Wind_N"])
 
-    if "precip" not in ds.data_vars and "Rainf" in ds.data_vars:
-        ds["precip"] = ds["Rainf"]
-        if "Snowf" in ds.data_vars:
-            ds["precip"] = ds["precip"] + ds["Snowf"]
+    if "precip" not in ds.data_vars:
+        if {"Rainf", "Snowf"}.issubset(ds.data_vars):
+            ds["precip"] = ds["Rainf"] + ds["Snowf"]
+        elif "Rainf" in ds.data_vars:
+            ds["precip"] = ds["Rainf"]
 
     temp_gs_var = climvar.get("growing_season_temperature", "Tair")
     precip_gs_var = climvar.get("growing_season_precipitation", "precip")
@@ -226,8 +227,12 @@ def readvar(varlist, config, logfile):
             ds = ds.drop_vars(var).assign(stats)
 
     # 0.3 Interactions between variables
-    precip_mean_name = "precip_mean" if "precip_mean" in ds.data_vars else "Rainf_mean"
-    if {"Tmean", precip_mean_name}.issubset(ds.data_vars):
+    precip_mean_name = None
+    for candidate in ("precip_mean", "Rainf_mean"):
+        if candidate in ds.data_vars:
+            precip_mean_name = candidate
+            break
+    if precip_mean_name is not None and "Tmean" in ds.data_vars:
         ds["interx1"] = ds.Tmean * ds[precip_mean_name]
     if {"Temp_GS", "Pre_GS"}.issubset(ds.data_vars):
         ds["interx2"] = ds.Temp_GS * ds.Pre_GS

@@ -73,8 +73,9 @@ def readvar(varlist, config, logfile):
 
             # calculate the monthly value from sub-daily or daily data
             # auto-detect timesteps per day (e.g. 4 for 6-hourly, 1 for daily)
+            # days = calendar.mdays[1:] = [31, 28, 31, ...], so total_days = 365
             total_days = int(np.nansum(days))
-            steps_per_day = max(1, len(da) // total_days)
+            steps_per_day = max(1, len(da) // total_days) if total_days > 0 else 1
             zstart = 1
             var_month = np.full((12, nlat, nlon), np.nan)
             count = 0

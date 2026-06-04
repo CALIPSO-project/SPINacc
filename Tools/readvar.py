@@ -71,13 +71,18 @@ def readvar(varlist, config, logfile):
                 da = uncomp.reshape((ntime, nlat, nlon))
             # DSG: end
 
-            # calculate the monthly value from 6h data
+            # calculate the monthly value from sub-daily or daily data
+            # auto-detect timesteps per day (e.g. 4 for 6-hourly, 1 for daily)
+            total_days = int(np.nansum(days))
+            steps_per_day = max(1, len(da) // total_days)
             zstart = 1
             var_month = np.full((12, nlat, nlon), np.nan)
             count = 0
             for month in range(1, 13):
                 count = np.nansum(days[:month])
-                mkk = np.mean(da[4 * (zstart - 1) : 4 * count], axis=0)
+                mkk = np.mean(
+                    da[steps_per_day * (zstart - 1) : steps_per_day * count], axis=0
+                )
                 # mkk[da[0]==mask]=np.nan
                 var_month[month - 1] = mkk.filled(np.nan)
                 zstart = count + 1

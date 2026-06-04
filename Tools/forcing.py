@@ -174,13 +174,14 @@ def write(varlist, resultpath, IDx):
 
             # Create time variables
             ncout.createVariable("time_counter", "f8", ("tstep",))
-            ncout.createVariable("timeplussix", "f8", ("tstep",))
             ncout.variables["time_counter"].setncatts(nc.variables["time"].__dict__)
-            ncout.variables["timeplussix"].setncatts(
-                nc.variables["timeplussix"].__dict__
-            )
             ncout.variables["time_counter"][:] = nc.variables["time"][:]
-            ncout.variables["timeplussix"][:] = nc.variables["timeplussix"][:]
+            if "timeplussix" in nc.variables:
+                ncout.createVariable("timeplussix", "f8", ("tstep",))
+                ncout.variables["timeplussix"].setncatts(
+                    nc.variables["timeplussix"].__dict__
+                )
+                ncout.variables["timeplussix"][:] = nc.variables["timeplussix"][:]
 
             # Copy remaining variables
             for var in nc.variables:

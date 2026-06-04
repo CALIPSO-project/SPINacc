@@ -226,9 +226,7 @@ def readvar(varlist, config, logfile):
             ds = ds.drop_vars(var).assign(stats)
 
     # 0.3 Interactions between variables
-    precip_mean_name = (
-        "precip_mean" if "precip_mean" in ds.data_vars else "Rainf_mean"
-    )
+    precip_mean_name = "precip_mean" if "precip_mean" in ds.data_vars else "Rainf_mean"
     if {"Tmean", precip_mean_name}.issubset(ds.data_vars):
         ds["interx1"] = ds.Tmean * ds[precip_mean_name]
     if {"Temp_GS", "Pre_GS"}.issubset(ds.data_vars):
@@ -257,7 +255,19 @@ def readvar(varlist, config, logfile):
             for value in ds.data_vars
             if value.endswith("_mean")
             or value.endswith("_std")
-            or value in {"Tamp", "Tmax", "Tmean", "Tmin", "Tstd", "Pre_GS", "Temp_GS", "GS_length", "interx1", "interx2"}
+            or value
+            in {
+                "Tamp",
+                "Tmax",
+                "Tmean",
+                "Tmin",
+                "Tstd",
+                "Pre_GS",
+                "Temp_GS",
+                "GS_length",
+                "interx1",
+                "interx2",
+            }
         )
         raise KeyError(
             "Configured predictors missing from packdata: "

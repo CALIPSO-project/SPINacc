@@ -13,40 +13,40 @@ MONTH_DAYS = np.array(calendar.mdays[1:])
 
 def _write_coord_ref(path: Path):
     with Dataset(path, "w") as nc:
-        nc.createDimension("y", 1)
-        nc.createDimension("x", 1)
+        nc.createDimension("y", 2)
+        nc.createDimension("x", 2)
         nav_lat = nc.createVariable("nav_lat", "f4", ("y", "x"))
         nav_lon = nc.createVariable("nav_lon", "f4", ("y", "x"))
-        nav_lat[:] = [[45.0]]
-        nav_lon[:] = [[5.0]]
+        nav_lat[:] = [[45.0, 45.0], [43.0, 43.0]]
+        nav_lon[:] = [[5.0, 7.0], [5.0, 7.0]]
 
 
 def _write_pft_mask(path: Path):
     with Dataset(path, "w") as nc:
-        nc.createDimension("veget", 1)
-        nc.createDimension("lat", 1)
-        nc.createDimension("lon", 1)
+        nc.createDimension("veget", 2)
+        nc.createDimension("lat", 2)
+        nc.createDimension("lon", 2)
         var = nc.createVariable("VEGET_COV_MAX", "f4", ("veget", "lat", "lon"))
-        var[:] = [[[1.0]]]
+        var[:] = np.ones((2, 2, 2), dtype=np.float32)
 
 
 def _write_pred_source(path: Path):
     with Dataset(path, "w") as nc:
-        nc.createDimension("veget", 1)
-        nc.createDimension("lat", 1)
-        nc.createDimension("lon", 1)
+        nc.createDimension("veget", 2)
+        nc.createDimension("lat", 2)
+        nc.createDimension("lon", 2)
         npp = nc.createVariable("NPP", "f4", ("veget", "lat", "lon"))
         lai = nc.createVariable("LAI", "f4", ("veget", "lat", "lon"))
-        npp[:] = [[[10.0]]]
-        lai[:] = [[[2.0]]]
+        npp[:] = np.full((2, 2, 2), 10.0, dtype=np.float32)
+        lai[:] = np.full((2, 2, 2), 2.0, dtype=np.float32)
 
 
 def _write_soil_source(path: Path):
     with Dataset(path, "w") as nc:
-        nc.createDimension("lat", 1)
-        nc.createDimension("lon", 1)
+        nc.createDimension("lat", 2)
+        nc.createDimension("lon", 2)
         clay = nc.createVariable("clay_frac", "f4", ("lat", "lon"))
-        clay[:] = [[0.3]]
+        clay[:] = np.full((2, 2), 0.3, dtype=np.float32)
 
 
 def _expand_monthly(monthly_values, steps_per_day):
@@ -63,15 +63,23 @@ def _write_climate_file(path: Path, variables, steps_per_day):
     nsteps = int(MONTH_DAYS.sum() * steps_per_day)
     with Dataset(path, "w") as nc:
         nc.createDimension("tstep", nsteps)
-        nc.createDimension("latitude", 1)
-        nc.createDimension("longitude", 1)
+        nc.createDimension("latitude", 2)
+        nc.createDimension("longitude", 2)
         time = nc.createVariable("time", "f8", ("tstep",))
         time[:] = np.arange(nsteps)
-        nc.createVariable("latitude", "f4", ("latitude",))[:] = [45.0]
-        nc.createVariable("longitude", "f4", ("longitude",))[:] = [5.0]
-        nc.createVariable("nav_lat", "f4", ("latitude", "longitude"))[:] = [[45.0]]
-        nc.createVariable("nav_lon", "f4", ("latitude", "longitude"))[:] = [[5.0]]
-        nc.createVariable("contfrac", "f4", ("latitude", "longitude"))[:] = [[1.0]]
+        nc.createVariable("latitude", "f4", ("latitude",))[:] = [45.0, 43.0]
+        nc.createVariable("longitude", "f4", ("longitude",))[:] = [5.0, 7.0]
+        nc.createVariable("nav_lat", "f4", ("latitude", "longitude"))[:] = [
+            [45.0, 45.0],
+            [43.0, 43.0],
+        ]
+        nc.createVariable("nav_lon", "f4", ("latitude", "longitude"))[:] = [
+            [5.0, 7.0],
+            [5.0, 7.0],
+        ]
+        nc.createVariable("contfrac", "f4", ("latitude", "longitude"))[:] = np.ones(
+            (2, 2), dtype=np.float32
+        )
         for name, monthly_values in variables.items():
             var = nc.createVariable(
                 name,
@@ -79,7 +87,8 @@ def _write_climate_file(path: Path, variables, steps_per_day):
                 ("tstep", "latitude", "longitude"),
                 fill_value=np.float32(1.0e20),
             )
-            var[:] = _expand_monthly(monthly_values, steps_per_day)
+            data = _expand_monthly(monthly_values, steps_per_day)
+            var[:] = np.broadcast_to(data, (nsteps, 2, 2))
 
 
 def _make_varlist(tmp_path: Path, climate_variables):
@@ -163,6 +172,10 @@ def _config():
     )
 
 
+def _scalar(ds, name):
+    return ds[name].isel(lat=0, lon=0).item()
+
+
 def test_readvar_supports_daily_tmax_tmin_and_scalar_wind(tmp_path):
     _write_coord_ref(tmp_path / "coord_ref.nc")
     _write_pft_mask(tmp_path / "pftmask.nc")
@@ -205,14 +218,16 @@ def test_readvar_supports_daily_tmax_tmin_and_scalar_wind(tmp_path):
         None,
     )
 
-    assert np.isclose(ds["Tmean"].item(), 8.35)
-    assert np.isclose(ds["Tmin"].item(), 2.85)
-    assert np.isclose(ds["Tmax"].item(), 13.85)
-    assert np.isclose(ds["Tamp"].item(), 11.0)
-    assert np.isclose(ds["Wind_mean"].item(), 7.5)
-    assert np.isclose(ds["precip_mean"].item(), 204984.0)
-    assert np.isclose(ds["Pre_GS"].item(), 202176.0)
-    assert np.isclose(ds["interx1"].item(), ds["Tmean"].item() * ds["precip_mean"].item())
+    assert np.isclose(_scalar(ds, "Tmean"), 8.35)
+    assert np.isclose(_scalar(ds, "Tmin"), 2.85)
+    assert np.isclose(_scalar(ds, "Tmax"), 13.85)
+    assert np.isclose(_scalar(ds, "Tamp"), 11.0)
+    assert np.isclose(_scalar(ds, "Wind_mean"), 7.5)
+    assert np.isclose(_scalar(ds, "precip_mean"), 204984.0)
+    assert np.isclose(_scalar(ds, "Pre_GS"), 202176.0)
+    assert np.isclose(
+        _scalar(ds, "interx1"), _scalar(ds, "Tmean") * _scalar(ds, "precip_mean")
+    )
 
 
 def test_readvar_supports_legacy_6hourly_tair_and_wind_components(tmp_path):
@@ -255,7 +270,9 @@ def test_readvar_supports_legacy_6hourly_tair_and_wind_components(tmp_path):
         None,
     )
 
-    assert np.isclose(ds["Tmean"].item(), 3.35)
-    assert np.isclose(ds["precip_mean"].item(), 122990.4)
-    assert np.isclose(ds["Wind_mean"].item(), 5.0)
-    assert np.isclose(ds["interx1"].item(), ds["Tmean"].item() * ds["precip_mean"].item())
+    assert np.isclose(_scalar(ds, "Tmean"), 3.35)
+    assert np.isclose(_scalar(ds, "precip_mean"), 122990.4)
+    assert np.isclose(_scalar(ds, "Wind_mean"), 5.0)
+    assert np.isclose(
+        _scalar(ds, "interx1"), _scalar(ds, "Tmean") * _scalar(ds, "precip_mean")
+    )

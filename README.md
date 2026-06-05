@@ -176,6 +176,32 @@ The following settings can change the performance of SPINacc:
 We recommend always setting `parallel = True` in `config.py` to speed up the execution of SPINacc. The serial and parallel execution gives exactly the same results, however it may sometimes be useful to turn this off for debugging purposes. If parallel execution is used, request the respective number of processors in the `jobs/obelix/job` script by activating (uncommenting, i.e. changing `##PBS -l ncpus=4` to `#PBS -l ncpus=4`) or adding the appropriate `#PBS -l ncpus=<N>` directive.
 
 
+### Climate forcing inputs
+
+SPINacc supports both legacy 6-hourly forcing and daily forcing files with a different variable mix.
+
+- 6-hourly inputs can provide `Tair`, `Rainf`, `Snowf`, `Qair`, `PSurf`, `SWdown`, `LWdown`, `Wind_E`, and `Wind_N`.
+- Daily inputs can provide `Tmax`, `Tmin`, `precip`, `Rainf`, `Snowf`, `Qair`, `PSurf`, `SWdown`, `LWdown`, and `Wind`.
+
+The climate reader now:
+
+- derives `Tair` from `Tmax` and `Tmin` when `Tair` is not present
+- derives scalar `Wind` from `Wind_E` and `Wind_N` when only wind components are present
+- derives total precipitation `precip` from `Rainf + Snowf` when `precip` is not present
+- computes generic `<variable>_mean` and `<variable>_std` predictors for all climate inputs
+- computes `Pre_GS` and `interx1` from total precipitation when available
+
+`varlist.json` can optionally remap source names to SPINacc names:
+
+```json
+"climate": {
+  "variables": ["tasmax", "tasmin", "huss", "ps", "sfcWind", "pr", "rlds", "rsds"],
+  "rename": ["Tmax", "Tmin", "Qair", "PSurf", "Wind", "precip", "LWdown", "SWdown"]
+}
+```
+
+For daily forcing, update `pred.clustering` and `pred.allname` to use the aggregated predictors that are actually present in `packdata.nc`, for example `precip_mean`, `precip_std`, `Wind_mean`, or `Wind_std`.
+
 ### Obtaining best performance.
 
 The following settings are recommended to obtain best machine learning performance with SPINacc. Note that training time will be longer with `take_year_average` set to `False`.

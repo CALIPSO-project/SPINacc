@@ -144,9 +144,16 @@ def write(varlist, resultpath, IDx):
             ncout.createVariable("bounds_lat", "f4", ("cell", "nvertex"))
             ncout.createVariable("Areas", "f4", ("cell",))
 
-            # Copy attributes for nav_lon/nav_lat
-            for v in ["nav_lon", "nav_lat"]:
-                ncout.variables[v].setncatts(nc.variables[v].__dict__)
+            # Copy attributes for coordinate variables when present in the source file
+            coord_sources = {
+                "nav_lon": nc.variables.get("nav_lon"),
+                "nav_lat": nc.variables.get("nav_lat"),
+                "lon": nc.variables.get("lon", nc.variables.get("longitude")),
+                "lat": nc.variables.get("lat", nc.variables.get("latitude")),
+            }
+            for target, source in coord_sources.items():
+                if source is not None:
+                    ncout.variables[target].setncatts(source.__dict__)
 
             # Assign coordinates
             selected_lons = lon[ilons]
@@ -174,17 +181,28 @@ def write(varlist, resultpath, IDx):
 
             # Create time variables
             ncout.createVariable("time_counter", "f8", ("tstep",))
-            ncout.createVariable("timeplussix", "f8", ("tstep",))
             ncout.variables["time_counter"].setncatts(nc.variables["time"].__dict__)
-            ncout.variables["timeplussix"].setncatts(
-                nc.variables["timeplussix"].__dict__
-            )
             ncout.variables["time_counter"][:] = nc.variables["time"][:]
-            ncout.variables["timeplussix"][:] = nc.variables["timeplussix"][:]
+            if "timeplussix" in nc.variables:
+                ncout.createVariable("timeplussix", "f8", ("tstep",))
+                ncout.variables["timeplussix"].setncatts(
+                    nc.variables["timeplussix"].__dict__
+                )
+                ncout.variables["timeplussix"][:] = nc.variables["timeplussix"][:]
 
             # Copy remaining variables
             for var in nc.variables:
-                if var in ["nav_lon", "nav_lat", "time", "timeplussix", "fd"]:
+                if var in [
+                    "nav_lon",
+                    "nav_lat",
+                    "lon",
+                    "lat",
+                    "longitude",
+                    "latitude",
+                    "time",
+                    "timeplussix",
+                    "fd",
+                ]:
                     continue
 
                 dims = nc.variables[var].dimensions

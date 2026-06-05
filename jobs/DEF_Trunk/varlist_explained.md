@@ -8,7 +8,9 @@
 - **Source Path:** /home/orchideeshare/igcmg/IGCM/SRF/METEO/CRUJRA/v2.2/twodeg/
 - **File Names Pattern:** crujra_twodeg_v2.2_
 - **Usage:** Provides historical climate data for driving ORCHIDEE simulations or for use in machine learning models.
-- **Variables:** Temperature (Tair), rainfall (Rainf), snowfall (Snowf), air humidity (Qair), surface pressure (PSurf), downward shortwave radiation (SWdown), and longwave radiation (LWdown)- **Tools Usage:** Referenced in Tools/forcing.py for creating compressed and aligned forcing data.
+- **Variables:** Legacy 6-hourly forcing can provide `Tair`, `Rainf`, `Snowf`, `Qair`, `PSurf`, `SWdown`, `LWdown`, `Wind_E`, and `Wind_N`. Daily forcing can instead provide `Tmax`, `Tmin`, `precip`, `Rainf`, `Snowf`, `Qair`, `PSurf`, `SWdown`, `LWdown`, and `Wind`.
+- **Predictor aggregation:** SPINacc derives `Tair` from `Tmax` and `Tmin` when needed, derives `Wind` from `Wind_E` and `Wind_N` when needed, and derives total precipitation `precip` from `Rainf + Snowf` when needed before building aggregated predictors such as `precip_mean`, `precip_std`, `Wind_mean`, and `Wind_std`.
+- **Tools Usage:** Referenced in `Tools/readvar.py` for predictor generation and in `Tools/forcing.py` for creating compressed and aligned forcing data.
 
 ## PFT Mask File
 - **File Name:** FGSPIN.10Y.ORC22v8034_19010101_19101231_1Y_stomate_history.nc
